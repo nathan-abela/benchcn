@@ -1,0 +1,61 @@
+---
+title: Decoders
+description: Pure I2C, SPI and UART decoders with matching encoders, for the logic analyzer, for tests and for logs.
+---
+
+Each decoder takes arrays of logic levels and a sample rate and returns frames with sample positions. Each has an encoder that produces the same kind of trace from a description, which is how the analyzer demo and the round-trip tests work.
+
+## Installation
+
+<InstallTabs item="decoders" />
+
+## I2C
+
+```ts
+import { decodeI2c, encodeI2c, summarizeI2c } from "@/lib/decoders/i2c";
+
+const trace = encodeI2c(
+  [
+    { address: 0x76, read: false, data: [0xf7] },
+    { address: 0x76, read: true, data: [0xa0, 0x00], repeatedStart: true },
+  ],
+  { sampleRate: 1_000_000, clockHz: 100_000 },
+);
+const frames = decodeI2c(trace);
+summarizeI2c(frames);
+// W 0x76: F7
+// R 0x76: A0 00
+```
+
+Frames: `start`, `repeated-start`, `address` (`value`, `read`, `ack`), `data` (`value`, `ack`), `stop`. `start` and `end` are sample indices.
+
+## SPI
+
+```ts
+import { decodeSpi, encodeSpi, summarizeSpi } from "@/lib/decoders/spi";
+
+const trace = encodeSpi([{ mosi: [0x9f], miso: [0x00, 0xef] }], {
+  sampleRate: 10_000_000,
+  mode: 0,
+});
+const frames = decodeSpi(trace, { mode: 0 });
+summarizeSpi(frames); // MOSI 9F  MISO 00 EF
+```
+
+All four modes, both bit orders, active-low or active-high chip select, and word sizes other than 8 are supported. Without a chip-select lane the decoder runs continuously.
+
+## UART
+
+```ts
+import { decodeUart, encodeUart, summarizeUart } from "@/lib/decoders/uart";
+
+const trace = encodeUart([0x68, 0x69], { sampleRate: 1_000_000, baudRate: 9600 });
+const frames = decodeUart(trace, { baudRate: 9600 });
+summarizeUart(frames); // hi
+```
+
+5 to 8 data bits, even, odd or no parity, one or two stop bits. Framing and parity errors come back as `error` frames and decoding resynchronises on the next idle line.
+
+## In the logic analyzer
+
+Only I2C is drawn as an overlay in v1. SPI and UART overlays are on the [roadmap](https://github.com/nathan-abela/benchcn/blob/main/ROADMAP.md); the decoders are complete and tested today.
