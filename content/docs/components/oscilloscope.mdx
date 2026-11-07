@@ -1,0 +1,129 @@
+---
+title: Oscilloscope
+description: Working oscilloscope for analog waveforms with edge trigger, timebase and volts per division, phosphor persistence, and live measurements.
+---
+
+<ComponentPreview name="oscilloscope" />
+
+Drag on the screen to move the trigger level. The trace holds still because the trigger crossing is interpolated between samples and the window is anchored to it.
+
+## Installation
+
+<InstallTabs item="oscilloscope" />
+
+## Usage
+
+The scope renders whatever samples you hand it. Pass `data` as a function and it pulls fresh samples on every frame without re-rendering React.
+
+```tsx
+import { createMockDevice } from "@/lib/mock-device";
+import { Oscilloscope } from "@/components/ui/oscilloscope";
+
+const device = createMockDevice();
+const sampleRate = 1_000_000;
+const n = 8192;
+
+export function Scope() {
+  return (
+    <Oscilloscope
+      channels={[
+        {
+          id: "ch1",
+          data: () => device.waveform("ch1", Date.now() - (n / sampleRate) * 1000, n, sampleRate),
+          sampleRate,
+          voltsPerDiv: 0.5,
+        },
+      ]}
+      timebase={0.0002}
+      trigger={{ level: 0.2, edge: "rising" }}
+    />
+  );
+}
+```
+
+With real hardware, keep a ring buffer per channel and feed it `block` messages from a source:
+
+```tsx
+import { useRingBuffer } from "@/hooks/use-ring-buffer";
+import { useWebSocketSource } from "@/hooks/use-websocket-source";
+
+const source = useWebSocketSource("ws://scope.local/ws");
+const ch1 = useRingBuffer(source, "ch1", { capacity: 65_536 });
+
+<Oscilloscope
+  channels={[{ id: "ch1", data: () => ch1.tail(8192).values, sampleRate: ch1.sampleRate }]}
+/>;
+```
+
+## Anatomy
+
+```tsx
+import { Scope } from "@/components/ui/oscilloscope";
+
+<Scope.Root channels={channels} timebase={0.001} trigger={{ level: 0 }}>
+  <Scope.Status />
+  <Scope.Screen />
+  <Scope.Readout />
+  <Scope.Measurements items={["frequency", "peakToPeak"]} />
+</Scope.Root>;
+```
+
+`Oscilloscope` is `Scope.Root` with the bezel, a header, the screen, the readout and the measurements. Use the parts when the scope sits inside your own panel.
+
+## Props
+
+<PropsTable of="oscilloscope" />
+
+### ScopeChannel
+
+<PropsTable of="oscilloscope-channel" />
+
+### ScopeTrigger
+
+<PropsTable of="oscilloscope-trigger" />
+
+## Examples
+
+### Two channels with an offset
+
+Logic-level signals sit on top of analog ones by giving each channel its own scale and offset, in divisions from the centre line.
+
+```tsx
+channels={[
+  { id: "audio", data: audio, sampleRate, voltsPerDiv: 0.5 },
+  { id: "gate", data: gate, sampleRate, voltsPerDiv: 1, offset: -2.5 },
+]}
+```
+
+### Normal trigger mode
+
+In `normal` mode the screen holds the last triggered capture instead of free running, which is what you want when hunting an intermittent pulse.
+
+```tsx
+trigger={{ source: "ch1", level: 1.2, edge: "falling", mode: "normal" }}
+```
+
+### Stopped
+
+`running={false}` freezes both the drawing loop and the measurements.
+
+## Theming
+
+The bezel, labels and readouts use shadcn tokens. The screen is always dark (`--scope-screen`, falling back to a warm near-black) because displays are the emissive part of a bench. Traces use `--channel-1` to `--channel-4` from `@benchcn/tokens`, then `--chart-n`, then any `color` you pass.
+
+## Accessibility
+
+The canvas is decorative. A visually hidden sentence next to it reads the current measurements for each channel, and the measurement cells are real text updated ten times a second.
+
+| Interaction        | Result                                                      |
+| ------------------ | ----------------------------------------------------------- |
+| Drag on the screen | Sets the trigger level when `onTriggerLevelChange` is given |
+
+Under `prefers-reduced-motion` persistence is disabled and the screen redraws four times a second.
+
+## Ask your agent
+
+<AgentPrompt item="oscilloscope">
+  Use one Oscilloscope with a channel per signal. Pick the timebase so two to five periods are on
+  screen and set the trigger level to the middle of the signal.
+</AgentPrompt>

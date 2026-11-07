@@ -1,0 +1,106 @@
+---
+title: Actuator control
+description: Press-and-hold switch for relays, pumps and motor enables that shows commanded versus confirmed state, acknowledgement latency, timeout and fail-safe.
+---
+
+<ComponentPreview name="actuator-control" />
+
+Hold the pump button. The command goes out when the bar fills, the LED pulses until the device acknowledges, and the two readouts only agree once it has. The mock device drops about 4% of commands, so a few tries in you will see the timeout path.
+
+## Installation
+
+<InstallTabs item="actuator-control" />
+
+## Usage
+
+The control is stateless: it renders what you pass and calls `onCommand` once per completed hold. `useMockDevice` tracks the acknowledgement for you.
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { ActuatorControl } from "@/components/ui/actuator-control";
+
+export function Pump() {
+  const { actuators, command } = useMockDevice({ failSafe: { pump: false } });
+  return (
+    <ActuatorControl
+      label="Water pump"
+      description="Relay on GPIO 17"
+      {...actuators.pump}
+      onCommand={(next) => command("pump", next)}
+    />
+  );
+}
+```
+
+With real hardware the same tracker follows acknowledgements from any source:
+
+```tsx
+import { createActuatorTracker } from "@/lib/actuator";
+import { setCommand } from "@/lib/wire";
+
+const pump = createActuatorTracker({ timeout: 2000, failSafe: false });
+source.subscribe((message) => {
+  if ("ack" in message) pump.ack(message);
+});
+
+const onCommand = (next: boolean) => {
+  const message = setCommand("pump", next);
+  pump.command(next, message.n);
+  source.send(message);
+};
+```
+
+## Props
+
+<PropsTable of="actuator-control" />
+
+## Examples
+
+### Tap instead of hold
+
+`holdMs={0}` for things that are safe to toggle, like an indicator LED.
+
+### Rejected command
+
+Pass the device's error text and the control shows it in place of the latency.
+
+```tsx
+<ActuatorControl label="Heater" commanded confirmed={false} error="overcurrent" onCommand={send} />
+```
+
+### Unknown state
+
+Before the first acknowledgement `confirmed` is `null`. The control shows Unknown and a dash, never a guess.
+
+## States
+
+| Status    | When                                      |
+| --------- | ----------------------------------------- |
+| Unknown   | `confirmed` is `null`                     |
+| Idle      | Confirmed is known, nothing commanded yet |
+| Waiting   | `pending`                                 |
+| Confirmed | Commanded and confirmed agree             |
+| Mismatch  | They disagree and no error is set         |
+| Error     | `error` is set, including `"timeout"`     |
+
+## Theming
+
+Bezel and readouts use shadcn tokens. The LED uses `--success`, `--warning` and `--destructive`; the hold bar uses `--primary` at low opacity. There is no `color` prop: an actuator's colour is semantic, not physical.
+
+## Accessibility
+
+The button is a `switch` whose `aria-checked` reflects the confirmed state (`mixed` while unknown) and `aria-busy` the pending state. The status chip is a polite live region, so screen readers hear "Waiting" and "Confirmed" without the LED.
+
+| Key                 | Result                                 |
+| ------------------- | -------------------------------------- |
+| Hold Space or Enter | Fills the bar; releasing early cancels |
+| Tab                 | Moves focus to the switch              |
+
+Under `prefers-reduced-motion` the bar jumps to full when the hold completes and the LED does not pulse.
+
+## Ask your agent
+
+<AgentPrompt item="actuator-control">
+  Never show an actuator as on because the user pressed it. Render pending until the matching ack
+  arrives, and pass a failSafe so a timeout shows the state the firmware falls back to.
+</AgentPrompt>
