@@ -1,0 +1,25 @@
+node_modules
+
+.DS_Store
+.cache
+.vercel
+.output
+.nitro
+/build/
+/api/
+/server/build
+/public/build
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.tanstack
+
+.source
+# generated
+public/r/
+src/routeTree.gen.ts
+dist/
+
+# local only
+docs/BRIEF.md
