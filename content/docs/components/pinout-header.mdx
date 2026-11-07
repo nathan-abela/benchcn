@@ -1,0 +1,86 @@
+---
+title: Pinout header
+description: Board pinouts from typed data with an official source, your wiring drawn on top, and conflicts called out before anything smokes.
+---
+
+<ComponentPreview name="pinout-header" />
+
+Switch boards, then add the wiring mistake: on the Raspberry Pi a buzzer lands on the relay's pin, on the Pico a second sensor puts I2C0 SDA on a second pin.
+
+## Installation
+
+<InstallTabs item="pinout-header" />
+
+## Usage
+
+```tsx
+import { raspberryPi40Pin } from "@/lib/boards";
+import { PinoutHeader } from "@/components/ui/pinout-header";
+
+<PinoutHeader
+  board={raspberryPi40Pin}
+  assignments={[
+    { pin: 3, part: "BME280", signal: "SDA", use: "i2c" },
+    { pin: 5, part: "BME280", signal: "SCL", use: "i2c" },
+    { pin: 11, part: "Relay", signal: "IN", use: "gpio" },
+  ]}
+/>;
+```
+
+`use` tells the conflict checker which function the wire relies on. Leave it out for power and ground wires; set it for signals so bus roles are checked and a signal on a power pin is reported.
+
+## Supported boards
+
+| Board                      | Export             | Source                                                                                                                        |
+| -------------------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------- |
+| Raspberry Pi 40-pin header | `raspberryPi40Pin` | [Raspberry Pi documentation, GPIO](https://www.raspberrypi.com/documentation/computers/raspberry-pi.html#gpio)                |
+| Raspberry Pi Pico          | `raspberryPiPico`  | [Pico datasheet](https://datasheets.raspberrypi.com/pico/pico-datasheet.pdf)                                                  |
+| ESP32-DevKitC V4           | `esp32DevkitcV4`   | [ESP32-DevKitC V4 user guide](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-devkitc/user_guide.html) |
+| Arduino UNO R3             | `arduinoUnoR3`     | [UNO R3 full pinout, A000066](https://docs.arduino.cc/resources/pinouts/A000066-full-pinout.pdf)                              |
+
+Every pin was typed from the document linked in its data file, with the retrieval date. Nothing comes from pinout.xyz, Fritzing or Wokwi. To add a board, follow the `add-board-definition` skill in the repository.
+
+## Props
+
+<PropsTable of="pinout-header" />
+
+## Conflicts
+
+| Kind     | Meaning                                                                     |
+| -------- | --------------------------------------------------------------------------- |
+| pin      | Two parts claim the same physical pin                                       |
+| bus      | One bus role (for example I2C0 SDA) is routed to two different pins         |
+| reserved | A wire with `use` set lands on a power, ground, reserved or unconnected pin |
+
+The checker is a plain function, `findConflicts(board, assignments)`, so a docs page or an agent can run it without rendering.
+
+## Examples
+
+### One header only
+
+```tsx
+<PinoutHeader board={raspberryPiPico} headers={["main"]} />
+```
+
+### Colour by kind
+
+`colorBy="kind"` drops the bus colours and leaves power, ground and GPIO, for a calmer diagram.
+
+### Click handling
+
+`onPinClick` receives the pin and its header; use it to open a wiring form or copy the pin name.
+
+## Theming
+
+Pin colours are conventional and fixed: 5 V red, 3V3 orange, ground dark, I2C blue, SPI purple, UART green, PWM yellow, ADC teal. Labels, chips and the frame follow your theme.
+
+## Accessibility
+
+Pins are list items. Each has a text description with number, name, functions and the parts wired to it; with `onPinClick` they are buttons. Conflicts are a labelled list of sentences, not just red rings.
+
+## Ask your agent
+
+<AgentPrompt item="pinout-header">
+  Pick the board export that matches the hardware, list every wire as an assignment with `use` set,
+  and keep the page if `findConflicts` returns nothing.
+</AgentPrompt>
