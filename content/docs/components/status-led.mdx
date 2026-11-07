@@ -1,0 +1,65 @@
+---
+title: Status LED
+description: Panel LED with physical colour presets, on and off states, and blink, pulse or heartbeat patterns that stop under reduced motion.
+---
+
+<ComponentPreview name="status-led" />
+
+The Link LED beats once the mock device has sent its first sample, the Pump LED follows the confirmed relay state, and the Battery LED blinks only when the pack is low.
+
+## Installation
+
+<InstallTabs item="status-led" />
+
+## Usage
+
+```tsx
+import { StatusLed } from "@/components/ui/status-led";
+
+<StatusLed label="Power" color="green" />
+<StatusLed label="Link" color="blue" pattern="heartbeat" rate={1} on={connected} />
+<StatusLed label="Fault" color="red" pattern="blink" on={faulted} />
+```
+
+An off LED is still an LED: it keeps its colour, dimmed, so a dark panel reads the same way as a real one.
+
+## Props
+
+<PropsTable of="status-led" />
+
+## Examples
+
+### With a visible label
+
+`showLabel` renders the label in the panel's engraved style next to the LED.
+
+```tsx
+<StatusLed label="Heater" color="amber" showLabel />
+```
+
+### Any colour
+
+Pass a CSS colour instead of a preset for an RGB status LED.
+
+```tsx
+<StatusLed label="Mode" color="oklch(0.75 0.2 320)" />
+```
+
+### Sizes
+
+`sm`, `md` and `lg` are 8, 12 and 16 pixels: `sm` in dense tables, `lg` as the main indicator on a tile.
+
+## Theming
+
+Presets are fixed physical colours (`red`, `amber`, `green`, `blue`, `white`) because an LED does not change colour with your theme. Without `color` the LED takes `--primary`. The blink, pulse and heartbeat keyframes are added to your CSS on install.
+
+## Accessibility
+
+The LED is decorative; a visually hidden text reads "`label` on", "`label` off", or the pattern name when blinking. Under `prefers-reduced-motion` every pattern renders as steady on.
+
+## Ask your agent
+
+<AgentPrompt item="status-led">
+  Use one StatusLed per discrete state (power, link, fault). Drive `on` from device state, never
+  from the user's last click.
+</AgentPrompt>

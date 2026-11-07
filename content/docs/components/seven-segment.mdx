@@ -1,0 +1,63 @@
+---
+title: Seven-segment display
+description: SVG seven-segment readout with real segment geometry, faint unlit segments, decimals, colons, minus and a few letters, in physical colours.
+---
+
+<ComponentPreview name="seven-segment" />
+
+Unlit segments stay faintly visible, decimal points attach to the digit before them, and a colon takes half a digit, so a clock reads `12:34` the way the module would show it.
+
+## Installation
+
+<InstallTabs item="seven-segment" />
+
+## Usage
+
+```tsx
+import { SevenSegment } from "@/components/ui/seven-segment";
+
+<SevenSegment value={reading.temp} decimals={1} digits={4} color="red" />
+<SevenSegment value="12:34" color="amber" size={48} />
+<SevenSegment value="Err" />
+```
+
+Numbers are formatted with `decimals` and right aligned into `digits` positions. Strings are rendered character by character; anything the segment font cannot show becomes a blank.
+
+## Props
+
+<PropsTable of="seven-segment" />
+
+## Supported characters
+
+Digits `0` to `9`, `-`, `_`, space, `.`, `:`, `°` and the letters `A b C c d E F H h L n o P r t u y`. Lookups are case-insensitive where only one case exists.
+
+## Examples
+
+### Leading zeros
+
+```tsx
+<SevenSegment value={7} digits={3} leadingZeros />
+```
+
+### Without the bezel
+
+`bezel={false}` drops the dark window so the digits sit on your own surface.
+
+### Larger
+
+`size` is the digit height in pixels; width follows.
+
+## Theming
+
+Presets `red`, `amber`, `green`, `blue` and `white` are physical colours; without `color` the segments use `--primary`. The bezel is a fixed near-black. `offOpacity` controls how visible unlit segments are.
+
+## Accessibility
+
+The SVG is decorative. A visually hidden text carries `label`, or the formatted value when no label is given.
+
+## Ask your agent
+
+<AgentPrompt item="seven-segment">
+  Pass numbers with `decimals` and `digits` so the width never jumps; pass strings only for clocks
+  and status words.
+</AgentPrompt>

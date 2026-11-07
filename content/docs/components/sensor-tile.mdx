@@ -1,0 +1,87 @@
+---
+title: Sensor tile
+description: One reading with unit, a state derived from thresholds, a range bar, a sparkline and automatic stale detection when samples stop.
+---
+
+<ComponentPreview name="sensor-tile" />
+
+The first three tiles are live from the mock device. Pressure has not updated for a while, so it reports Stale on its own; CO₂ has no data at all.
+
+## Installation
+
+<InstallTabs item="sensor-tile" />
+
+## Usage
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { SensorTile } from "@/components/ui/sensor-tile";
+
+export function Climate() {
+  const { readings, history } = useMockDevice();
+  const temp = readings.temp;
+  return (
+    <SensorTile
+      label="Air temperature"
+      value={typeof temp?.v === "number" ? temp.v : null}
+      unit={temp?.u}
+      thresholds={{ min: 0, max: 40, warnAbove: 28, high: 35 }}
+      history={history.temp}
+      updatedAt={temp?.t ? temp.t * 1000 : undefined}
+    />
+  );
+}
+```
+
+Units travel with the sample. Thresholds are in the same unit as the value.
+
+## Props
+
+<PropsTable of="sensor-tile" />
+
+## States
+
+| State   | When                                   |
+| ------- | -------------------------------------- |
+| OK      | Inside every limit                     |
+| Warn    | Outside `warnBelow` or `warnAbove`     |
+| Alarm   | Outside `low` or `high`                |
+| Stale   | `updatedAt` is older than `staleAfter` |
+| No data | `value` is `null`                      |
+
+## Examples
+
+### Just a number
+
+Leave out thresholds and history for a plain readout with unit.
+
+```tsx
+<SensorTile label="Uptime" value={4812} unit="s" precision={0} />
+```
+
+### Range without limits
+
+`min` and `max` alone draw the bar and the marker without colouring anything.
+
+```tsx
+<SensorTile label="Potentiometer" value={2.1} unit="V" thresholds={{ min: 0, max: 3.3 }} />
+```
+
+### Forced state
+
+`state` overrides the derived one, for example to show Alarm from a device-side flag.
+
+## Theming
+
+The tile uses the shadcn card tokens. States use `--success`, `--warning` and `--destructive`; stale and unknown fall back to `--muted-foreground`. The sparkline inherits the muted colour.
+
+## Accessibility
+
+Everything on the tile is text except the sparkline and the bar, which are decorative. The state chip is readable text, so "Alarm" is announced as a word, not as a colour.
+
+## Ask your agent
+
+<AgentPrompt item="sensor-tile">
+  One tile per reading. Pass `updatedAt` from the sample timestamp so the tile can report stale
+  data, and pass `history` from the source for the sparkline.
+</AgentPrompt>
