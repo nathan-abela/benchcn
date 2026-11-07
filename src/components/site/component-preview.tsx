@@ -3,6 +3,7 @@ import { Tab, Tabs } from "fumadocs-ui/components/tabs";
 import { type ReactElement, Suspense } from "react";
 
 import { demos, publicSource } from "@/components/demos";
+import { OpenInV0 } from "@/components/site/open-in-v0";
 import { cn } from "@/lib/utils";
 
 export type ComponentPreviewProps = {
@@ -18,7 +19,11 @@ export function ComponentPreview({ name, className }: ComponentPreviewProps): Re
   const Demo = demo.component;
 
   return (
-    <Tabs items={["Preview", "Code"]} className={cn("not-prose", className)}>
+    <Tabs
+      items={["Preview", "Code"]}
+      label={<OpenInV0 item={name} />}
+      className={cn("not-prose", className)}
+    >
       <Tab value="Preview" className="p-4 sm:p-6">
         <Suspense fallback={<div className="bg-muted/40 h-64 animate-pulse rounded-xl" />}>
           <Demo />
