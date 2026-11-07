@@ -1,0 +1,72 @@
+---
+title: Character LCD
+description: HD44780-style character LCD rendered pixel for pixel from the A00 character ROM, with module colours, backlight, cursor and custom glyphs.
+---
+
+<ComponentPreview name="character-lcd" />
+
+Every pixel comes from the HD44780U A00 character ROM, so text looks exactly as it would on a 16×2 module, including the Yen sign at `\` and the arrows at `~` and `DEL`. The first display uses two custom glyphs, the way firmware loads icons into CGRAM.
+
+## Installation
+
+<InstallTabs item="character-lcd" />
+
+## Usage
+
+```tsx
+import { CharacterLcd } from "@/components/ui/character-lcd";
+
+<CharacterLcd lines={["Temp  21.5°C", "Soil    38%"]} />
+<CharacterLcd lines={["Hello, world!"]} color="blue" cursor={{ col: 13, row: 0, blink: true }} />
+```
+
+Rows are padded or clipped to `cols`, so `lines` can be shorter than the display.
+
+### Custom glyphs
+
+Up to eight 5×8 bitmaps, keyed by the character that triggers them. Rows are top to bottom, bit 4 is the left column, as in the datasheet's CGRAM table.
+
+```tsx
+const heart = [0b00000, 0b01010, 0b11111, 0b11111, 0b01110, 0b00100, 0b00000, 0b00000];
+
+<CharacterLcd lines={["I \u0001 benchcn"]} customGlyphs={{ "\u0001": heart }} />;
+```
+
+## Props
+
+<PropsTable of="character-lcd" />
+
+## Character set
+
+ASCII `0x20` to `0x7E` plus the A00 quirks: `¥` at `0x5C`, `→` at `0x7E`, `←` at `0x7F`, and `°` mapped to the ring at `0xDF`. Characters without a glyph render blank. The ROM data is typed from the Hitachi HD44780U datasheet, Table 4, via an MIT-licensed transcription cited in the source file.
+
+## Examples
+
+### 20×4
+
+```tsx
+<CharacterLcd lines={["Line 1", "Line 2", "Line 3", "Line 4"]} cols={20} rows={4} />
+```
+
+### Backlight off
+
+`backlight={false}` dims the glass the way a module looks with its LED off.
+
+### Scrolling text
+
+Slice a longer string on a timer and pass the window as a line; the preview's second display does this.
+
+## Theming
+
+Presets are module colours, not theme colours: `green` (dark on yellow-green), `blue` (white on blue), `amber`, `white` and `red` (light on dark). The frame is a fixed dark bezel.
+
+## Accessibility
+
+The SVG is decorative. A visually hidden text carries `label`, or the display text with rows separated by slashes. The blinking cursor is still under reduced motion.
+
+## Ask your agent
+
+<AgentPrompt item="character-lcd">
+  Format each row to the column count in your own code, exactly as the firmware would, and pass the
+  rows as `lines`. Use customGlyphs for icons instead of Unicode symbols.
+</AgentPrompt>

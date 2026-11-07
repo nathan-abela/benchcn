@@ -1,0 +1,78 @@
+---
+title: Serial console
+description: Device logs and a command line in one panel, with levels, timestamps, follow mode and command history.
+---
+
+<ComponentPreview name="serial-console" />
+
+Type `{"cmd":"ping","n":1}` and press Enter. Scroll up and the console stops following; new lines are counted on the Follow pill until you jump back down.
+
+## Installation
+
+<InstallTabs item="serial-console" />
+
+## Usage
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { SerialConsole } from "@/components/ui/serial-console";
+import { isCommand, parseLine } from "@/lib/wire";
+
+export function Console() {
+  const { logs, send } = useMockDevice();
+  return (
+    <SerialConsole
+      lines={logs.map((log, i) => ({ id: i, text: log.log, level: log.lvl, t: log.t }))}
+      onCommand={(line) => {
+        const message = parseLine(line);
+        if (message && isCommand(message)) send(message);
+      }}
+    />
+  );
+}
+```
+
+Plain text lines from the device arrive as `info` logs through the wire protocol's parser, so a firmware that only prints works unchanged.
+
+## Props
+
+<PropsTable of="serial-console" />
+
+## Examples
+
+### Read only
+
+Leave out `onCommand` and the input disappears.
+
+### Warnings and errors only
+
+```tsx
+<SerialConsole lines={lines} levels={["warn", "error"]} />
+```
+
+### Echoing sent lines
+
+Add what you send to `lines` with `direction: "out"` and it is drawn in the second channel colour with an arrow.
+
+## Keyboard
+
+| Key       | Result                       |
+| --------- | ---------------------------- |
+| Enter     | Sends the line               |
+| Up / Down | Walks the last 50 sent lines |
+| Escape    | Clears the input             |
+
+## Theming
+
+The log area uses the dark screen colour; levels use `--muted-foreground`, `--warning` and `--destructive`; sent lines use `--channel-2`. The frame follows your card tokens.
+
+## Accessibility
+
+The log is a `log` region with live announcements off, so a chatty device does not talk over the screen reader. The input is labelled. The Follow pill is a button.
+
+## Ask your agent
+
+<AgentPrompt item="serial-console">
+  Feed every log message from the source to `lines` and keep sent commands in the same list with
+  `direction: "out"` so the conversation reads in order.
+</AgentPrompt>
