@@ -1,0 +1,48 @@
+---
+title: Installation
+description: Add the benchcn registry to a shadcn project and install your first component.
+---
+
+## Prerequisites
+
+A React project with shadcn/ui initialised (Tailwind CSS v4, `components.json`). If you are starting fresh:
+
+```bash
+pnpm dlx shadcn@latest init
+```
+
+## Register the namespace
+
+Add `@benchcn` to the `registries` field of your `components.json` so the CLI can resolve `@benchcn/<item>`:
+
+```json title="components.json"
+{
+  "registries": {
+    "@benchcn": "https://nathan-abela.github.io/benchcn/r/{name}.json"
+  }
+}
+```
+
+## Add a component
+
+```bash
+pnpm dlx shadcn@latest add @benchcn/sensor-tile
+```
+
+The CLI copies the component source into your project, installs its dependencies and pulls in anything it needs from this registry (such as the `tokens` item and the `mock-device`).
+
+Without the namespace, the URL form also works:
+
+```bash
+pnpm dlx shadcn@latest add https://nathan-abela.github.io/benchcn/r/sensor-tile.json
+```
+
+## Try it with the mock device
+
+Every component renders against `createMockDevice()` with zero configuration. Swap in a real source when the hardware is ready; see [Data sources](/docs/data-sources).
+
+## AI assistants
+
+- `https://nathan-abela.github.io/benchcn/llms.txt` lists every page; `llms-full.txt` includes the content.
+- Every docs page has a **Copy prompt** button with a ready-made prompt for your agent.
+- Each page is also available as Markdown by appending `.md` to its URL.

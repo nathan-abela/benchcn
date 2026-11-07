@@ -1,0 +1,77 @@
+---
+title: Wire protocol
+description: benchcn/0, a newline-delimited JSON protocol small enough to speak from a microcontroller.
+---
+
+One JSON object per line, UTF-8, newline terminated. Keys are short because the other end is often an 8-bit print loop. Lines that are not JSON are treated as log text, so plain `print()` output still shows up in a serial console.
+
+## Messages
+
+### Sample (device to dashboard)
+
+```json
+{ "ch": "soil", "v": 42, "u": "%", "t": 1731000000 }
+```
+
+| Key  | Type                      | Meaning                                                                                                                                                                        |
+| ---- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `ch` | string                    | Channel id.                                                                                                                                                                    |
+| `v`  | number, boolean or string | The reading.                                                                                                                                                                   |
+| `u`  | string, optional          | Unit, displayed verbatim.                                                                                                                                                      |
+| `t`  | number, optional          | Seconds since the Unix epoch. Devices without a clock send seconds since boot (any value below 1e9) and the dashboard anchors it to its own clock. Omitted means arrival time. |
+
+### Block (device to dashboard)
+
+Evenly spaced numeric samples for scopes and logic analyzers. `sr` is the sample rate in Hz and `t` is the time of the first sample.
+
+```json
+{ "ch": "ch1", "vs": [0.01, 0.52, 0.98, 0.51], "sr": 100000, "u": "V", "t": 1731000000.004 }
+```
+
+### Command (dashboard to device)
+
+```json
+{ "cmd": "set", "n": 17, "id": "pump", "v": true }
+```
+
+`cmd` is `set`, `get` or `ping`. `n` is a nonce the device must echo in its acknowledgement.
+
+### Ack (device to dashboard)
+
+```json
+{"ack":17,"ok":true,"id":"pump","v":true,"t":1731000000.3}
+{"ack":18,"ok":false,"id":"pump","err":"overcurrent"}
+```
+
+An actuator is **commanded** when the dashboard sends `set` and **confirmed** only when the matching `ack` arrives with `ok: true`. No ack within the timeout is a failure the UI must show.
+
+### Log (device to dashboard)
+
+```json
+{ "log": "boot ok", "lvl": "info", "t": 12.5 }
+```
+
+`lvl` is `debug`, `info`, `warn` or `error`.
+
+### Hello (device to dashboard)
+
+Sent once on connect. Lets dashboards and agents discover channels without reading the firmware.
+
+```json
+{
+  "hello": "benchcn/0",
+  "dev": "pico-weather",
+  "chs": [
+    { "id": "soil", "u": "%", "min": 0, "max": 100, "kind": "sensor" },
+    { "id": "pump", "kind": "actuator" }
+  ]
+}
+```
+
+## Transport
+
+Any ordered byte stream: a WebSocket text frame per line, a serial port at 115200 baud, an MQTT message per line. The TypeScript side (`@benchcn/wire`) handles partial chunks, so devices can flush whenever they like.
+
+## Device-side snippets
+
+Ready-made firmware snippets for Raspberry Pi (Python), MicroPython (Pico, ESP32) and Arduino C++ ship with the launch release.

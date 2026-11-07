@@ -1,0 +1,23 @@
+---
+title: Introduction
+description: Hardware and maker UI components for shadcn/ui. Instruments that work, not instruments that look like it.
+---
+
+benchcn is a copy-paste registry of the instruments, readouts, controls and diagrams you want on a dashboard or docs page for a Raspberry Pi, Arduino, ESP32 or home-automation project.
+
+Every component is live out of the box against a **mock device**, and connects to real hardware through small data-source hooks: WebSocket, Web Serial, and later MQTT.
+
+## What makes it different
+
+- **Instruments behave like the real thing.** The oscilloscope triggers and measures. The logic analyzer decodes I²C. The character LCD renders the HD44780 character ROM. Pinouts come from the official datasheets.
+- **Commanded vs. confirmed.** Actuator controls distinguish what you asked for from what the device acknowledged, with latency, timeouts and fail-safe states built in.
+- **Your theme, not ours.** Chrome follows your shadcn tokens. Channels use `--chart-1` to `--chart-5`. Physical colours (LEDs, backlights, segments) are a `color` prop because real hardware has fixed colours.
+- **Both ends of the wire.** A tiny JSON-lines [wire protocol](/docs/wire-protocol) with device-side snippets for Python, MicroPython and Arduino, so an agent can write the firmware and the dashboard in one go.
+
+## Install
+
+```bash
+pnpm dlx shadcn@latest add @benchcn/sensor-tile
+```
+
+See [Installation](/docs/installation) for the one-time registry setup.

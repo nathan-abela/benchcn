@@ -1,0 +1,14 @@
+{
+  "title": "Docs",
+  "pages": [
+    "index",
+    "installation",
+    "data-sources",
+    "wire-protocol",
+    "theming",
+    "---Components---",
+    "...components",
+    "---Hooks & lib---",
+    "...hooks"
+  ]
+}

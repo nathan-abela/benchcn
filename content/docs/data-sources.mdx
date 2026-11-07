@@ -1,0 +1,33 @@
+---
+title: Data sources
+description: Components never open connections. Sources do, and they all speak the same wire protocol.
+---
+
+benchcn components take data in and render UI out. A small data layer provides the data:
+
+| Source               | Use it when                                               | Notes                                                                           |
+| -------------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `createMockDevice()` | Developing, demos, docs, tests                            | Deterministic. Sensors, waveforms, a relay with ack latency, occasional faults. |
+| `useWebSocketSource` | The device, or a bridge next to it, can serve a WebSocket | Works with ESP32, Pico W, Raspberry Pi. Reconnects with backoff.                |
+| `useSerialSource`    | A board is plugged into this computer over USB            | Web Serial, Chromium-only, requires a user gesture to open the port.            |
+| `useMqttSource`      | You already run a broker (Home Assistant, Mosquitto)      | MQTT over WebSocket. Planned.                                                   |
+
+All of them deliver [wire protocol](/docs/wire-protocol) messages, so a dashboard switches from mock to real data by changing one line.
+
+## The mock device
+
+```ts
+import { createMockDevice } from "@/lib/mock-device";
+
+const device = createMockDevice({ seed: 1 });
+device.subscribe((message) => console.log(message));
+device.start();
+```
+
+It emits a `hello` with its channel list, then a sample per sensor every second: `temp`, `humidity`, `soil`, `light`, `battery`, `pressure`. Send it a command and it acknowledges after 120 to 400 ms, unless the command is one of the roughly 4% that get dropped, which is exactly the situation an actuator control has to handle.
+
+Waveform channels `ch1` to `ch4` are sampled on demand for scopes:
+
+```ts
+const samples = device.waveform("ch1", performance.now(), 1024, 100_000);
+```
