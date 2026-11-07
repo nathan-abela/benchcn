@@ -234,36 +234,38 @@ export function ActuatorControl({
         </span>
       </button>
 
-      <dl className="@container grid grid-cols-3 gap-x-4 gap-y-3 font-mono text-sm tabular-nums @max-[300px]:grid-cols-2">
-        <div className="flex flex-col gap-1">
-          <dt>
-            <InstrumentLabel>Commanded</InstrumentLabel>
-          </dt>
-          <dd>{commanded === null ? "—" : commanded ? onLabel : offLabel}</dd>
-        </div>
-        <div className="flex flex-col gap-1">
-          <dt>
-            <InstrumentLabel>Confirmed</InstrumentLabel>
-          </dt>
-          <dd
-            className={cn(
-              status === "mismatch" && "text-warning",
-              status === "error" && "text-destructive",
-              status === "confirmed" && "text-success",
-            )}
-          >
-            {confirmed === null ? "—" : confirmed ? onLabel : offLabel}
-          </dd>
-        </div>
-        <div className="flex flex-col gap-1">
-          <dt>
-            <InstrumentLabel>{error ? "Error" : "Latency"}</InstrumentLabel>
-          </dt>
-          <dd className={cn(error && "text-destructive")}>
-            {error ? error : latency === null ? "—" : `${Math.round(latency)} ms`}
-          </dd>
-        </div>
-      </dl>
+      <div className="@container">
+        <dl className="grid grid-cols-3 gap-x-4 gap-y-3 font-mono text-sm tabular-nums @max-[300px]:grid-cols-2">
+          <div className="flex flex-col gap-1">
+            <dt>
+              <InstrumentLabel>Commanded</InstrumentLabel>
+            </dt>
+            <dd>{commanded === null ? "—" : commanded ? onLabel : offLabel}</dd>
+          </div>
+          <div className="flex flex-col gap-1">
+            <dt>
+              <InstrumentLabel>Confirmed</InstrumentLabel>
+            </dt>
+            <dd
+              className={cn(
+                status === "mismatch" && "text-warning",
+                status === "error" && "text-destructive",
+                status === "confirmed" && "text-success",
+              )}
+            >
+              {confirmed === null ? "—" : confirmed ? onLabel : offLabel}
+            </dd>
+          </div>
+          <div className="flex flex-col gap-1">
+            <dt>
+              <InstrumentLabel>{error ? "Error" : "Latency"}</InstrumentLabel>
+            </dt>
+            <dd className={cn(error && "text-destructive")}>
+              {error ? error : latency === null ? "—" : `${Math.round(latency)} ms`}
+            </dd>
+          </div>
+        </dl>
+      </div>
       {children}
     </div>
   );
