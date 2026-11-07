@@ -24,6 +24,7 @@ export type RegistryItem = {
     light?: Record<string, string>;
     dark?: Record<string, string>;
   };
+  css?: Record<string, Record<string, Record<string, string>>>;
   categories?: string[];
   docs?: string;
   meta?: Record<string, unknown>;
@@ -147,23 +148,71 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/actuator-control"),
   },
   {
+    name: "source-store",
+    type: "registry:lib",
+    title: "Source store",
+    description:
+      "Turns any transport that speaks the wire protocol into one subscribable snapshot: readings, histories, logs and actuators tracked through their acknowledgements.",
+    files: [{ path: "registry/benchcn/lib/source-store.ts", type: "registry:lib" }],
+    registryDependencies: [`${ns}/actuator`, `${ns}/wire`],
+    categories: ["data"],
+    docs: docsUrl("hooks"),
+  },
+  {
     name: "use-mock-device",
     type: "registry:hook",
     title: "useMockDevice",
     description:
-      "React binding for the mock device: live readings, logs, tracked actuators and a command helper. Swap for a real source when the hardware is ready.",
+      "React binding for the mock device: live readings, histories, logs, tracked actuators and a command helper. Swap for a real source when the hardware is ready.",
     files: [{ path: "registry/benchcn/hooks/use-mock-device.ts", type: "registry:hook" }],
-    registryDependencies: [`${ns}/mock-device`, `${ns}/actuator`, `${ns}/wire`],
+    registryDependencies: [`${ns}/mock-device`, `${ns}/source-store`],
     categories: ["data"],
-    docs: docsUrl("data-sources"),
+    docs: docsUrl("hooks/use-mock-device"),
+  },
+  {
+    name: "use-websocket-source",
+    type: "registry:hook",
+    title: "useWebSocketSource",
+    description:
+      "WebSocket source speaking the wire protocol, with reconnect and backoff, returning the same snapshot as the mock device.",
+    files: [{ path: "registry/benchcn/hooks/use-websocket-source.ts", type: "registry:hook" }],
+    registryDependencies: [`${ns}/source-store`],
+    categories: ["data"],
+    docs: docsUrl("hooks/use-websocket-source"),
+  },
+  {
+    name: "use-serial-source",
+    type: "registry:hook",
+    title: "useSerialSource",
+    description:
+      "Web Serial source for a board on USB, opened from a user gesture, returning the same snapshot as the mock device.",
+    files: [{ path: "registry/benchcn/hooks/use-serial-source.ts", type: "registry:hook" }],
+    registryDependencies: [`${ns}/source-store`, `${ns}/use-websocket-source`],
+    categories: ["data"],
+    docs: docsUrl("hooks/use-serial-source"),
+  },
+  {
+    name: "use-ring-buffer",
+    type: "registry:hook",
+    title: "useRingBuffer",
+    description:
+      "Fills a ring buffer with one channel's samples and blocks from a source so scopes can read it every frame without React state.",
+    files: [{ path: "registry/benchcn/hooks/use-ring-buffer.ts", type: "registry:hook" }],
+    registryDependencies: [`${ns}/ring-buffer`, `${ns}/source-store`],
+    categories: ["data"],
+    docs: docsUrl("hooks/use-ring-buffer"),
   },
   {
     name: "decoders",
     type: "registry:lib",
     title: "Protocol decoders",
     description:
-      "Pure I2C decoder and encoder: turns SDA/SCL logic levels into start, address, data, ack and stop frames, and back again for tests and demos.",
-    files: [{ path: "registry/benchcn/lib/decoders/i2c.ts", type: "registry:lib" }],
+      "Pure I2C, SPI and UART decoders with matching encoders: logic levels in, frames out, and back again for tests and demos.",
+    files: [
+      { path: "registry/benchcn/lib/decoders/i2c.ts", type: "registry:lib" },
+      { path: "registry/benchcn/lib/decoders/spi.ts", type: "registry:lib" },
+      { path: "registry/benchcn/lib/decoders/uart.ts", type: "registry:lib" },
+    ],
     categories: ["data"],
     docs: docsUrl("hooks/decoders"),
   },
@@ -198,6 +247,161 @@ export const registry: RegistryItem[] = [
     ],
     categories: ["signals"],
     docs: docsUrl("components/logic-analyzer"),
+  },
+  {
+    name: "status-led",
+    type: "registry:ui",
+    title: "Status LED",
+    description:
+      "Panel LED with physical colour presets, on and off states, and blink, pulse or heartbeat patterns that stop under reduced motion.",
+    files: [{ path: "registry/benchcn/ui/status-led/status-led.tsx", type: "registry:ui" }],
+    css: {
+      "@keyframes benchcn-blink": {
+        "0%, 49%": { opacity: "1" },
+        "50%, 100%": { opacity: "0.12" },
+      },
+      "@keyframes benchcn-pulse": {
+        "0%, 100%": { opacity: "1" },
+        "50%": { opacity: "0.25" },
+      },
+      "@keyframes benchcn-heartbeat": {
+        "0%, 28%, 100%": { opacity: "0.15" },
+        "6%, 18%": { opacity: "1" },
+      },
+    },
+    categories: ["displays"],
+    docs: docsUrl("components/status-led"),
+  },
+  {
+    name: "seven-segment",
+    type: "registry:ui",
+    title: "Seven-segment display",
+    description:
+      "SVG seven-segment readout with real segment geometry, faint unlit segments, decimals, colons, minus and a few letters, in physical colours.",
+    files: [{ path: "registry/benchcn/ui/seven-segment/seven-segment.tsx", type: "registry:ui" }],
+    categories: ["displays"],
+    docs: docsUrl("components/seven-segment"),
+  },
+  {
+    name: "sensor-tile",
+    type: "registry:ui",
+    title: "Sensor tile",
+    description:
+      "One reading with unit, a state derived from thresholds, a range bar, a sparkline and automatic stale detection when samples stop.",
+    files: [{ path: "registry/benchcn/ui/sensor-tile/sensor-tile.tsx", type: "registry:ui" }],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`],
+    categories: ["readouts"],
+    docs: docsUrl("components/sensor-tile"),
+  },
+  {
+    name: "character-lcd",
+    type: "registry:ui",
+    title: "Character LCD",
+    description:
+      "HD44780-style character LCD drawn pixel for pixel from the A00 character ROM, with module colour presets, backlight, cursor and custom glyphs.",
+    files: [
+      { path: "registry/benchcn/ui/character-lcd/character-lcd.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/lib/hd44780-rom.ts", type: "registry:lib" },
+    ],
+    registryDependencies: [`${ns}/status-led`],
+    categories: ["displays"],
+    docs: docsUrl("components/character-lcd"),
+  },
+  {
+    name: "serial-console",
+    type: "registry:ui",
+    title: "Serial console",
+    description:
+      "Device logs and a command line in one panel: levels, timestamps, follow mode that pauses when you scroll up, and command history.",
+    files: [{ path: "registry/benchcn/ui/serial-console/serial-console.tsx", type: "registry:ui" }],
+    dependencies: ["lucide-react"],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`, `${ns}/wire`],
+    categories: ["comms"],
+    docs: docsUrl("components/serial-console"),
+  },
+  {
+    name: "boards",
+    type: "registry:lib",
+    title: "Board pinouts",
+    description:
+      "Typed pinout data for the Raspberry Pi 40-pin header, Raspberry Pi Pico, ESP32-DevKitC V4 and Arduino UNO R3, each citing the official document it was typed from.",
+    files: [
+      {
+        path: "registry/benchcn/boards/types.ts",
+        type: "registry:lib",
+        target: "lib/boards/types.ts",
+      },
+      {
+        path: "registry/benchcn/boards/index.ts",
+        type: "registry:lib",
+        target: "lib/boards/index.ts",
+      },
+      {
+        path: "registry/benchcn/boards/raspberry-pi-40pin.ts",
+        type: "registry:lib",
+        target: "lib/boards/raspberry-pi-40pin.ts",
+      },
+      {
+        path: "registry/benchcn/boards/raspberry-pi-pico.ts",
+        type: "registry:lib",
+        target: "lib/boards/raspberry-pi-pico.ts",
+      },
+      {
+        path: "registry/benchcn/boards/esp32-devkitc-v4.ts",
+        type: "registry:lib",
+        target: "lib/boards/esp32-devkitc-v4.ts",
+      },
+      {
+        path: "registry/benchcn/boards/arduino-uno-r3.ts",
+        type: "registry:lib",
+        target: "lib/boards/arduino-uno-r3.ts",
+      },
+    ],
+    categories: ["board"],
+    docs: docsUrl("components/pinout-header"),
+  },
+  {
+    name: "pinout-header",
+    type: "registry:ui",
+    title: "Pinout header",
+    description:
+      "Board pinout diagram from typed data with an official source, with your wiring drawn on top and pin, bus-role and reserved-pin conflicts called out.",
+    files: [
+      { path: "registry/benchcn/ui/pinout-header/pinout-header.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/lib/pinout.ts", type: "registry:lib" },
+    ],
+    dependencies: ["lucide-react"],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`, `${ns}/boards`],
+    categories: ["board"],
+    docs: docsUrl("components/pinout-header"),
+  },
+  {
+    name: "bitfield-diagram",
+    type: "registry:ui",
+    title: "Bitfield diagram",
+    description:
+      "Register bit layout with named fields, reserved bits hatched, the current value decoded per field, and clickable bits for editing a register.",
+    files: [
+      { path: "registry/benchcn/ui/bitfield-diagram/bitfield-diagram.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/lib/bitfield.ts", type: "registry:lib" },
+    ],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`],
+    categories: ["board"],
+    docs: docsUrl("components/bitfield-diagram"),
+  },
+  {
+    name: "timing-diagram",
+    type: "registry:ui",
+    title: "Timing diagram",
+    description:
+      "Datasheet-style timing figures from WaveJSON-like signal strings: clocks, levels, buses with labels, unknown and high-impedance states.",
+    files: [
+      { path: "registry/benchcn/ui/timing-diagram/timing-diagram.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/lib/wavejson.ts", type: "registry:lib" },
+    ],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`],
+    categories: ["board"],
+    docs: docsUrl("components/timing-diagram"),
   },
   {
     name: "actuator-control",

@@ -1,0 +1,12 @@
+{
+  "title": "Hooks & lib",
+  "pages": [
+    "index",
+    "use-mock-device",
+    "use-websocket-source",
+    "use-serial-source",
+    "use-ring-buffer",
+    "decoders",
+    "..."
+  ]
+}

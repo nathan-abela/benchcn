@@ -1,0 +1,18 @@
+{
+  "title": "Components",
+  "pages": [
+    "index",
+    "oscilloscope",
+    "logic-analyzer",
+    "actuator-control",
+    "sensor-tile",
+    "status-led",
+    "seven-segment",
+    "character-lcd",
+    "serial-console",
+    "pinout-header",
+    "bitfield-diagram",
+    "timing-diagram",
+    "..."
+  ]
+}

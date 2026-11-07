@@ -3,14 +3,30 @@ title: Overview
 description: The v1 catalog. Each page has a live preview, install command, usage, API and accessibility notes.
 ---
 
-Displays: seven-segment, character-lcd, status-led.
+## Signals
 
-Signals: oscilloscope, logic-analyzer.
+- [Oscilloscope](/docs/components/oscilloscope): triggered waveform display with measurements.
+- [Logic analyzer](/docs/components/logic-analyzer): digital lanes with zoom and I²C decode.
 
-Readouts: sensor-tile.
+## Readouts and displays
 
-Controls: actuator-control.
+- [Sensor tile](/docs/components/sensor-tile): one reading with thresholds, sparkline and stale detection.
+- [Seven-segment display](/docs/components/seven-segment): SVG digits in physical colours.
+- [Character LCD](/docs/components/character-lcd): HD44780 text display from the real character ROM.
+- [Status LED](/docs/components/status-led): panel LED with patterns.
 
-Board and docs: pinout-header, bitfield-diagram, timing-diagram.
+## Controls
 
-Comms: serial-console.
+- [Actuator control](/docs/components/actuator-control): press-and-hold with commanded versus confirmed state.
+
+## Boards and docs
+
+- [Pinout header](/docs/components/pinout-header): board pinouts with wiring and conflict detection.
+- [Bitfield diagram](/docs/components/bitfield-diagram): register layouts with live decoding.
+- [Timing diagram](/docs/components/timing-diagram): WaveJSON-style timing figures.
+
+## Comms
+
+- [Serial console](/docs/components/serial-console): logs and a command line.
+
+Everything else, from OLED and LED matrix to strip charts and robotics panels, is tracked in the [roadmap](https://github.com/nathan-abela/benchcn/blob/main/ROADMAP.md).
