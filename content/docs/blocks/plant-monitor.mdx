@@ -1,0 +1,60 @@
+---
+title: Plant monitor
+description: A complete plant dashboard with soil, climate and light tiles, a pump with commanded-versus-confirmed state, a status LCD, link LEDs and a console.
+---
+
+<ComponentPreview name="plant-monitor" />
+
+Hold the pump. Soil moisture starts climbing once the device confirms, the LCD mirrors the state, and the console shows the acknowledgement. About one command in twenty-five is dropped by the mock device, which is when the fail-safe shows.
+
+## Installation
+
+<InstallTabs item="plant-monitor" />
+
+This installs the block and every component it uses.
+
+## Usage
+
+```tsx
+import { PlantMonitor } from "@/components/plant-monitor";
+
+<PlantMonitor />;
+```
+
+With hardware, pass any source handle; the block never creates its own connection when it is given one.
+
+```tsx
+import { useWebSocketSource } from "@/hooks/use-websocket-source";
+
+const source = useWebSocketSource("ws://plant.local/ws", { failSafe: { pump: false } });
+
+<PlantMonitor source={source} channels={{ soil: "moisture", pump: "relay1" }} />;
+```
+
+## Props
+
+| Prop       | Type                                             | Default           | Meaning                                             |
+| ---------- | ------------------------------------------------ | ----------------- | --------------------------------------------------- |
+| `source`   | `SourceHandle`                                   | its own mock      | Readings, history, actuators and `command`          |
+| `title`    | `string`                                         | `"Plant monitor"` |                                                     |
+| `layout`   | `"grid" \| "kiosk"`                              | `"grid"`          | Kiosk fills 800×480 with larger targets, no console |
+| `channels` | `Partial<{ soil, temp, humidity, light, pump }>` | defaults          | Channel ids on your device                          |
+
+## Kiosk mode
+
+```tsx
+<PlantMonitor layout="kiosk" />
+```
+
+Sized for the common 800×480 touchscreen: three columns, the soil tile spanning two rows, the pump control two columns wide, 48 px hold target.
+
+## Firmware
+
+The device needs to publish `soil`, `temp`, `humidity` and `light` samples and acknowledge `set` commands for `pump`. Device-side snippets for Raspberry Pi, MicroPython and Arduino are in the repository's `device/` folder.
+
+## Ask your agent
+
+<AgentPrompt item="plant-monitor">
+  Start from PlantMonitor with the mock, then pass the real source and map channel ids with the
+  `channels` prop instead of renaming firmware channels.
+</AgentPrompt>

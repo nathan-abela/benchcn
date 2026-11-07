@@ -60,6 +60,7 @@ export const registry: RegistryItem[] = [
         "channel-2": "oklch(0.70 0.12 200)",
         "channel-3": "oklch(0.66 0.20 340)",
         "channel-4": "oklch(0.62 0.17 262)",
+        "scope-screen": "oklch(0.19 0.004 80)",
       },
       dark: {
         success: "oklch(72.3% 0.219 149.579)",
@@ -70,6 +71,7 @@ export const registry: RegistryItem[] = [
         "channel-2": "oklch(0.84 0.12 200)",
         "channel-3": "oklch(0.76 0.20 340)",
         "channel-4": "oklch(0.72 0.16 262)",
+        "scope-screen": "oklch(0.15 0.004 80)",
       },
     },
     categories: ["theme"],
@@ -402,6 +404,51 @@ export const registry: RegistryItem[] = [
     registryDependencies: [`${ns}/tokens`, `${ns}/instrument`],
     categories: ["board"],
     docs: docsUrl("components/timing-diagram"),
+  },
+  {
+    name: "plant-monitor",
+    type: "registry:block",
+    title: "Plant monitor",
+    description:
+      "Complete plant dashboard block: soil, climate and light tiles, a pump with commanded-versus-confirmed state, a status LCD, link LEDs and a console, with a kiosk layout for 800x480 screens.",
+    files: [
+      {
+        path: "registry/benchcn/blocks/plant-monitor/plant-monitor.tsx",
+        type: "registry:component",
+      },
+    ],
+    registryDependencies: [
+      `${ns}/use-mock-device`,
+      `${ns}/sensor-tile`,
+      `${ns}/actuator-control`,
+      `${ns}/character-lcd`,
+      `${ns}/serial-console`,
+      `${ns}/status-led`,
+    ],
+    categories: ["blocks"],
+    docs: docsUrl("blocks/plant-monitor"),
+  },
+  {
+    name: "weather-station",
+    type: "registry:block",
+    title: "Weather station",
+    description:
+      "Weather dashboard block: seven-segment temperature, climate tiles with sparklines, computed dew point, pressure trend on an LCD and battery state, with a kiosk layout.",
+    files: [
+      {
+        path: "registry/benchcn/blocks/weather-station/weather-station.tsx",
+        type: "registry:component",
+      },
+    ],
+    registryDependencies: [
+      `${ns}/use-mock-device`,
+      `${ns}/sensor-tile`,
+      `${ns}/seven-segment`,
+      `${ns}/character-lcd`,
+      `${ns}/status-led`,
+    ],
+    categories: ["blocks"],
+    docs: docsUrl("blocks/weather-station"),
   },
   {
     name: "actuator-control",

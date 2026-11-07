@@ -62,6 +62,13 @@ export type SourceStore = {
   onBlock: (listener: (block: WireBlock) => void) => () => void;
 };
 
+/** What every source hook returns, and what blocks accept as `source`. */
+export type SourceHandle = SourceSnapshot & {
+  command: (id: string, value: boolean) => void;
+  send: (message: WireMessage) => void;
+  store: SourceStore;
+};
+
 export const EMPTY_SNAPSHOT: SourceSnapshot = {
   readings: {},
   history: {},

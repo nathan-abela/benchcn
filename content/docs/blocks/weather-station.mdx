@@ -1,0 +1,39 @@
+---
+title: Weather station
+description: A weather dashboard with a seven-segment temperature, climate tiles with sparklines, a computed dew point, pressure trend on an LCD and battery state.
+---
+
+<ComponentPreview name="weather-station" />
+
+## Installation
+
+<InstallTabs item="weather-station" />
+
+## Usage
+
+```tsx
+import { WeatherStation } from "@/components/weather-station";
+
+<WeatherStation />;
+<WeatherStation source={useWebSocketSource("ws://roof.local/ws")} />;
+```
+
+## Props
+
+| Prop       | Type                                                    | Default             | Meaning                    |
+| ---------- | ------------------------------------------------------- | ------------------- | -------------------------- |
+| `source`   | `SourceHandle`                                          | its own mock        |                            |
+| `title`    | `string`                                                | `"Weather station"` |                            |
+| `layout`   | `"grid" \| "kiosk"`                                     | `"grid"`            | Kiosk fills 800×480        |
+| `channels` | `Partial<{ temp, humidity, pressure, light, battery }>` | defaults            | Channel ids on your device |
+
+## Derived values
+
+Dew point uses the Magnus formula with the Sonntag constants (within about 0.35 °C from -45 to 60 °C). The pressure trend compares the oldest and newest values in the history; more than 0.5 hPa either way reads as rising or falling. Both are exported functions with tests.
+
+## Ask your agent
+
+<AgentPrompt item="weather-station">
+  Keep the sample timestamps from the device so the tiles can report stale readings when the station
+  goes quiet.
+</AgentPrompt>

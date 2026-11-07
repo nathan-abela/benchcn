@@ -6,11 +6,13 @@ import characterLcdSource from "./character-lcd-demo.tsx?raw";
 import logicAnalyzerSource from "./logic-analyzer-demo.tsx?raw";
 import oscilloscopeSource from "./oscilloscope-demo.tsx?raw";
 import pinoutHeaderSource from "./pinout-header-demo.tsx?raw";
+import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
 import sensorTileSource from "./sensor-tile-demo.tsx?raw";
 import serialConsoleSource from "./serial-console-demo.tsx?raw";
 import sevenSegmentSource from "./seven-segment-demo.tsx?raw";
 import statusLedSource from "./status-led-demo.tsx?raw";
 import timingDiagramSource from "./timing-diagram-demo.tsx?raw";
+import weatherStationSource from "./weather-station-demo.tsx?raw";
 
 export type Demo = {
   component: ComponentType;
@@ -76,6 +78,18 @@ export const demos: Record<string, Demo> = {
     ),
     source: timingDiagramSource,
   },
+  "plant-monitor": {
+    component: lazy(() =>
+      import("./plant-monitor-demo").then((m) => ({ default: m.PlantMonitorDemo })),
+    ),
+    source: plantMonitorSource,
+  },
+  "weather-station": {
+    component: lazy(() =>
+      import("./weather-station-demo").then((m) => ({ default: m.WeatherStationDemo })),
+    ),
+    source: weatherStationSource,
+  },
   "serial-console": {
     component: lazy(() =>
       import("./serial-console-demo").then((m) => ({ default: m.SerialConsoleDemo })),
@@ -88,6 +102,7 @@ export const demos: Record<string, Demo> = {
 export function publicSource(source: string): string {
   return source
     .replaceAll(/@\/registry\/benchcn\/ui\/([\w-]+)\/[\w-]+/g, "@/components/ui/$1")
+    .replaceAll(/@\/registry\/benchcn\/blocks\/([\w-]+)\/[\w-]+/g, "@/components/$1")
     .replaceAll("@/registry/benchcn/lib/", "@/lib/")
     .replaceAll("@/registry/benchcn/hooks/", "@/hooks/");
 }
