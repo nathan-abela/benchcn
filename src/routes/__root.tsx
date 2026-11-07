@@ -21,6 +21,12 @@ export const Route = createRootRoute({
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [{ rel: "stylesheet", href: appCss }],
+    scripts: [
+      {
+        children:
+          "try{var t=localStorage.getItem('benchcn-theme');if(t&&t!=='stone')document.documentElement.setAttribute('data-theme',t)}catch(e){}",
+      },
+    ],
   }),
   component: RootComponent,
 });
