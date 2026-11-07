@@ -1,0 +1,68 @@
+---
+title: Bitfield diagram
+description: Register bit layout with named fields, reserved bits hatched, the current value decoded per field, and clickable bits for editing a register.
+---
+
+<ComponentPreview name="bitfield-diagram" />
+
+Click any bit to flip it. The legend decodes each field, including named values such as the BME280's oversampling settings.
+
+## Installation
+
+<InstallTabs item="bitfield-diagram" />
+
+## Usage
+
+Fields are listed LSB first with a width, the way WaveDrom's bitfield does, or with an explicit `[lsb, msb]` range. Gaps become reserved bits.
+
+```tsx
+import { BitfieldDiagram } from "@/components/ui/bitfield-diagram";
+
+<BitfieldDiagram
+  title="BME280 ctrl_meas"
+  name="0xF4"
+  bits={8}
+  fields={[
+    { name: "mode", bits: 2, values: { 0: "sleep", 1: "forced", 3: "normal" } },
+    { name: "osrs_p", bits: 3, description: "Pressure oversampling" },
+    { name: "osrs_t", bits: 3, description: "Temperature oversampling" },
+  ]}
+  value={register}
+  onValueChange={setRegister}
+/>;
+```
+
+The layout maths is a plain function, `layoutBitfield(fields, bits)`, and throws on overlaps or fields that do not fit, so a wrong register map fails loudly in development.
+
+## Props
+
+<PropsTable of="bitfield-diagram" />
+
+## Examples
+
+### Read only
+
+Leave out `onValueChange` to show a decoded value without editing. Leave out `value` as well for a pure layout figure.
+
+### 32-bit registers
+
+Registers wider than 16 bits wrap into rows of 16; set `lanes` to change that. Fields that cross a row boundary are drawn in both rows.
+
+### Access types
+
+`access` accepts `RW`, `RO`, `WO`, `W1C` and `RSVD`; it is shown in the legend and `RSVD` hatches the field.
+
+## Theming
+
+Fields take `--channel-1` to `--channel-4` in order, or a `color` of your own. Reserved bits are hatched in the foreground colour at low opacity.
+
+## Accessibility
+
+The SVG is decorative. A visually hidden sentence lists every field with its bit range and the current value, and the legend is a real table. Clickable bits are SVG rectangles; for keyboard editing pair the diagram with inputs that call the same setter.
+
+## Ask your agent
+
+<AgentPrompt item="bitfield-diagram">
+  Type register maps from the datasheet, LSB first, and cite the document and section in a comment
+  next to the fields.
+</AgentPrompt>

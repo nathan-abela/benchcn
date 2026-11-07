@@ -1,0 +1,59 @@
+---
+title: Timing diagram
+description: Datasheet-style timing figures from WaveJSON-like signal strings, with clocks, levels, buses with labels, unknown and high-impedance states.
+---
+
+<ComponentPreview name="timing-diagram" />
+
+## Installation
+
+<InstallTabs item="timing-diagram" />
+
+## Usage
+
+One character per cycle. `.` repeats the previous state and bus characters take their labels from `data` in order.
+
+```tsx
+import { TimingDiagram } from "@/components/ui/timing-diagram";
+
+<TimingDiagram
+  title="SPI mode 0"
+  signals={[
+    { name: "CS", wave: "10......1" },
+    { name: "SCLK", wave: "0.pppppp.0" },
+    { name: "MOSI", wave: "x.222222.x", data: ["7", "6", "5", "4", "3", "2"] },
+  ]}
+/>;
+```
+
+## Wave characters
+
+| Character   | Meaning                                             |
+| ----------- | --------------------------------------------------- |
+| `0` `1`     | Low, high (`l`, `h`, `d`, `u` are accepted aliases) |
+| `p` `n`     | One clock cycle, rising or falling edge first       |
+| `=` `2`-`9` | A bus value; the digit picks the colour slot        |
+| `x`         | Unknown, hatched                                    |
+| `z`         | High impedance, dashed mid level                    |
+| `.`         | Repeat the previous character                       |
+| `\|`        | A break in time                                     |
+
+`period` stretches every character of a signal; `phase` shifts it in cycles. Node arrows and edge annotations from full WaveJSON are not supported.
+
+## Props
+
+<PropsTable of="timing-diagram" />
+
+## Theming
+
+Lines use the current text colour. Bus fills use `--channel-1` to `--channel-4` by digit. The grid is the foreground at low opacity.
+
+## Accessibility
+
+The figure is decorative; a visually hidden sentence names the signals. Put the meaning of the figure in `caption`, which is real text.
+
+## Ask your agent
+
+<AgentPrompt item="timing-diagram">
+  Describe each signal as a wave string of one character per clock and keep bus labels short.
+</AgentPrompt>
