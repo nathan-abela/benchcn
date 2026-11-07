@@ -1,0 +1,45 @@
+---
+title: useMockDevice
+description: React binding for the mock device, with live readings, histories, logs, tracked actuators and a command helper.
+---
+
+Every demo on this site runs on this hook. It creates one mock device per component instance, starts it on mount and stops it on unmount.
+
+## Installation
+
+<InstallTabs item="use-mock-device" />
+
+## Usage
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+
+const { readings, history, logs, actuators, command } = useMockDevice({
+  seed: 1,
+  failSafe: { pump: false },
+});
+
+readings.temp; // { ch: "temp", v: 21.4, u: "°C", t: 1731000000 }
+history.temp; // [21.1, 21.2, 21.4]
+actuators.pump; // { commanded, confirmed, pending, error, latency }
+command("pump", true);
+```
+
+## Options
+
+| Option            | Type                      | Default      | Meaning                                         |
+| ----------------- | ------------------------- | ------------ | ----------------------------------------------- |
+| `seed`            | `number`                  | `1`          | Deterministic noise and faults                  |
+| `sampleInterval`  | `number`                  | `1000`       | Milliseconds between sensor samples             |
+| `ackLatency`      | `[min, max]`              | `[120, 400]` | Acknowledgement delay range                     |
+| `faultRate`       | `number`                  | `0.04`       | Share of commands that are dropped              |
+| `actuatorTimeout` | `number`                  | `2000`       | Milliseconds before a command reports a timeout |
+| `failSafe`        | `Record<string, boolean>` | `{}`         | State assumed per actuator after a timeout      |
+| `historyLength`   | `number`                  | `60`         | Values kept per channel for sparklines          |
+| `logLimit`        | `number`                  | `200`        | Log lines kept                                  |
+
+## Returns
+
+`readings`, `history`, `logs`, `actuators`, `hello`, `received`, plus `command(id, value)`, `send(message)`, the underlying `device` and the `store`, which `useRingBuffer` consumes.
+
+The same shape comes back from [useWebSocketSource](/docs/hooks/use-websocket-source) and [useSerialSource](/docs/hooks/use-serial-source), so a page written against the mock moves to hardware by changing one line.

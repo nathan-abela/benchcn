@@ -1,0 +1,47 @@
+---
+title: useSerialSource
+description: Web Serial as a wire-protocol source for a board plugged into this computer over USB.
+---
+
+Web Serial works in Chromium browsers over HTTPS or on localhost. The port picker only opens from a user gesture, so `connect` is something a button calls.
+
+## Installation
+
+<InstallTabs item="use-serial-source" />
+
+## Usage
+
+```tsx
+import { useSerialSource } from "@/hooks/use-serial-source";
+
+export function Bench() {
+  const serial = useSerialSource({ baudRate: 115200 });
+  return (
+    <>
+      <button onClick={() => serial.connect()} disabled={serial.status === "unsupported"}>
+        {serial.status === "open" ? "Connected" : "Connect"}
+      </button>
+      <SerialConsole
+        lines={serial.logs.map(toLine)}
+        onCommand={(l) => serial.send(parseLine(l)!)}
+      />
+    </>
+  );
+}
+```
+
+## Options
+
+| Option                                                                                                 | Type                                | Default  | Meaning                          |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------- | -------- | -------------------------------- |
+| `baudRate`                                                                                             | `number`                            | `115200` | Serial speed                     |
+| `filters`                                                                                              | `{ usbVendorId?, usbProductId? }[]` |          | Limit the picker to known boards |
+| plus the store options of `useMockDevice` (`actuatorTimeout`, `failSafe`, `historyLength`, `logLimit`) |
+
+## Returns
+
+The source snapshot, `status` (`unsupported` when the browser has no Web Serial), `connect()`, `disconnect()`, `command`, `send` and `store`.
+
+## Device side
+
+Anything that prints lines over USB serial works: a MicroPython `print(json.dumps(...))`, an Arduino `Serial.println`. Lines that are not JSON show up as `info` logs, so an existing sketch keeps working while you add the protocol.

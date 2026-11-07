@@ -1,0 +1,50 @@
+---
+title: useRingBuffer
+description: Collects one channel's samples and blocks from a source into a ring buffer that scopes read every frame without React state.
+---
+
+High-rate data should not go through React state. This hook fills a typed-array ring buffer from a source store and bumps a `revision` at most once per animation frame so a component can re-render if it wants to.
+
+## Installation
+
+<InstallTabs item="use-ring-buffer" />
+
+## Usage
+
+```tsx
+import { useRingBuffer } from "@/hooks/use-ring-buffer";
+import { useWebSocketSource } from "@/hooks/use-websocket-source";
+import { Oscilloscope } from "@/components/ui/oscilloscope";
+
+const source = useWebSocketSource("ws://scope.local/ws");
+const ch1 = useRingBuffer(source.store, "ch1", { capacity: 65_536 });
+
+<Oscilloscope
+  channels={[{ id: "ch1", data: () => ch1.buffer.tail(8192).values, sampleRate: ch1.sampleRate }]}
+/>;
+```
+
+`block` messages (`{"ch","vs","sr"}`) are appended whole with their sample rate; single `sample` messages are appended one by one with the rate estimated from their spacing.
+
+## Options
+
+| Option      | Type             | Default | Meaning      |
+| ----------- | ---------------- | ------- | ------------ |
+| `capacity`  | `number`         | `65536` | Samples kept |
+| `precision` | `"f32" \| "f64"` | `"f32"` | Storage type |
+
+## Returns
+
+`buffer` (a `RingBuffer` with `tail(n)`, `since(t)`, `latest`, `extent(n)`), `sampleRate` and `revision`.
+
+## The ring buffer on its own
+
+`RingBuffer` from `@benchcn/ring-buffer` has no React dependency:
+
+```ts
+import { RingBuffer } from "@/lib/ring-buffer";
+
+const buffer = new RingBuffer({ capacity: 4096 });
+buffer.pushBlock(Date.now(), samples, 10_000);
+const { times, values } = buffer.tail(1024);
+```

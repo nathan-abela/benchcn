@@ -1,0 +1,41 @@
+---
+title: useWebSocketSource
+description: A WebSocket that speaks the wire protocol, with reconnect and backoff, returning the same snapshot as the mock device.
+---
+
+For an ESP32, a Pico W or a Raspberry Pi that serves a WebSocket and prints wire-protocol lines.
+
+## Installation
+
+<InstallTabs item="use-websocket-source" />
+
+## Usage
+
+```tsx
+import { useWebSocketSource } from "@/hooks/use-websocket-source";
+
+const { status, readings, actuators, command } = useWebSocketSource("ws://weather.local/ws", {
+  failSafe: { pump: false },
+});
+```
+
+Pass `null` as the URL to stay disconnected, for example until the user has typed an address.
+
+## Options
+
+| Option                                                                                                 | Type                 | Default | Meaning                                         |
+| ------------------------------------------------------------------------------------------------------ | -------------------- | ------- | ----------------------------------------------- |
+| `reconnect`                                                                                            | `boolean`            | `true`  | Reconnect after a drop with exponential backoff |
+| `maxBackoff`                                                                                           | `number`             | `10000` | Longest wait between attempts in milliseconds   |
+| `protocols`                                                                                            | `string \| string[]` |         | WebSocket subprotocols                          |
+| plus the store options of `useMockDevice` (`actuatorTimeout`, `failSafe`, `historyLength`, `logLimit`) |
+
+## Returns
+
+The source snapshot (`readings`, `history`, `logs`, `actuators`, `hello`, `received`), `status` (`idle`, `connecting`, `open`, `closed`, `error`, `unsupported`), `command`, `send` and `store`.
+
+## Device side
+
+The firmware serves a WebSocket, sends one JSON object per line, and answers `set` commands with an `ack`. Binary frames are decoded as UTF-8 text; frames do not need to end on a line boundary. See the [wire protocol](/docs/wire-protocol).
+
+Without React, `createWebSocketTransport(url)` returns the transport and `createSourceStore(transport)` the store.
