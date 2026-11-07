@@ -1,0 +1,92 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "benchcn",
+  "homepage": "https://nathan-abela.github.io/benchcn",
+  "items": [
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "tokens",
+      "type": "registry:item",
+      "title": "benchcn tokens",
+      "description": "Adds --success and --warning colour tokens next to the shadcn --destructive token, mapped into Tailwind as bg-success, text-warning and friends.",
+      "cssVars": {
+        "theme": {
+          "color-success": "var(--success)",
+          "color-success-foreground": "var(--success-foreground)",
+          "color-warning": "var(--warning)",
+          "color-warning-foreground": "var(--warning-foreground)"
+        },
+        "light": {
+          "success": "oklch(62.7% 0.194 149.214)",
+          "success-foreground": "oklch(98.2% 0.018 155.826)",
+          "warning": "oklch(76.9% 0.188 70.08)",
+          "warning-foreground": "oklch(27.9% 0.077 45.635)"
+        },
+        "dark": {
+          "success": "oklch(72.3% 0.219 149.579)",
+          "success-foreground": "oklch(26.6% 0.065 152.934)",
+          "warning": "oklch(82.8% 0.189 84.429)",
+          "warning-foreground": "oklch(27.9% 0.077 45.635)"
+        }
+      },
+      "categories": [
+        "theme"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/theming"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "wire",
+      "type": "registry:lib",
+      "title": "Wire protocol",
+      "description": "Types, parser and serialiser for the benchcn wire protocol: JSON lines carrying telemetry samples, actuator commands and acknowledgements.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/wire.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/wire-protocol"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "ring-buffer",
+      "type": "registry:lib",
+      "title": "Ring buffer",
+      "description": "Fixed-capacity typed-array ring buffer for high-rate samples, with time-windowed reads for scopes and strip charts.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/ring-buffer.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks/use-ring-buffer"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "mock-device",
+      "type": "registry:lib",
+      "title": "Mock device",
+      "description": "Deterministic simulated bench device: slow sensors, waveform channels, I2C traffic, a relay with acknowledgement latency and occasional faults. Powers every demo.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/mock-device.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/wire"
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/data-sources"
+    }
+  ]
+}
