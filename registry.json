@@ -8,25 +8,37 @@
       "name": "tokens",
       "type": "registry:item",
       "title": "benchcn tokens",
-      "description": "Adds --success and --warning colour tokens next to the shadcn --destructive token, mapped into Tailwind as bg-success, text-warning and friends.",
+      "description": "Adds --success and --warning next to the shadcn --destructive token, and --channel-1 to --channel-4 instrument colours for scope traces and analyzer lanes, all mapped into Tailwind (bg-success, text-channel-1).",
       "cssVars": {
         "theme": {
           "color-success": "var(--success)",
           "color-success-foreground": "var(--success-foreground)",
           "color-warning": "var(--warning)",
-          "color-warning-foreground": "var(--warning-foreground)"
+          "color-warning-foreground": "var(--warning-foreground)",
+          "color-channel-1": "var(--channel-1)",
+          "color-channel-2": "var(--channel-2)",
+          "color-channel-3": "var(--channel-3)",
+          "color-channel-4": "var(--channel-4)"
         },
         "light": {
           "success": "oklch(62.7% 0.194 149.214)",
           "success-foreground": "oklch(98.2% 0.018 155.826)",
           "warning": "oklch(76.9% 0.188 70.08)",
-          "warning-foreground": "oklch(27.9% 0.077 45.635)"
+          "warning-foreground": "oklch(27.9% 0.077 45.635)",
+          "channel-1": "oklch(0.80 0.16 85)",
+          "channel-2": "oklch(0.70 0.12 200)",
+          "channel-3": "oklch(0.66 0.20 340)",
+          "channel-4": "oklch(0.62 0.17 262)"
         },
         "dark": {
           "success": "oklch(72.3% 0.219 149.579)",
           "success-foreground": "oklch(26.6% 0.065 152.934)",
           "warning": "oklch(82.8% 0.189 84.429)",
-          "warning-foreground": "oklch(27.9% 0.077 45.635)"
+          "warning-foreground": "oklch(27.9% 0.077 45.635)",
+          "channel-1": "oklch(0.88 0.17 92)",
+          "channel-2": "oklch(0.84 0.12 200)",
+          "channel-3": "oklch(0.76 0.20 340)",
+          "channel-4": "oklch(0.72 0.16 262)"
         }
       },
       "categories": [
@@ -87,6 +99,193 @@
         "data"
       ],
       "docs": "https://nathan-abela.github.io/benchcn/docs/data-sources"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "instrument",
+      "type": "registry:lib",
+      "title": "Instrument chrome",
+      "description": "Shared bezel, engraved labels, numeric readouts, channel colour tokens and the reduced-motion hook used by every benchcn instrument.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/instrument.tsx",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens"
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/theming"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "units",
+      "type": "registry:lib",
+      "title": "Units",
+      "description": "Engineering notation (250 µs, 1.00 kHz) and 1-2-5 knob stepping for timebases and ranges.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/units.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "use-canvas",
+      "type": "registry:hook",
+      "title": "useCanvas",
+      "description": "Device-pixel-ratio aware canvas sizing with a frame loop that pauses offscreen and respects reduced motion.",
+      "files": [
+        {
+          "path": "registry/benchcn/hooks/use-canvas.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "actuator",
+      "type": "registry:lib",
+      "title": "Actuator tracker",
+      "description": "Follows a command through acknowledgement, timeout and fail-safe so UI can show commanded versus confirmed state.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/actuator.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/actuator-control"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "use-mock-device",
+      "type": "registry:hook",
+      "title": "useMockDevice",
+      "description": "React binding for the mock device: live readings, logs, tracked actuators and a command helper. Swap for a real source when the hardware is ready.",
+      "files": [
+        {
+          "path": "registry/benchcn/hooks/use-mock-device.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/mock-device",
+        "@benchcn/actuator",
+        "@benchcn/wire"
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/data-sources"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "decoders",
+      "type": "registry:lib",
+      "title": "Protocol decoders",
+      "description": "Pure I2C decoder and encoder: turns SDA/SCL logic levels into start, address, data, ack and stop frames, and back again for tests and demos.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/decoders/i2c.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks/decoders"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "oscilloscope",
+      "type": "registry:ui",
+      "title": "Oscilloscope",
+      "description": "Working oscilloscope for analog waveforms: edge trigger with hysteresis, timebase and volts per division, phosphor persistence, and live frequency, period, Vpp, Vrms and mean measurements.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/oscilloscope/oscilloscope.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/benchcn/lib/scope-math.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens",
+        "@benchcn/instrument",
+        "@benchcn/units",
+        "@benchcn/use-canvas"
+      ],
+      "categories": [
+        "signals"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/oscilloscope"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "logic-analyzer",
+      "type": "registry:ui",
+      "title": "Logic analyzer",
+      "description": "Digital lanes with zoom, pan, a time ruler and in-place I2C decode: start, address, read/write, data bytes, ack and stop drawn over the SDA lane.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/logic-analyzer/logic-analyzer.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": [
+        "button",
+        "@benchcn/tokens",
+        "@benchcn/instrument",
+        "@benchcn/units",
+        "@benchcn/use-canvas",
+        "@benchcn/decoders"
+      ],
+      "categories": [
+        "signals"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/logic-analyzer"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "actuator-control",
+      "type": "registry:ui",
+      "title": "Actuator control",
+      "description": "Press-and-hold switch for relays, pumps and motor enables that shows commanded versus confirmed state, acknowledgement latency, timeout and fail-safe.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/actuator-control/actuator-control.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "dependencies": [
+        "motion"
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens",
+        "@benchcn/instrument",
+        "@benchcn/actuator"
+      ],
+      "categories": [
+        "controls"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/actuator-control"
     }
   ]
 }

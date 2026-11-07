@@ -36,12 +36,20 @@ const semantic = {
     "success-foreground": palette.green[50],
     warning: palette.amber[500],
     "warning-foreground": palette.amber[950],
+    "channel-1": "oklch(0.8 0.16 85)",
+    "channel-2": "oklch(0.7 0.12 200)",
+    "channel-3": "oklch(0.66 0.2 340)",
+    "channel-4": "oklch(0.62 0.17 262)",
   },
   dark: {
     success: palette.green[500],
     "success-foreground": palette.green[950],
     warning: palette.amber[400],
     "warning-foreground": palette.amber[950],
+    "channel-1": "oklch(0.88 0.17 92)",
+    "channel-2": "oklch(0.84 0.12 200)",
+    "channel-3": "oklch(0.76 0.2 340)",
+    "channel-4": "oklch(0.72 0.16 262)",
   },
 };
 

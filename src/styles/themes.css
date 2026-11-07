@@ -37,6 +37,10 @@
   --success-foreground: oklch(98.2% 0.018 155.826);
   --warning: oklch(76.9% 0.188 70.08);
   --warning-foreground: oklch(27.9% 0.077 45.635);
+  --channel-1: oklch(0.8 0.16 85);
+  --channel-2: oklch(0.7 0.12 200);
+  --channel-3: oklch(0.66 0.2 340);
+  --channel-4: oklch(0.62 0.17 262);
 }
 .dark {
   --background: oklch(0.147 0.004 49.25);
@@ -74,6 +78,10 @@
   --success-foreground: oklch(26.6% 0.065 152.934);
   --warning: oklch(82.8% 0.189 84.429);
   --warning-foreground: oklch(27.9% 0.077 45.635);
+  --channel-1: oklch(0.88 0.17 92);
+  --channel-2: oklch(0.84 0.12 200);
+  --channel-3: oklch(0.76 0.2 340);
+  --channel-4: oklch(0.72 0.16 262);
 }
 
 :root[data-theme="zinc"] {
