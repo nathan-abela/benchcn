@@ -17,7 +17,11 @@ Oscilloscope, logic analyzer with I²C decode, seven-segment and character-LCD d
 
 **Docs:** https://nathan-abela.github.io/benchcn
 
-> Status: foundation. The design spike (oscilloscope, logic analyzer, actuator control) is next. See [ROADMAP.md](ROADMAP.md).
+> Status: the eleven v1 components, the data-source hooks and the decoders are in. The landing page and the two dashboard blocks are next. See [ROADMAP.md](ROADMAP.md).
+
+## What is in v1
+
+Oscilloscope, logic analyzer with I²C decode, actuator control, sensor tile, status LED, seven-segment display, character LCD, serial console, pinout header with four boards, bitfield diagram and timing diagram. Hooks for the mock device, WebSocket and Web Serial sources and a ring buffer. Pure I²C, SPI and UART decoders with encoders and tests.
 
 ## Install
 
