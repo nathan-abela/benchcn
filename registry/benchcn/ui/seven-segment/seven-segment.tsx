@@ -201,7 +201,7 @@ export function SevenSegment({
     <div
       data-slot="seven-segment"
       className={cn(
-        "inline-flex items-center",
+        "inline-flex max-w-full items-center",
         bezel &&
           "rounded-md bg-[oklch(0.13_0.004_80)] px-2.5 py-1.5 shadow-[inset_0_1px_3px_rgb(0_0_0/0.6)]",
         className,
@@ -214,7 +214,7 @@ export function SevenSegment({
         height={DIGIT_H * scale}
         viewBox={`0 0 ${totalW} ${DIGIT_H}`}
         aria-hidden
-        className="block overflow-visible"
+        className="block h-auto max-w-full overflow-visible"
         style={{
           filter: "drop-shadow(0 0 1.5px color-mix(in oklab, var(--segment), transparent 40%))",
         }}

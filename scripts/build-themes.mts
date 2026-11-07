@@ -40,6 +40,7 @@ const semantic = {
     "channel-2": "oklch(0.7 0.12 200)",
     "channel-3": "oklch(0.66 0.2 340)",
     "channel-4": "oklch(0.62 0.17 262)",
+    "scope-screen": "oklch(0.19 0.004 80)",
   },
   dark: {
     success: palette.green[500],
@@ -50,6 +51,7 @@ const semantic = {
     "channel-2": "oklch(0.84 0.12 200)",
     "channel-3": "oklch(0.76 0.2 340)",
     "channel-4": "oklch(0.72 0.16 262)",
+    "scope-screen": "oklch(0.15 0.004 80)",
   },
 };
 

@@ -11,7 +11,7 @@ import {
 import { cn } from "@/lib/utils";
 
 export const INSTRUMENT_FRAME =
-  "bg-card text-card-foreground flex flex-col gap-3 rounded-xl border p-3 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.04)]";
+  "bg-card text-card-foreground flex flex-col gap-3 rounded-xl border p-3 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.05),0_1px_2px_rgb(0_0_0/0.25)]";
 
 export function InstrumentFrame({ className, ...props }: ComponentProps<"div">): ReactElement {
   return <div data-slot="instrument" className={cn(INSTRUMENT_FRAME, className)} {...props} />;

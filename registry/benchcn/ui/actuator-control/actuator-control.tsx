@@ -234,7 +234,7 @@ export function ActuatorControl({
         </span>
       </button>
 
-      <dl className="grid grid-cols-3 gap-x-4 gap-y-1 font-mono text-sm tabular-nums">
+      <dl className="@container grid grid-cols-3 gap-x-4 gap-y-3 font-mono text-sm tabular-nums @max-[300px]:grid-cols-2">
         <div className="flex flex-col gap-1">
           <dt>
             <InstrumentLabel>Commanded</InstrumentLabel>

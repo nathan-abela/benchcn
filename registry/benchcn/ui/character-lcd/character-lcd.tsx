@@ -127,7 +127,7 @@ export function CharacterLcd({
       data-slot="character-lcd"
       data-backlight={backlight}
       className={cn(
-        "inline-block rounded-md bg-[var(--lcd-frame)] p-2 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(0_0_0/0.4)]",
+        "inline-block max-w-full rounded-md bg-[var(--lcd-frame)] p-2 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(0_0_0/0.4)]",
         className,
       )}
       style={{ ...vars, ...style }}
@@ -138,7 +138,7 @@ export function CharacterLcd({
         height={height * scale}
         viewBox={`0 0 ${width} ${height}`}
         aria-hidden
-        className="block rounded-[2px] transition-[filter] duration-300"
+        className="block h-auto max-w-full rounded-[2px] transition-[filter] duration-300"
         style={{ filter: backlight ? undefined : "brightness(0.45) saturate(0.6)" }}
         shapeRendering="crispEdges"
       >

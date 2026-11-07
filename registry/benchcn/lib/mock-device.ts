@@ -91,7 +91,7 @@ const sensors: Sensor[] = [
   },
   {
     info: { id: "light", u: "lx", min: 0, max: 20000, kind: "sensor", label: "Light" },
-    read: (t, s) => Math.max(0, 9000 * Math.sin((TAU * (t - 21600)) / 86400)) + noise(s, 40),
+    read: (t, s) => Math.max(0, 9000 * Math.sin((TAU * (t - 21600)) / 86400) + noise(s, 40)),
   },
   {
     info: { id: "battery", u: "V", min: 3.0, max: 4.2, kind: "sensor", label: "Battery" },
