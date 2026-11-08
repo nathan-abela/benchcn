@@ -7,8 +7,8 @@ import { Bench } from "@/components/site/bench";
 import { ComponentList } from "@/components/site/component-grid";
 import { CopyButton } from "@/components/site/copy-button";
 import { InstallTabs } from "@/components/site/install-tabs";
-import { Mark } from "@/components/site/logo";
 import { ScenarioTabs } from "@/components/site/scenario-tabs";
+import { SiteFooter } from "@/components/site/site-footer";
 import { SiteNav } from "@/components/site/site-nav";
 import { track } from "@/lib/analytics";
 import { baseOptions } from "@/lib/layout.shared";
@@ -201,18 +201,7 @@ function Home(): ReactElement {
           </div>
         </Section>
 
-        <footer className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center justify-between gap-4 border-t px-4 pt-10 pb-10 md:px-6">
-          <span className="inline-flex items-center gap-2 text-sm font-medium">
-            <Mark className="size-4" /> {siteConfig.name}
-          </span>
-          <p className="text-muted-foreground text-sm">
-            {siteConfig.license} licensed. Board pinouts are typed from the official datasheets
-            cited in each data file.
-          </p>
-          <a href={siteConfig.repo.url} className="text-sm underline-offset-4 hover:underline">
-            GitHub
-          </a>
-        </footer>
+        <SiteFooter />
       </main>
     </HomeLayout>
   );
