@@ -1,12 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HomeLayout } from "fumadocs-ui/layouts/home";
-import type { ReactElement, ReactNode } from "react";
+import { Fragment, type ReactElement, type ReactNode } from "react";
 
 import { buildAgentPrompt } from "@/components/site/agent-prompt";
 import { Bench } from "@/components/site/bench";
 import { ComponentList } from "@/components/site/component-grid";
 import { CopyButton } from "@/components/site/copy-button";
-import { InstallCommand } from "@/components/site/install-command";
 import { InstallTabs } from "@/components/site/install-tabs";
 import { Mark } from "@/components/site/logo";
 import { ScenarioTabs } from "@/components/site/scenario-tabs";
@@ -138,12 +137,26 @@ function Home(): ReactElement {
         >
           <div className="grid gap-3 *:min-w-0 lg:grid-cols-2">
             <div className="bg-card flex flex-col gap-3 rounded-xl border p-4">
-              <span className="text-sm font-medium">Install the skill</span>
-              <InstallCommand
-                command={SKILL}
-                item="skill"
-                className="border-0 bg-transparent px-0 shadow-none"
-              />
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-medium">Install the skill</span>
+                <CopyButton
+                  text={SKILL}
+                  label="Copy command"
+                  variant="outline"
+                  size="xs"
+                  onCopied={() => track("copy_install_command", { item: "skill" })}
+                >
+                  Copy
+                </CopyButton>
+              </div>
+              <code className="font-mono text-[13px]">
+                {SKILL.split(" ").map((word, i) => (
+                  <Fragment key={word}>
+                    {i > 0 ? " " : null}
+                    <span className="whitespace-nowrap">{word}</span>
+                  </Fragment>
+                ))}
+              </code>
               <p className="text-muted-foreground text-sm">
                 Works with Claude Code, Cursor, Codex and anything else that reads{" "}
                 <code>.agents/skills</code>.
