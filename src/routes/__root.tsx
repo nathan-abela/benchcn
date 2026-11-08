@@ -16,11 +16,16 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: `${siteConfig.name} — ${siteConfig.tagline}` },
       { name: "description", content: siteConfig.description },
+      { name: "theme-color", media: "(prefers-color-scheme: light)", content: "#ffffff" },
+      { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#0c0a09" },
       { property: "og:site_name", content: siteConfig.name },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/svg+xml", href: `${siteConfig.basepath}/favicon.svg` },
+    ],
     scripts: [
       {
         children:
