@@ -4,7 +4,8 @@ import { CheckIcon, CopyIcon } from "@/components/site/icons";
 import { Button } from "@/components/ui/button";
 
 export type CopyButtonProps = Omit<ComponentProps<typeof Button>, "onClick" | "children"> & {
-  text: string;
+  /** The text to copy, or a function that produces it when pressed. */
+  text: string | (() => Promise<string>);
   label?: string;
   onCopied?: () => void;
   children?: ReactElement | string;
@@ -34,10 +35,14 @@ export function CopyButton({
       size={size}
       aria-label={copied ? "Copied" : label}
       onClick={() => {
-        void navigator.clipboard.writeText(text).then(() => {
-          setCopied(true);
-          onCopied?.();
-        });
+        const value = typeof text === "function" ? text() : Promise.resolve(text);
+        void value
+          .then((content) => navigator.clipboard.writeText(content))
+          .then(() => {
+            setCopied(true);
+            onCopied?.();
+          })
+          .catch((error: unknown) => console.error(error));
       }}
       {...props}
     >

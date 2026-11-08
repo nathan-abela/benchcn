@@ -3,18 +3,12 @@ import { createServerFn } from "@tanstack/react-start";
 import { useFumadocsLoader } from "fumadocs-core/source/client";
 import { useSidebar } from "fumadocs-ui/components/sidebar/base";
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
-import {
-  DocsBody,
-  DocsDescription,
-  DocsPage,
-  DocsTitle,
-  MarkdownCopyButton,
-  ViewOptionsPopover,
-} from "fumadocs-ui/layouts/notebook/page";
+import { DocsBody, DocsDescription, DocsPage, DocsTitle } from "fumadocs-ui/layouts/notebook/page";
 import { type CSSProperties, type ReactElement, Suspense, use } from "react";
 
 import { useMDXComponents } from "@/components/mdx";
 import { MenuIcon } from "@/components/site/icons";
+import { PageActions } from "@/components/site/page-actions";
 import { SiteNav } from "@/components/site/site-nav";
 import { ThemeChips } from "@/components/site/theme-chips";
 import { baseOptions } from "@/lib/layout.shared";
@@ -70,13 +64,10 @@ function Content({ path, markdownUrl }: { path: string; markdownUrl: string }) {
     <DocsPage toc={toc}>
       <DocsTitle>{page.title}</DocsTitle>
       <DocsDescription>{page.description}</DocsDescription>
-      <div className="-mt-4 flex flex-row items-center gap-2 border-b pb-6">
-        <MarkdownCopyButton markdownUrl={markdownUrl} />
-        <ViewOptionsPopover
-          markdownUrl={markdownUrl}
-          githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${path}`}
-        />
-      </div>
+      <PageActions
+        markdownUrl={markdownUrl}
+        githubUrl={`https://github.com/${gitConfig.user}/${gitConfig.repo}/blob/${gitConfig.branch}/content/docs/${path}`}
+      />
       <DocsBody>
         <MDX components={useMDXComponents()} />
       </DocsBody>

@@ -108,6 +108,17 @@
   }
 }
 
+/* Unlayered on purpose: these must win over the docs library's own utility classes. */
+#toc-title > svg {
+  display: none;
+}
+
+@media (width >= 48rem) {
+  #nd-notebook-layout aside {
+    background-color: transparent;
+  }
+}
+
 @keyframes benchcn-rise {
   from {
     opacity: 0;
