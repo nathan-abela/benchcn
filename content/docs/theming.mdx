@@ -9,9 +9,9 @@ benchcn components follow your project's shadcn theme. Any base colour and accen
 
 Cards, bezels, text, borders and focus rings read the standard shadcn variables: `--background`, `--card`, `--muted`, `--border`, `--primary`, `--ring`. Nothing to configure.
 
-## 2. Channels use the chart palette
+## 2. Channels have their own tokens
 
-Scope channels, logic-analyzer lanes and strip-chart lines use `--chart-1` to `--chart-5`, the way chart libraries do. Change your chart palette and every instrument follows.
+Scope channels and logic-analyzer lanes use `--channel-1` to `--channel-4`, which `@benchcn/tokens` adds as bright trace colours that read on the dark screen. A channel without its own token falls back to your `--chart-1` to `--chart-5`, so a fifth lane, or a project that removes the channel tokens, follows your chart palette.
 
 ## 3. Physical colours are props
 

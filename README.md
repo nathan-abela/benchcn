@@ -55,7 +55,7 @@ Firmware snippets for Raspberry Pi (Python), MicroPython and Arduino ship in `de
 
 ## Theming
 
-Chrome follows your shadcn tokens. Channels use `--chart-1` to `--chart-5`. Physical colours (LEDs, backlights, segments) are a `color` prop. Two extra tokens, `--success` and `--warning`, come with `@benchcn/tokens`.
+Chrome follows your shadcn tokens. Channels use `--channel-1` to `--channel-4`, falling back to `--chart-1` to `--chart-5`. Physical colours (LEDs, backlights, segments) are a `color` prop. Two extra tokens, `--success` and `--warning`, come with `@benchcn/tokens`.
 
 ## AI assistants
 

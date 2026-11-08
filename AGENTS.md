@@ -61,7 +61,7 @@ evals/                    Realistic agent prompts and results log
 - Every registry source file starts with `// benchcn.dev · <item-name>` (the registry build fails otherwise). This is how public usage is found with GitHub code search.
 - Imports inside registry files use `@/registry/benchcn/...`; the shadcn CLI rewrites them to `@/components/ui`, `@/lib`, `@/hooks` on install. Only import from `@/components/ui/*` for shadcn wrappers listed in `registryDependencies`.
 - Props are plain, predictable English: `value`, `unit`, `min`, `max`, `thresholds`, `channels`, `color`, `onCommand`, `confirmed`. An agent should be able to guess them.
-- Theming has three layers: chrome on shadcn tokens, channels on `--chart-1..5`, physical colours on a `color` prop with presets (`red`, `amber`, `green`, `blue`, `white`) defaulting to `--primary`.
+- Theming has three layers: chrome on shadcn tokens, channels on `--channel-1..4` (falling back to `--chart-1..5`), physical colours on a `color` prop with presets (`red`, `amber`, `green`, `blue`, `white`) defaulting to `--primary`.
 - Rendering: SVG for static and low-frequency components; Canvas 2D with devicePixelRatio handling for the scope, logic analyzer and strip charts. No chart libraries.
 - Motion: `motion/react` for UI motion, `requestAnimationFrame` loops for instruments, always gated on `prefers-reduced-motion`.
 - Keep comments to the why. No commented-out code.
