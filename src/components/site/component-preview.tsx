@@ -3,6 +3,7 @@ import { type ReactElement, Suspense, useId, useState } from "react";
 
 import { demos, publicSource } from "@/components/demos";
 import { OpenInV0 } from "@/components/site/open-in-v0";
+import { Placeholder } from "@/components/site/placeholder";
 import { cn } from "@/lib/utils";
 
 export type ComponentPreviewProps = {
@@ -67,7 +68,7 @@ export function ComponentPreview({ name, className }: ComponentPreviewProps): Re
         )}
       >
         {view === "Preview" ? (
-          <Suspense fallback={<div className="bg-muted/40 h-64 animate-pulse rounded-xl" />}>
+          <Suspense fallback={<Placeholder heights={demo.placeholder} />}>
             <Demo />
           </Suspense>
         ) : (

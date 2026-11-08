@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { lazy, type ReactElement, Suspense, useState } from "react";
 
+import { Placeholder, type PlaceholderHeights } from "@/components/site/placeholder";
 import { cn } from "@/lib/utils";
 import { PlantMonitor } from "@/registry/benchcn/blocks/plant-monitor/plant-monitor";
 import { useMockDevice } from "@/registry/benchcn/hooks/use-mock-device";
@@ -114,9 +115,13 @@ function Robot(): ReactElement {
   );
 }
 
-function Fallback(): ReactElement {
-  return <div className="bg-muted/30 h-72 animate-pulse rounded-xl" />;
-}
+const PLACEHOLDERS: Record<ScenarioId, PlaceholderHeights> = {
+  plant: { base: 1103, sm: 831, lg: 566 },
+  weather: { base: 869, md: 419 },
+  bench: { base: 1034, md: 1196, lg: 1086, xl: 1273 },
+  robot: { base: 816, lg: 472, xl: 416 },
+  datasheet: { base: 2057, lg: 1477, xl: 1461 },
+};
 
 export function ScenarioTabs(): ReactElement {
   const [active, setActive] = useState<ScenarioId>("plant");
@@ -158,7 +163,7 @@ export function ScenarioTabs(): ReactElement {
         <p className="text-muted-foreground text-sm">{scenario.blurb}</p>
       </div>
       <div role="tabpanel" className="min-h-72">
-        <Suspense fallback={<Fallback />}>
+        <Suspense fallback={<Placeholder heights={PLACEHOLDERS[active]} />}>
           <div key={active} className="rise-in">
             {active === "plant" ? <PlantMonitor key="plant" /> : null}
             {active === "weather" ? <WeatherStation key="weather" /> : null}
