@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { lazy, type ReactElement, Suspense, useState } from "react";
 
 import { cn } from "@/lib/utils";
+import { PlantMonitor } from "@/registry/benchcn/blocks/plant-monitor/plant-monitor";
 import { useMockDevice } from "@/registry/benchcn/hooks/use-mock-device";
 import { INITIAL_ACTUATOR_STATE } from "@/registry/benchcn/lib/actuator";
 import type { WireSample } from "@/registry/benchcn/lib/wire";
@@ -10,11 +11,8 @@ import { SensorTile } from "@/registry/benchcn/ui/sensor-tile/sensor-tile";
 import { SerialConsole } from "@/registry/benchcn/ui/serial-console/serial-console";
 import { StatusLed } from "@/registry/benchcn/ui/status-led/status-led";
 
-const PlantMonitor = lazy(() =>
-  import("@/registry/benchcn/blocks/plant-monitor/plant-monitor").then((m) => ({
-    default: m.PlantMonitor,
-  })),
-);
+// The default scenario is imported statically: a lazy component in the first render suspends the
+// prerender, and the late streamed chunk lands after </html>. The rest load on first selection.
 const WeatherStation = lazy(() =>
   import("@/registry/benchcn/blocks/weather-station/weather-station").then((m) => ({
     default: m.WeatherStation,
