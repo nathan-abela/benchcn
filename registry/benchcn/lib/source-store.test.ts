@@ -127,6 +127,20 @@ describe("createSourceStore", () => {
     expect(blocks).toEqual([1000]);
   });
 
+  it("should keep tracking actuators after a stop and restart", () => {
+    // #given a store that was started, stopped and started again, as React strict mode does
+    const fake = fakeTransport();
+    const store = createSourceStore(fake.transport, { actuators: ["pump"] });
+    store.start()();
+    store.start();
+
+    // #when
+    store.command("pump", true);
+
+    // #then the command is reflected in the snapshot
+    expect(store.getSnapshot().actuators.pump).toMatchObject({ commanded: true, pending: true });
+  });
+
   it("should stop the transport when the returned function is called", () => {
     // #given
     const fake = fakeTransport();

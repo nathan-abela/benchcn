@@ -177,6 +177,9 @@ export function createSourceStore(
     },
     send: (message) => transport.send(message),
     start() {
+      // A restart (React strict mode, a reconnect) needs fresh trackers: disposing one drops
+      // the store's own subscription to it, so a disposed tracker is never reused.
+      for (const id of actuators) trackerFor(id);
       const unsubscribe = transport.subscribe(onMessage);
       const stop = transport.start();
       for (const id of actuators) query(id);
@@ -184,6 +187,7 @@ export function createSourceStore(
         unsubscribe();
         stop();
         for (const tracker of trackers.values()) tracker.dispose();
+        trackers.clear();
       };
     },
     onBlock(listener) {
