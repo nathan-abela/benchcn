@@ -25,7 +25,12 @@ v1 is the starred list from the original brief. Everything else lives here so it
 
 ### Blocks
 
-- Robot telemetry, home-automation panel, embedded docs page (pinout + bitfield + timing in prose).
+- Robot telemetry: promote the Robot scenario already composed in `src/components/site/scenario-tabs.tsx`, with a kiosk route.
+- Smart-home relay panel: a bank of relays with commanded vs. confirmed state, plus room sensors.
+- 3D printer or CNC panel: temperatures, axis positions, job progress, pause and stop.
+- Bench power supply: set vs. measured voltage and current, output enable, CV/CC status.
+- Auto dashboard: built at runtime from the channel list in the device's `hello` message.
+- Embedded docs page (pinout + bitfield + timing in prose).
 - Kiosk layout for 800×480 touchscreens.
 
 ### Site
