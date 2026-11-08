@@ -555,7 +555,7 @@ export function LogicAnalyzer({
         <div
           ref={wrapperRef}
           aria-hidden
-          className="relative min-w-0 flex-1 cursor-grab touch-none overflow-hidden rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] select-none active:cursor-grabbing"
+          className="dark relative min-w-0 flex-1 cursor-grab touch-none overflow-hidden rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] select-none active:cursor-grabbing"
           style={{ height: rows.height }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}

@@ -163,7 +163,7 @@ export function SerialConsole({
           role="log"
           aria-live="off"
           onScroll={onScroll}
-          className="overflow-y-auto rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] px-3 py-2 font-mono text-xs leading-5 text-[rgb(255_255_255/0.85)] shadow-[inset_0_2px_8px_rgb(0_0_0/0.4)]"
+          className="dark overflow-y-auto rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] px-3 py-2 font-mono text-xs leading-5 text-[rgb(255_255_255/0.85)] shadow-[inset_0_2px_8px_rgb(0_0_0/0.4)]"
           style={{ height }}
         >
           {visible.length === 0 ? (

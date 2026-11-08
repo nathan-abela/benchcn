@@ -461,8 +461,9 @@ function Screen({ graticule = true, className, ...props }: ScopeScreenProps): Re
   return (
     <div
       data-slot="scope-screen"
+      // `dark` because the screen is emissive in both themes: traces take the bright channel values.
       className={cn(
-        "relative aspect-[5/4] w-full overflow-hidden rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.04),inset_0_2px_12px_rgb(0_0_0/0.5)]",
+        "dark relative aspect-[5/4] w-full overflow-hidden rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.04),inset_0_2px_12px_rgb(0_0_0/0.5)]",
         // The tube: the screen darkens towards its edges, over the canvas and under the pointer.
         "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-[radial-gradient(ellipse_at_center,transparent_55%,rgb(0_0_0/0.38)_100%)]",
         interactive && "cursor-ns-resize touch-none select-none",

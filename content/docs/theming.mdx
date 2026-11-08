@@ -11,7 +11,7 @@ Cards, bezels, text, borders and focus rings read the standard shadcn variables:
 
 ## 2. Channels have their own tokens
 
-Scope channels and logic-analyzer lanes use `--channel-1` to `--channel-4`, which `@benchcn/tokens` adds as bright trace colours that read on the dark screen. A channel without its own token falls back to your `--chart-1` to `--chart-5`, so a fifth lane, or a project that removes the channel tokens, follows your chart palette.
+Scope channels, analyzer lanes, bitfield fields and timing diagram buses use `--channel-1` to `--channel-4`, which `@benchcn/tokens` adds at one perceived lightness per theme, so no channel outweighs another. The scope, analyzer and serial console screens carry the `dark` class, so their traces take the dark values in both themes. A channel without its own token falls back to your `--chart-1` to `--chart-5`, so a fifth lane, or a project that removes the channel tokens, follows your chart palette.
 
 ## 3. Physical colours are props
 
