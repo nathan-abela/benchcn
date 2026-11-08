@@ -20,11 +20,13 @@ const block = (selector: string, vars: Vars) =>
     .join("\n")}\n}\n`;
 
 const semantic = {
+  // Light status colours are used as text, so they keep 4.5:1 on white. Warning is amber-700
+  // turned toward yellow, so it stays clearly apart from the red of --destructive.
   light: {
-    success: palette.green[600],
+    success: palette.green[700],
     "success-foreground": palette.green[50],
-    warning: palette.amber[500],
-    "warning-foreground": palette.amber[950],
+    warning: "oklch(0.555 0.132 58)",
+    "warning-foreground": palette.amber[50],
     "channel-1": "oklch(0.62 0.12 65)",
     "channel-2": "oklch(0.6 0.09 185)",
     "channel-3": "oklch(0.58 0.14 320)",

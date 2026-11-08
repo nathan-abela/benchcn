@@ -23,14 +23,14 @@ shadcn ships `--destructive` but no success or warning token. The `@benchcn/toke
 
 ```css
 :root {
-  --success: oklch(62.7% 0.194 149.214);
+  --success: oklch(52.7% 0.154 150.069);
   --success-foreground: oklch(98.2% 0.018 155.826);
-  --warning: oklch(76.9% 0.188 70.08);
-  --warning-foreground: oklch(27.9% 0.077 45.635);
+  --warning: oklch(0.555 0.132 58);
+  --warning-foreground: oklch(98.7% 0.022 95.277);
 }
 ```
 
-They are mapped into Tailwind as `bg-success`, `text-warning` and so on.
+They are mapped into Tailwind as `bg-success`, `text-warning` and so on. Components use them as text as well as fills, so the light values are dark enough to keep 4.5:1 on white, with warning turned toward yellow to stay apart from red. The dark values are brighter and pass on dark cards.
 
 ## Reduced motion
 
