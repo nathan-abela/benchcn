@@ -11,6 +11,48 @@ test.describe("landing page", () => {
     await expect(page.locator("[data-slot=bench]")).toContainText("0x76");
   });
 
+  test("loads without page errors", async ({ page }) => {
+    // #given
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+
+    // #when
+    await page.goto("./");
+    await page.waitForLoadState("networkidle");
+
+    // #then
+    expect(errors).toEqual([]);
+  });
+
+  test("shows every section once it scrolls into view", async ({ page }) => {
+    // #given
+    await page.goto("./");
+    const sections = ["scenarios", "how", "components", "agents"];
+
+    // #when each section is scrolled to, which runs its entrance animation
+    const visible: string[] = [];
+    for (const id of sections) {
+      const section = page.locator(`#${id}`);
+      await section.scrollIntoViewIfNeeded();
+      await expect(section.getByRole("heading", { level: 2 })).toBeVisible();
+      visible.push(id);
+    }
+
+    // #then
+    expect(visible).toEqual(sections);
+  });
+
+  test("prerenders the default scenario instead of streaming it late", async ({ request }) => {
+    // #when
+    const html = await (await request.get("./")).text();
+
+    // #then the plant monitor is in the HTML and no streamed boundary scripts are needed
+    expect({
+      block: html.includes('data-slot="plant-monitor"'),
+      streamed: /\$R[SC]\(/.test(html),
+    }).toEqual({ block: true, streamed: false });
+  });
+
   test("switches the theme and remembers it", async ({ page }) => {
     // #given
     await page.goto("./");
