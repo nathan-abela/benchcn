@@ -140,7 +140,7 @@ function Root({
   channels,
   timebase = 0.0002,
   trigger,
-  persistence = 0.35,
+  persistence = 0.5,
   running = true,
   divisions = DEFAULT_DIVISIONS,
   onTriggerLevelChange,
@@ -278,14 +278,27 @@ function drawTrace(
     }
   }
 
+  // A phosphor beam: two additive halos so overlapping channels add light, a solid body, and a
+  // hot core mixed towards white. Browsers that cannot parse color-mix keep the body colour.
+  ctx.save();
   ctx.lineJoin = "round";
   ctx.lineCap = "round";
   ctx.strokeStyle = color;
-  ctx.globalAlpha = 0.22;
+  ctx.globalCompositeOperation = "lighter";
+  ctx.globalAlpha = 0.07;
+  ctx.lineWidth = 10;
+  ctx.stroke();
+  ctx.globalAlpha = 0.2;
   ctx.lineWidth = 4;
   ctx.stroke();
-  ctx.globalAlpha = 1;
-  ctx.lineWidth = 1.5;
+  ctx.restore();
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.6;
+  ctx.stroke();
+  ctx.strokeStyle = `color-mix(in oklab, ${color}, white 45%)`;
+  ctx.lineWidth = 0.7;
   ctx.stroke();
 }
 
@@ -450,6 +463,8 @@ function Screen({ graticule = true, className, ...props }: ScopeScreenProps): Re
       data-slot="scope-screen"
       className={cn(
         "relative aspect-[5/4] w-full overflow-hidden rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.04),inset_0_2px_12px_rgb(0_0_0/0.5)]",
+        // The tube: the screen darkens towards its edges, over the canvas and under the pointer.
+        "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-[radial-gradient(ellipse_at_center,transparent_55%,rgb(0_0_0/0.38)_100%)]",
         interactive && "cursor-ns-resize touch-none select-none",
         className,
       )}
