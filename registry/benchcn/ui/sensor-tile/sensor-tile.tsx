@@ -189,7 +189,7 @@ export function SensorTile({
       </div>
 
       <div className="flex items-end justify-between gap-4">
-        <div className="flex items-baseline gap-1.5">
+        <div className="flex shrink-0 items-baseline gap-1.5">
           <span
             className={cn(
               "text-3xl leading-none font-medium tracking-tight tabular-nums",
@@ -201,7 +201,10 @@ export function SensorTile({
           {unit ? <span className="text-muted-foreground text-sm">{unit}</span> : null}
         </div>
         {history && history.length > 1 ? (
-          <Sparkline values={history} className="text-muted-foreground/70 shrink-0" />
+          <Sparkline
+            values={history}
+            className="text-muted-foreground/70 max-w-24 min-w-0 flex-1"
+          />
         ) : null}
       </div>
 
