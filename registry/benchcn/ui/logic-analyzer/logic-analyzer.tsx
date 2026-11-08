@@ -484,7 +484,7 @@ export function LogicAnalyzer({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <InstrumentLabel>{title}</InstrumentLabel>
         <div className="flex items-center gap-3">
-          <span className="text-muted-foreground font-mono text-[11px] uppercase tabular-nums">
+          <span className="text-muted-foreground text-xs tabular-nums">
             {decode ? `${decode.protocol} · ` : ""}
             {formatSi(span, "s")} shown · {formatSi(lanes[0]?.sampleRate ?? 0, "S/s")}
           </span>
@@ -522,7 +522,7 @@ export function LogicAnalyzer({
             <div
               key={`${row.kind}-${row.index}`}
               className={cn(
-                "flex w-12 items-center justify-end pr-2 tracking-wider uppercase",
+                "flex w-12 items-center justify-end pr-2",
                 row.kind === "decode" ? "text-muted-foreground/70" : "text-muted-foreground",
               )}
               style={{ height: row.height }}

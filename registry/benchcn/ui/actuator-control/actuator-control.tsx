@@ -169,10 +169,7 @@ export function ActuatorControl({
             <span className="text-muted-foreground truncate text-xs">{description}</span>
           ) : null}
         </div>
-        <span
-          className="inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase"
-          aria-live="polite"
-        >
+        <span className="inline-flex shrink-0 items-center gap-1.5 text-xs" aria-live="polite">
           <motion.span
             aria-hidden
             key={`${status}-${latency ?? 0}`}
@@ -229,13 +226,13 @@ export function ActuatorControl({
           }}
         />
         <span className="font-medium">{action}</span>
-        <span className="text-muted-foreground font-mono text-[11px] tracking-[0.08em] uppercase">
-          {holding ? "Hold" : pending ? "…" : next ? "→ " + onLabel : "→ " + offLabel}
+        <span className="text-muted-foreground text-xs tabular-nums">
+          {holding ? "Hold" : pending ? "…" : next ? onLabel : offLabel}
         </span>
       </button>
 
       <div className="@container">
-        <dl className="grid grid-cols-3 gap-x-4 gap-y-3 font-mono text-sm tabular-nums @max-[300px]:grid-cols-2">
+        <dl className="grid grid-cols-3 gap-x-4 gap-y-3 text-sm font-medium tabular-nums @max-[300px]:grid-cols-2">
           <div className="flex flex-col gap-1">
             <dt>
               <InstrumentLabel>Commanded</InstrumentLabel>

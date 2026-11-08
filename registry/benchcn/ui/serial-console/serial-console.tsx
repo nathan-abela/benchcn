@@ -151,7 +151,7 @@ export function SerialConsole({
     <div data-slot="serial-console" className={cn(INSTRUMENT_FRAME, "gap-2", className)} {...props}>
       <div className="flex items-center justify-between gap-3">
         <InstrumentLabel>{title}</InstrumentLabel>
-        <span className="text-muted-foreground font-mono text-[11px] uppercase tabular-nums">
+        <span className="text-muted-foreground text-xs tabular-nums">
           {status}
           {status ? " · " : ""}
           {visible.length} lines
@@ -184,16 +184,18 @@ export function SerialConsole({
                       {formatTimestamp(line.t).padStart(12)}
                     </span>
                   ) : null}
-                  <span
-                    className={cn(
-                      "w-10 shrink-0 uppercase",
-                      line.direction === "out"
-                        ? "text-channel-2/80"
-                        : LEVEL_CLASS[line.level ?? "info"],
-                    )}
-                  >
-                    {line.direction === "out" ? "→" : (line.level ?? "info")}
-                  </span>
+                  {line.direction === "out" || line.level ? (
+                    <span
+                      className={cn(
+                        "w-10 shrink-0 uppercase",
+                        line.direction === "out"
+                          ? "text-channel-2/80"
+                          : LEVEL_CLASS[line.level ?? "info"],
+                      )}
+                    >
+                      {line.direction === "out" ? "→" : line.level}
+                    </span>
+                  ) : null}
                   <span className="min-w-0 break-all">{line.text}</span>
                 </li>
               ))}
@@ -204,7 +206,7 @@ export function SerialConsole({
           <button
             type="button"
             onClick={jumpToBottom}
-            className="bg-background/90 hover:bg-accent absolute right-3 bottom-3 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[11px] shadow-sm backdrop-blur"
+            className="bg-background/90 hover:bg-accent absolute right-3 bottom-3 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs shadow-sm backdrop-blur"
           >
             <ArrowDown className="size-3" />
             {unseen > 0 ? `${unseen} new` : "Follow"}

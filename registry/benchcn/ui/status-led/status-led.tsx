@@ -87,11 +87,7 @@ export function StatusLed({
             : "bg-[color-mix(in_oklab,var(--led),black_72%)] shadow-[inset_0_1px_1px_rgb(0_0_0/0.5)]",
         )}
       />
-      {showLabel ? (
-        <span className="text-muted-foreground font-mono text-[11px] tracking-[0.08em] uppercase">
-          {label}
-        </span>
-      ) : null}
+      {showLabel ? <span className="text-muted-foreground text-xs">{label}</span> : null}
       <span className="sr-only">
         {showLabel ? "" : label} {on ? (pattern === "steady" ? "on" : pattern) : "off"}
       </span>

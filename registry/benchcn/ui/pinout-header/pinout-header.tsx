@@ -102,7 +102,7 @@ export function PinoutHeader({
           <InstrumentLabel>{title ?? board.vendor}</InstrumentLabel>
           <span className="text-sm font-medium">{board.name}</span>
         </div>
-        <span className="text-muted-foreground font-mono text-[11px] uppercase">
+        <span className="text-muted-foreground text-xs">
           {board.logicLevel} V logic ·{" "}
           <a
             href={board.source.url}
@@ -328,7 +328,7 @@ const LEGEND: { key: keyof typeof PIN_COLORS; label: string; buses?: boolean }[]
 
 function Legend({ colorBy }: { colorBy: "function" | "kind" }): ReactElement {
   return (
-    <ul className="flex flex-wrap gap-x-3 gap-y-1.5 border-t pt-3 font-mono text-[10px] uppercase">
+    <ul className="flex flex-wrap gap-x-3 gap-y-1.5 border-t pt-3 text-xs">
       {LEGEND.filter((l) => colorBy === "function" || !l.buses).map((item) => (
         <li key={item.key} className="text-muted-foreground inline-flex items-center gap-1.5">
           <span

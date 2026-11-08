@@ -21,10 +21,7 @@ export function InstrumentLabel({ className, ...props }: ComponentProps<"span">)
   return (
     <span
       data-slot="instrument-label"
-      className={cn(
-        "text-muted-foreground font-mono text-[11px] leading-none tracking-[0.12em] uppercase",
-        className,
-      )}
+      className={cn("text-muted-foreground text-xs leading-none", className)}
       {...props}
     />
   );
@@ -40,7 +37,7 @@ export function Readout({ label, value, unit, className, ...props }: ReadoutProp
   return (
     <div data-slot="readout" className={cn("flex min-w-0 flex-col gap-1", className)} {...props}>
       <InstrumentLabel>{label}</InstrumentLabel>
-      <span className="font-mono text-sm leading-none tabular-nums">
+      <span className="text-sm leading-none font-medium tabular-nums">
         {value}
         {unit ? <span className="text-muted-foreground ml-1 text-xs">{unit}</span> : null}
       </span>

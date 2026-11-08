@@ -499,7 +499,10 @@ function Readout({ className, ...props }: ScopeReadoutProps): ReactElement {
   return (
     <div
       data-slot="scope-readout"
-      className={cn("flex flex-wrap items-center gap-x-4 gap-y-1.5 font-mono text-xs", className)}
+      className={cn(
+        "flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs tabular-nums",
+        className,
+      )}
       {...props}
     >
       {channels.map((channel, index) => (
@@ -601,7 +604,7 @@ function Status({ className, ...props }: ComponentProps<"span">): ReactElement {
   return (
     <span
       data-slot="scope-status"
-      className={cn("inline-flex items-center gap-1.5 font-mono text-[11px] uppercase", className)}
+      className={cn("inline-flex items-center gap-1.5 text-xs", className)}
       {...props}
     >
       <span

@@ -181,10 +181,7 @@ export function SensorTile({
       <div className="flex items-start justify-between gap-3">
         <span className="truncate text-sm font-medium">{label}</span>
         <span
-          className={cn(
-            "inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] tracking-[0.08em] uppercase",
-            STATE_CLASS[state],
-          )}
+          className={cn("inline-flex shrink-0 items-center gap-1.5 text-xs", STATE_CLASS[state])}
         >
           <span aria-hidden className={cn("size-1.5 rounded-full", STATE_BAR[state])} />
           {STATE_TEXT[state]}
@@ -195,7 +192,7 @@ export function SensorTile({
         <div className="flex items-baseline gap-1.5">
           <span
             className={cn(
-              "font-mono text-3xl leading-none font-medium tracking-tight tabular-nums",
+              "text-3xl leading-none font-medium tracking-tight tabular-nums",
               state === "stale" && "text-muted-foreground",
             )}
           >

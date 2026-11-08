@@ -202,7 +202,7 @@ export function BitfieldDiagram({
 
       {legend ? (
         <table className="w-full border-collapse font-mono text-xs">
-          <thead className="text-muted-foreground text-left text-[10px] tracking-[0.08em] uppercase">
+          <thead className="text-muted-foreground text-left text-xs">
             <tr>
               <th className="py-1 pr-3 font-medium">Bits</th>
               <th className="py-1 pr-3 font-medium">Field</th>
