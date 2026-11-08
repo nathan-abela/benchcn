@@ -2,12 +2,7 @@ import { posthog } from "posthog-js";
 
 import { siteConfig } from "../../config/site";
 
-type EventName =
-  | "copy_install_command"
-  | "copy_agent_prompt"
-  | "copy_markdown"
-  | "open_in_v0"
-  | "select_theme";
+type EventName = "copy_install_command" | "copy_agent_prompt" | "copy_markdown" | "open_in_v0";
 
 let ready = false;
 

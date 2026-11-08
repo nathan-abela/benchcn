@@ -12,7 +12,7 @@ Out-of-scope work goes to [ROADMAP.md](ROADMAP.md), not into the codebase.
 | `pnpm build`                                | `registry:build` then `vite build`; static output in `dist/client`      |
 | `pnpm preview`                              | Serve `dist/client` the way GitHub Pages will (basepath, `404.html`)    |
 | `pnpm registry:build`                       | `registry/registry.ts` to `registry.json` to `public/r/*.json`          |
-| `pnpm themes:build`                         | Regenerate `src/styles/themes.css` from shadcn base colours             |
+| `pnpm themes:build`                         | Regenerate `src/styles/themes.css` from the shadcn zinc base colour     |
 | `pnpm lint` / `pnpm fmt` / `pnpm fmt:check` | oxlint / oxfmt (no ESLint, no Prettier)                                 |
 | `pnpm typecheck`                            | `tsc --noEmit` (TypeScript 7)                                           |
 | `pnpm test`                                 | Vitest: decoders, wire protocol, ring buffer, mock device, unit maths   |
@@ -33,7 +33,7 @@ registry/benchcn/
   boards/                 Pinout data files, one per board, each with a `source` URL to the official doc
   blocks/                 Full dashboards (plant-monitor, weather-station)
 src/routes/               TanStack Start file routes: landing, docs/$, api/search, llms.txt, 404
-src/components/site/      Site chrome: theme chips, install block, copy-prompt button, scenario tabs
+src/components/site/      Site chrome: nav, install tabs, copy-prompt button, scenario tabs
 src/components/demos/     One demo per component, shared by landing and docs
 src/styles/               app.css (tokens, fonts), themes.css (generated)
 content/docs/             Fumadocs MDX. One page per component, hook and block.
@@ -85,7 +85,7 @@ The `add-component` skill in `.agents/skills/` walks through the same steps with
 
 - Installs cleanly with `pnpm dlx shadcn@latest add @benchcn/<name>` into a fresh Vite + shadcn project.
 - Works against `createMockDevice()` with zero config; documented props for real data.
-- Dark and light themes, all theme chips, responsive, reduced motion respected.
+- Dark and light themes, any shadcn base colour, responsive, reduced motion respected.
 - Keyboard and screen-reader support documented on the page.
 - Docs page complete: preview, install, usage, API, examples, accessibility.
 - Logic covered by tests; oxlint, oxfmt and typecheck clean.

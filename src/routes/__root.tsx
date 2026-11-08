@@ -17,7 +17,7 @@ export const Route = createRootRoute({
       { title: `${siteConfig.name} · ${siteConfig.tagline}` },
       { name: "description", content: siteConfig.description },
       { name: "theme-color", media: "(prefers-color-scheme: light)", content: "#ffffff" },
-      { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#0c0a09" },
+      { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#09090b" },
       { property: "og:site_name", content: siteConfig.name },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -25,12 +25,6 @@ export const Route = createRootRoute({
     links: [
       { rel: "stylesheet", href: appCss },
       { rel: "icon", type: "image/svg+xml", href: `${siteConfig.basepath}/favicon.svg` },
-    ],
-    scripts: [
-      {
-        children:
-          "try{var t=localStorage.getItem('benchcn-theme');if(t&&t!=='stone')document.documentElement.setAttribute('data-theme',t)}catch(e){}",
-      },
     ],
   }),
   component: RootComponent,

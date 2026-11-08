@@ -57,4 +57,4 @@ pnpm check
 pnpm e2e
 ```
 
-Open `/docs/components/<name>` in light and dark, with two theme chips, at 375 px and 1280 px wide, and with reduced motion enabled. Fix what you see before reporting done.
+Open `/docs/components/<name>` in light and dark, at 375 px and 1280 px wide, and with reduced motion enabled. Fix what you see before reporting done.

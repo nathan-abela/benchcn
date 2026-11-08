@@ -53,18 +53,6 @@ test.describe("landing page", () => {
     }).toEqual({ block: true, streamed: false });
   });
 
-  test("switches the theme and remembers it", async ({ page }) => {
-    // #given
-    await page.goto("./");
-
-    // #when the Blue chip is pressed and the page reloads
-    await page.getByRole("button", { name: "Blue" }).click();
-    await page.reload();
-
-    // #then
-    await expect(page.locator("html")).toHaveAttribute("data-theme", "blue");
-  });
-
   test("switches scenarios", async ({ page }) => {
     // #given
     await page.goto("./");

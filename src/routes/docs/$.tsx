@@ -10,7 +10,6 @@ import { useMDXComponents } from "@/components/mdx";
 import { MenuIcon } from "@/components/site/icons";
 import { PageActions } from "@/components/site/page-actions";
 import { SiteNav } from "@/components/site/site-nav";
-import { ThemeChips } from "@/components/site/theme-chips";
 import { baseOptions } from "@/lib/layout.shared";
 import { getPageImageUrl, getPageMarkdownUrl, gitConfig } from "@/lib/shared";
 import { docs, source } from "@/lib/source";
@@ -103,13 +102,6 @@ function Page() {
       searchToggle={{ enabled: false }}
       themeSwitch={{ enabled: false }}
       containerProps={{ style: LAYOUT_STYLE }}
-      sidebar={{
-        footer: (
-          <div className="px-3 pt-4 pb-2">
-            <ThemeChips />
-          </div>
-        ),
-      }}
     >
       <Suspense>
         <Content path={path} markdownUrl={markdownUrl} />

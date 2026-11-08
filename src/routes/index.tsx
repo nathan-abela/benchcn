@@ -10,7 +10,6 @@ import { InstallTabs } from "@/components/site/install-tabs";
 import { Mark } from "@/components/site/logo";
 import { ScenarioTabs } from "@/components/site/scenario-tabs";
 import { SiteNav } from "@/components/site/site-nav";
-import { ThemeChips } from "@/components/site/theme-chips";
 import { track } from "@/lib/analytics";
 import { baseOptions } from "@/lib/layout.shared";
 
@@ -72,7 +71,6 @@ function Home(): ReactElement {
                 GitHub
               </a>
             </div>
-            <ThemeChips className="mt-1 [--rise-delay:180ms]" />
           </div>
           <Bench />
         </section>
