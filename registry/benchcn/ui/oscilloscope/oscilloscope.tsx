@@ -468,6 +468,16 @@ function Screen({ graticule = true, className, ...props }: ScopeScreenProps): Re
         interactive && "cursor-ns-resize touch-none select-none",
         className,
       )}
+      // The graticule in CSS as well, so the screen is ruled before the canvas paints its first frame.
+      style={
+        graticule
+          ? {
+              backgroundImage:
+                "linear-gradient(to right, rgb(255 255 255 / 0.07) 1px, transparent 1px), linear-gradient(to bottom, rgb(255 255 255 / 0.07) 1px, transparent 1px)",
+              backgroundSize: `${100 / divisions.x}% ${100 / divisions.y}%`,
+            }
+          : undefined
+      }
       onPointerDown={(event) => {
         if (!interactive) return;
         dragging.current = true;
