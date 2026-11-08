@@ -79,8 +79,8 @@ function Home(): ReactElement {
 
         <Section
           id="scenarios"
-          title="Five benches, one registry"
-          lede="Every scenario runs on the same mock device and the same components. Hold the pump, zoom the analyzer, add a wiring mistake."
+          title="Six benches, one registry"
+          lede="Every scenario runs on the same mock device and the same components. Switch the supply on, zoom the analyzer, add a wiring mistake."
         >
           <ScenarioTabs />
         </Section>

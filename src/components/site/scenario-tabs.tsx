@@ -3,7 +3,7 @@ import { lazy, type ReactElement, Suspense, useState } from "react";
 
 import { Placeholder, type PlaceholderHeights } from "@/components/site/placeholder";
 import { cn } from "@/lib/utils";
-import { PlantMonitor } from "@/registry/benchcn/blocks/plant-monitor/plant-monitor";
+import { PowerBench } from "@/registry/benchcn/blocks/power-bench/power-bench";
 import { useMockDevice } from "@/registry/benchcn/hooks/use-mock-device";
 import { INITIAL_ACTUATOR_STATE } from "@/registry/benchcn/lib/actuator";
 import type { WireSample } from "@/registry/benchcn/lib/wire";
@@ -14,6 +14,11 @@ import { StatusLed } from "@/registry/benchcn/ui/status-led/status-led";
 
 // The default scenario is imported statically: a lazy component in the first render suspends the
 // prerender, and the late streamed chunk lands after </html>. The rest load on first selection.
+const PlantMonitor = lazy(() =>
+  import("@/registry/benchcn/blocks/plant-monitor/plant-monitor").then((m) => ({
+    default: m.PlantMonitor,
+  })),
+);
 const WeatherStation = lazy(() =>
   import("@/registry/benchcn/blocks/weather-station/weather-station").then((m) => ({
     default: m.WeatherStation,
@@ -38,13 +43,18 @@ const TimingDiagramDemo = lazy(() =>
 );
 
 const SCENARIOS = [
+  {
+    id: "power",
+    label: "Power bench",
+    blurb: "Confirmed setpoints, CV and CC, a meter at the load and the log.",
+  },
   { id: "plant", label: "Plant monitor", blurb: "Soil, climate, a pump and its acknowledgements." },
   {
     id: "weather",
     label: "Weather station",
     blurb: "Climate tiles, dew point and pressure trend.",
   },
-  { id: "bench", label: "Bench", blurb: "Scope and logic analyzer on the same mock signals." },
+  { id: "signals", label: "Signals", blurb: "Scope and logic analyzer on the same mock signals." },
   { id: "robot", label: "Robot", blurb: "Drive enable, e-stop, battery and a console." },
   { id: "datasheet", label: "Datasheet", blurb: "Pinout, register map and timing figures." },
 ] as const;
@@ -116,15 +126,16 @@ function Robot(): ReactElement {
 }
 
 const PLACEHOLDERS: Record<ScenarioId, PlaceholderHeights> = {
+  power: { base: 1802, sm: 1422, md: 1216, lg: 1178, xl: 1012 },
   plant: { base: 1103, sm: 831, lg: 566 },
   weather: { base: 880, sm: 916, md: 475 },
-  bench: { base: 1034, md: 1196, lg: 1086, xl: 1273 },
+  signals: { base: 1034, md: 1196, lg: 1086, xl: 1273 },
   robot: { base: 816, lg: 472, xl: 416 },
   datasheet: { base: 2057, lg: 1477, xl: 1461 },
 };
 
 export function ScenarioTabs(): ReactElement {
-  const [active, setActive] = useState<ScenarioId>("plant");
+  const [active, setActive] = useState<ScenarioId>("power");
   const reduced = useReducedMotion();
   const scenario = SCENARIOS.find((s) => s.id === active) ?? SCENARIOS[0];
 
@@ -165,9 +176,10 @@ export function ScenarioTabs(): ReactElement {
       <div role="tabpanel" className="min-h-72">
         <Suspense fallback={<Placeholder heights={PLACEHOLDERS[active]} />}>
           <div key={active} className="rise-in">
+            {active === "power" ? <PowerBench key="power" /> : null}
             {active === "plant" ? <PlantMonitor key="plant" /> : null}
             {active === "weather" ? <WeatherStation key="weather" /> : null}
-            {active === "bench" ? (
+            {active === "signals" ? (
               <div className="grid gap-4 lg:grid-cols-[3fr_2fr]">
                 <OscilloscopeDemo />
                 <div className="lg:col-span-2">

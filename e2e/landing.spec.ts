@@ -46,9 +46,9 @@ test.describe("landing page", () => {
     // #when
     const html = await (await request.get("./")).text();
 
-    // #then the plant monitor is in the HTML and no streamed boundary scripts are needed
+    // #then the power bench is in the HTML and no streamed boundary scripts are needed
     expect({
-      block: html.includes('data-slot="plant-monitor"'),
+      block: html.includes('data-slot="power-bench"'),
       streamed: /\$R[SC]\(/.test(html),
     }).toEqual({ block: true, streamed: false });
   });
