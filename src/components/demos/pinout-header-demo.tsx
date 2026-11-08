@@ -33,6 +33,7 @@ const MISTAKE: Record<string, Assignment[]> = {
 export function PinoutHeaderDemo(): ReactElement {
   const [boardId, setBoardId] = useState(boards[0].id);
   const [mistake, setMistake] = useState(false);
+  const [horizontal, setHorizontal] = useState(false);
   const board = boards.find((b) => b.id === boardId) ?? boards[0];
   const assignments = [...(WIRING[boardId] ?? []), ...(mistake ? (MISTAKE[boardId] ?? []) : [])];
 
@@ -50,16 +51,28 @@ export function PinoutHeaderDemo(): ReactElement {
           </Button>
         ))}
         <Button
-          variant={mistake ? "destructive" : "outline"}
+          variant="outline"
           size="sm"
           className="ml-auto"
+          aria-pressed={horizontal}
+          onClick={() => setHorizontal((h) => !h)}
+        >
+          {horizontal ? "Vertical" : "Horizontal"}
+        </Button>
+        <Button
+          variant={mistake ? "destructive" : "outline"}
+          size="sm"
           onClick={() => setMistake((m) => !m)}
           disabled={(MISTAKE[boardId] ?? []).length === 0}
         >
           {mistake ? "Fix the wiring" : "Add a wiring mistake"}
         </Button>
       </div>
-      <PinoutHeader board={board} assignments={assignments} />
+      <PinoutHeader
+        board={board}
+        assignments={assignments}
+        orientation={horizontal ? "horizontal" : "vertical"}
+      />
     </div>
   );
 }

@@ -62,6 +62,14 @@ The checker is a plain function, `findConflicts(board, assignments)`, so a docs 
 <PinoutHeader board={raspberryPiPico} headers={["main"]} />
 ```
 
+### Horizontal
+
+`orientation="horizontal"` lays each header along its board edge, with labels running up and down from the pins. Wide headers scroll sideways on narrow screens.
+
+```tsx
+<PinoutHeader board={raspberryPi40Pin} orientation="horizontal" />
+```
+
 ### Colour by kind
 
 `colorBy="kind"` drops the bus colours and leaves power, ground and GPIO, for a calmer diagram.
