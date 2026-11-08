@@ -68,6 +68,14 @@ export function MoonIcon(props: IconProps): ReactElement {
   );
 }
 
+export function MenuIcon(props: IconProps): ReactElement {
+  return (
+    <Icon {...props}>
+      <path d="M3.5 6h13M3.5 10h13M3.5 14h13" />
+    </Icon>
+  );
+}
+
 export function GitHubIcon({ className, ...props }: IconProps): ReactElement {
   return (
     <svg
