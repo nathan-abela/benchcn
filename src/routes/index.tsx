@@ -33,12 +33,14 @@ function Section({
   children: ReactNode;
 }): ReactElement {
   return (
-    <section id={id} className="mx-auto w-full max-w-[1400px] px-4 pt-20 pb-4 md:px-6 lg:pt-28">
-      <div className="rise-on-view mb-8 flex max-w-2xl flex-col gap-3">
-        <h2 className="text-2xl font-medium tracking-tight sm:text-3xl">{title}</h2>
-        {lede ? <p className="text-lg text-pretty">{lede}</p> : null}
+    <section id={id} className="border-t">
+      <div className="mx-auto w-full max-w-[1400px] px-4 py-20 md:px-6 lg:py-28">
+        <div className="rise-on-view mb-8 flex max-w-2xl flex-col gap-3">
+          <h2 className="text-2xl font-medium tracking-tight sm:text-3xl">{title}</h2>
+          {lede ? <p className="text-lg text-pretty">{lede}</p> : null}
+        </div>
+        <div className="rise-on-view">{children}</div>
       </div>
-      <div className="rise-on-view">{children}</div>
     </section>
   );
 }
@@ -47,7 +49,7 @@ function Home(): ReactElement {
   return (
     <HomeLayout {...baseOptions()} nav={{ component: <SiteNav /> }}>
       <main className="flex flex-col">
-        <section className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 px-4 pt-12 pb-4 md:px-6 lg:pt-16">
+        <section className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 px-4 pt-12 pb-20 md:px-6 lg:pt-16 lg:pb-28">
           <div className="*:rise-in mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">
             <h1 className="text-[clamp(2.5rem,7vw,3.75rem)] leading-[1] font-medium tracking-[-0.03em] text-balance">
               Hardware UI for shadcn/ui
@@ -199,7 +201,7 @@ function Home(): ReactElement {
           </div>
         </Section>
 
-        <footer className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center justify-between gap-4 px-4 pt-24 pb-10 md:px-6">
+        <footer className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center justify-between gap-4 border-t px-4 pt-10 pb-10 md:px-6">
           <span className="inline-flex items-center gap-2 text-sm font-medium">
             <Mark className="size-4" /> {siteConfig.name}
           </span>
