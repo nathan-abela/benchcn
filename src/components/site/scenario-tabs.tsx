@@ -137,7 +137,7 @@ export function ScenarioTabs(): ReactElement {
               className={cn(
                 "focus-visible:ring-ring/50 rounded-full border px-3 py-1.5 text-sm transition-colors outline-none focus-visible:ring-[3px]",
                 active === s.id
-                  ? "bg-foreground text-background border-foreground"
+                  ? "bg-primary text-primary-foreground border-primary"
                   : "text-muted-foreground hover:text-foreground hover:bg-accent border-transparent",
               )}
             >
@@ -145,7 +145,7 @@ export function ScenarioTabs(): ReactElement {
             </button>
           ))}
         </div>
-        <p className="text-muted-foreground font-mono text-xs">{scenario.blurb}</p>
+        <p className="text-muted-foreground text-sm">{scenario.blurb}</p>
       </div>
       <div role="tabpanel" className="min-h-72">
         <Suspense fallback={<Fallback />}>

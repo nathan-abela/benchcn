@@ -4,9 +4,10 @@ import type { ReactElement, ReactNode } from "react";
 
 import { buildAgentPrompt } from "@/components/site/agent-prompt";
 import { Bench } from "@/components/site/bench";
-import { ComponentGrid } from "@/components/site/component-grid";
+import { ComponentList } from "@/components/site/component-grid";
 import { CopyButton } from "@/components/site/copy-button";
 import { InstallCommand } from "@/components/site/install-command";
+import { InstallTabs } from "@/components/site/install-tabs";
 import { Mark } from "@/components/site/logo";
 import { ScenarioTabs } from "@/components/site/scenario-tabs";
 import { ThemeChips } from "@/components/site/theme-chips";
@@ -23,31 +24,22 @@ const SKILL = `npx skills add ${siteConfig.repo.owner}/${siteConfig.repo.name} -
 
 function Section({
   id,
-  eyebrow,
   title,
   lede,
   children,
-  className,
 }: {
   id: string;
-  eyebrow: string;
   title: string;
   lede?: ReactNode;
   children: ReactNode;
-  className?: string;
 }): ReactElement {
   return (
-    <section id={id} className={className}>
-      <div className="mx-auto w-full max-w-6xl border-t px-4 pt-16 pb-20 md:px-6 lg:pt-20 lg:pb-24">
-        <div className="mb-10 flex max-w-2xl flex-col gap-3">
-          <span className="text-muted-foreground font-mono text-[11px] tracking-[0.14em] uppercase">
-            {eyebrow}
-          </span>
-          <h2 className="text-2xl font-medium tracking-tight sm:text-3xl">{title}</h2>
-          {lede ? <p className="text-muted-foreground text-base sm:text-lg">{lede}</p> : null}
-        </div>
-        {children}
+    <section id={id} className="mx-auto w-full max-w-[1400px] px-4 pt-20 pb-4 md:px-6 lg:pt-28">
+      <div className="mb-8 flex max-w-2xl flex-col gap-3">
+        <h2 className="text-2xl font-medium tracking-tight sm:text-3xl">{title}</h2>
+        {lede ? <p className="text-lg text-pretty">{lede}</p> : null}
       </div>
+      {children}
     </section>
   );
 }
@@ -56,7 +48,7 @@ function Home(): ReactElement {
   return (
     <HomeLayout {...baseOptions()}>
       <main className="flex flex-col">
-        <section className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 px-4 pt-12 pb-16 md:px-6 lg:pt-16">
+        <section className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 px-4 pt-12 pb-4 md:px-6 lg:pt-16">
           <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">
             <h1 className="text-[clamp(2.5rem,7vw,3.75rem)] leading-[1] font-medium tracking-[-0.03em] text-balance">
               Hardware UI for shadcn/ui
@@ -87,8 +79,7 @@ function Home(): ReactElement {
 
         <Section
           id="scenarios"
-          eyebrow="Scenarios"
-          title="One registry, five benches"
+          title="Five benches, one registry"
           lede="Every scenario runs on the same mock device and the same components. Hold the pump, zoom the analyzer, add a wiring mistake."
         >
           <ScenarioTabs />
@@ -96,61 +87,57 @@ function Home(): ReactElement {
 
         <Section
           id="how"
-          eyebrow="How it works"
           title="Mock first, then one line to real hardware"
           lede="Components never open connections. A source does, and every source speaks the same tiny protocol."
         >
-          <ol className="grid gap-4 *:min-w-0 lg:grid-cols-3">
-            <Step n={1} title="Install what you need">
-              <code>{`pnpm dlx shadcn@latest add ${siteConfig.registry.namespace}/sensor-tile`}</code>
-            </Step>
-            <Step n={2} title="Build against the mock">
-              <code>{`const { readings, command } = useMockDevice();`}</code>
-            </Step>
-            <Step n={3} title="Point it at the device">
-              <code>{`const { readings, command } = useWebSocketSource("ws://plant.local/ws");`}</code>
-            </Step>
-          </ol>
-          <div className="bg-card mt-6 rounded-xl border p-4 font-mono text-xs leading-relaxed shadow-[inset_0_1px_0_0_rgb(255_255_255/0.04)] sm:text-sm">
-            <p className="text-muted-foreground mb-2 text-[11px] tracking-[0.12em] uppercase">
-              benchcn/0 · what the firmware prints
-            </p>
-            <pre className="overflow-x-auto">{`{"ch":"soil","v":42,"u":"%","t":1731000000}
+          <div className="grid gap-8 *:min-w-0 lg:grid-cols-2 lg:gap-12">
+            <ol className="flex flex-col gap-7">
+              <Step title="Install what you need">
+                <InstallTabs item="sensor-tile" note={false} />
+              </Step>
+              <Step title="Build against the mock">
+                <Code>{`const { readings, command } = useMockDevice();`}</Code>
+              </Step>
+              <Step title="Point it at the device">
+                <Code>{`const { readings, command } = useWebSocketSource("ws://plant.local/ws");`}</Code>
+              </Step>
+            </ol>
+            <div className="bg-card flex flex-col gap-3 self-start rounded-xl border p-4">
+              <span className="text-sm font-medium">What the firmware prints</span>
+              <pre className="overflow-x-auto font-mono text-xs leading-relaxed sm:text-sm">{`{"ch":"soil","v":42,"u":"%","t":1731000000}
 {"cmd":"set","n":17,"id":"pump","v":true}
 {"ack":17,"ok":true,"id":"pump","v":true}`}</pre>
-            <p className="text-muted-foreground mt-3 text-xs">
-              Plain text lines show up as logs, so <code>print()</code> debugging keeps working.{" "}
-              <Link
-                to="/docs/$"
-                params={{ _splat: "wire-protocol" }}
-                className="underline underline-offset-4"
-              >
-                Wire protocol
-              </Link>
-            </p>
+              <p className="text-muted-foreground text-sm">
+                One JSON object per line. Plain text lines show up as logs, so <code>print()</code>{" "}
+                debugging keeps working.{" "}
+                <Link
+                  to="/docs/$"
+                  params={{ _splat: "wire-protocol" }}
+                  className="text-foreground underline underline-offset-4"
+                >
+                  Wire protocol
+                </Link>
+              </p>
+            </div>
           </div>
         </Section>
 
         <Section
           id="components"
-          eyebrow="Components"
           title="Eleven instruments, two dashboards"
           lede="Each page has a live preview, the install command, the API and a prompt for your assistant."
         >
-          <ComponentGrid />
+          <ComponentList />
         </Section>
 
         <Section
           id="agents"
-          eyebrow="For you and your assistant"
           title="Readable by people, usable by agents"
           lede="Every page has a Markdown twin, the site serves llms.txt, and a skill teaches an assistant which component and source to reach for."
         >
-          <div className="grid gap-4 *:min-w-0 lg:grid-cols-2">
-            <div className="bg-card flex flex-col gap-3 rounded-xl border p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.04)]">
-              <span className="text-muted-foreground font-mono text-[11px] tracking-[0.12em] uppercase">
-                Install the skill
-              </span>
+          <div className="grid gap-3 *:min-w-0 lg:grid-cols-2">
+            <div className="bg-card flex flex-col gap-3 rounded-xl border p-4">
+              <span className="text-sm font-medium">Install the skill</span>
               <InstallCommand
                 command={SKILL}
                 item="skill"
@@ -161,11 +148,9 @@ function Home(): ReactElement {
                 <code>.agents/skills</code>.
               </p>
             </div>
-            <div className="bg-card flex flex-col gap-3 rounded-xl border p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.04)]">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground font-mono text-[11px] tracking-[0.12em] uppercase">
-                  Or paste a prompt
-                </span>
+            <div className="bg-card flex flex-col gap-3 rounded-xl border p-4">
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-sm font-medium">Or paste a prompt</span>
                 <CopyButton
                   text={buildAgentPrompt(
                     "plant-monitor",
@@ -186,14 +171,14 @@ function Home(): ReactElement {
               <p className="text-muted-foreground text-sm">
                 <a
                   href={`${siteConfig.basepath}/llms.txt`}
-                  className="underline underline-offset-4"
+                  className="text-foreground underline underline-offset-4"
                 >
                   llms.txt
                 </a>{" "}
-                ·{" "}
+                and{" "}
                 <a
                   href={`${siteConfig.basepath}/llms-full.txt`}
-                  className="underline underline-offset-4"
+                  className="text-foreground underline underline-offset-4"
                 >
                   llms-full.txt
                 </a>
@@ -202,19 +187,16 @@ function Home(): ReactElement {
           </div>
         </Section>
 
-        <footer className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 border-t px-4 py-8 md:px-6">
-          <span className="inline-flex items-center gap-2 font-mono text-sm">
+        <footer className="mx-auto flex w-full max-w-[1400px] flex-wrap items-center justify-between gap-4 px-4 pt-24 pb-10 md:px-6">
+          <span className="inline-flex items-center gap-2 text-sm font-medium">
             <Mark className="size-4" /> {siteConfig.name}
           </span>
-          <p className="text-muted-foreground text-xs">
+          <p className="text-muted-foreground text-sm">
             {siteConfig.license} licensed. Board pinouts are typed from the official datasheets
             cited in each data file.
           </p>
-          <a
-            href={siteConfig.repo.url}
-            className="text-muted-foreground hover:text-foreground text-sm"
-          >
-            GitHub ↗
+          <a href={siteConfig.repo.url} className="text-sm underline-offset-4 hover:underline">
+            GitHub
           </a>
         </footer>
       </main>
@@ -222,24 +204,19 @@ function Home(): ReactElement {
   );
 }
 
-function Step({
-  n,
-  title,
-  children,
-}: {
-  n: number;
-  title: string;
-  children: ReactNode;
-}): ReactElement {
+function Step({ title, children }: { title: string; children: ReactNode }): ReactElement {
   return (
-    <li className="bg-card flex min-w-0 flex-col gap-3 rounded-xl border p-4 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.04)]">
-      <span className="text-muted-foreground font-mono text-[11px] tracking-[0.12em] uppercase">
-        Step {n}
-      </span>
-      <span className="text-sm font-medium">{title}</span>
-      <div className="bg-background overflow-x-auto rounded-md border px-3 py-2 font-mono text-xs whitespace-nowrap">
-        {children}
-      </div>
+    <li className="flex min-w-0 flex-col gap-3">
+      <span className="text-base font-medium">{title}</span>
+      {children}
     </li>
+  );
+}
+
+function Code({ children }: { children: string }): ReactElement {
+  return (
+    <pre className="bg-card overflow-x-auto rounded-lg border px-4 py-3 font-mono text-xs sm:text-[13px]">
+      <code>{children}</code>
+    </pre>
   );
 }
