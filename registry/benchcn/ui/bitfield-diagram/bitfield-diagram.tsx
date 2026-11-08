@@ -134,7 +134,7 @@ export function BitfieldDiagram({
                     width={CELL}
                     height={CELL_H}
                     fill="transparent"
-                    className="hover:fill-opacity-10 cursor-pointer hover:fill-[currentColor]"
+                    className="hover:fill-foreground/10 cursor-pointer"
                     onClick={() => onValueChange(toggleBit(value, bit))}
                   />
                 ) : null}
