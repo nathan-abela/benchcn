@@ -1,0 +1,104 @@
+---
+title: Alarm list
+description: Alarm summary with acknowledgement and shelving. Rules raise alarms from any source, the most urgent unacknowledged alarm sits on top, and cleared alarms stay until someone acknowledges them.
+---
+
+<ComponentPreview name="alarm-list" />
+
+Heat the chamber below the list and watch it climb toward the two limits on its bar; each alarm rises as the value crosses its line, the critical one on top and flashing until acknowledged. Cool it again before acknowledging and both stay, marked Cleared, unacknowledged, until someone has seen them. Drop the link and the chamber sensor raises its own alarm two seconds later.
+
+## Installation
+
+<InstallTabs item="alarm-list" />
+
+## Usage
+
+`useAlarms` evaluates rules against any source and keeps acknowledgement and shelving on the page. `AlarmList` renders the result.
+
+```tsx
+import { useAlarms } from "@/hooks/use-alarms";
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { AlarmList } from "@/components/ui/alarm-list";
+
+const rules = [
+  {
+    id: "hot",
+    channel: "chamber",
+    message: "Chamber hot",
+    priority: "high",
+    above: 30,
+    deadband: 0.5,
+  },
+  {
+    id: "lost",
+    channel: "chamber",
+    message: "Chamber sensor silent",
+    priority: "high",
+    staleAfter: 3000,
+  },
+];
+
+export function Alarms() {
+  const source = useMockDevice();
+  const { alarms, acknowledge, acknowledgeAll, shelve, unshelve } = useAlarms(source, rules);
+  return (
+    <AlarmList
+      alarms={alarms}
+      onAcknowledge={acknowledge}
+      onAcknowledgeAll={acknowledgeAll}
+      onShelve={shelve}
+      onUnshelve={unshelve}
+    />
+  );
+}
+```
+
+## Rules
+
+| Field        | Meaning                                                           |
+| ------------ | ----------------------------------------------------------------- |
+| `above`      | Active while the value is above this                              |
+| `below`      | Active while the value is below this                              |
+| `deadband`   | How far back past the limit the value must go before it clears    |
+| `staleAfter` | Active when a channel that has reported goes quiet this many ms   |
+| `priority`   | `critical`, `high`, `medium` or `low`; sets order and edge colour |
+
+The deadband stops an alarm chattering when a value hovers at its limit. A channel that has never reported raises nothing: it has no signal to lose, and connection state belongs to the source.
+
+## Props
+
+<PropsTable of="alarm-list" />
+
+## State model
+
+An alarm is three independent things, after the OPC UA Alarms and Conditions model (Part 9): whether the condition is active, which comes from the process; whether the latest activation is acknowledged, which comes from the operator; and whether it is shelved. The row shows the ISA-18.2 style name for the first two.
+
+| Active | Acknowledged | Shown as                | Leaves the list when |
+| ------ | ------------ | ----------------------- | -------------------- |
+| Yes    | No           | Unacknowledged, flashes | Never on its own     |
+| Yes    | Yes          | Acknowledged            | The condition clears |
+| No     | No           | Cleared, unacknowledged | Acknowledged         |
+
+Every new activation needs its own acknowledgement, and the row counts repeat activations so a chattering alarm is visible.
+
+Shelving hides an alarm without changing its state. Shelve with no `shelveMinutes` lasts until the condition next clears; with minutes it lasts that long through any number of clears. Unshelve brings it back at once. A shelved alarm that cleared while unacknowledged comes back as Cleared, unacknowledged.
+
+Acknowledgement and shelving live on the page. They are not sent to the device.
+
+## Theming
+
+Rows use shadcn tokens. The priority edge is `--destructive` for critical and high, `--warning` for medium and `--muted-foreground` for low, and the priority is also written as a word.
+
+## Accessibility
+
+Each new unacknowledged alarm is announced through an assertive live region with its priority and message. Every action is a labelled button, and state and priority are text, never colour alone.
+
+Under `prefers-reduced-motion` unacknowledged alarms do not flash.
+
+## Ask your agent
+
+<AgentPrompt item="alarm-list">
+  Raise alarms with useAlarms rules instead of ad hoc state. Give each rule a deadband, add a
+  staleAfter rule for every channel an operator depends on, and never remove an alarm the operator
+  has not acknowledged.
+</AgentPrompt>

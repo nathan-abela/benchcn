@@ -209,6 +209,29 @@ export const props: Record<string, PropsDoc> = {
     },
     label: { type: "string", description: "Accessible description.", default: "the value" },
   },
+  "alarm-list": {
+    alarms: {
+      type: "AlarmRecord[]",
+      description: "Most urgent first, as `useAlarms` returns them. Shelved ones list separately.",
+      required: true,
+    },
+    title: { type: "ReactNode", description: "", default: '"Alarms"' },
+    onAcknowledge: {
+      type: "(id: string) => void",
+      description: "Shows Acknowledge on unacknowledged rows.",
+    },
+    onAcknowledgeAll: { type: "() => void", description: "Shows Acknowledge all in the header." },
+    onShelve: {
+      type: "(id: string, minutes?: number) => void",
+      description: "Shows Shelve on every row.",
+    },
+    onUnshelve: { type: "(id: string) => void", description: "Shows Unshelve on shelved alarms." },
+    shelveMinutes: {
+      type: "number",
+      description: "Minutes Shelve hides an alarm for.",
+      default: "until it clears",
+    },
+  },
   "range-bar": {
     label: { type: "ReactNode", description: "", required: true },
     value: {

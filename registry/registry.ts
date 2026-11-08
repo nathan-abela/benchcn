@@ -318,6 +318,21 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/range-bar"),
   },
   {
+    name: "alarm-list",
+    type: "registry:ui",
+    title: "Alarm list",
+    description:
+      "Alarm summary with acknowledgement and shelving: rules with deadband and signal-lost detection raise alarms from any source, the most urgent unacknowledged alarm sits on top, and cleared alarms stay until acknowledged.",
+    files: [
+      { path: "registry/benchcn/ui/alarm-list/alarm-list.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/hooks/use-alarms.ts", type: "registry:hook" },
+      { path: "registry/benchcn/lib/alarms.ts", type: "registry:lib" },
+    ],
+    registryDependencies: ["button", `${ns}/tokens`, `${ns}/instrument`, `${ns}/source-store`],
+    categories: ["readouts"],
+    docs: docsUrl("components/alarm-list"),
+  },
+  {
     name: "strip-chart",
     type: "registry:ui",
     title: "Strip chart",

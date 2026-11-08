@@ -3,6 +3,7 @@ import { type ComponentType, lazy } from "react";
 import type { PlaceholderHeights } from "@/components/site/placeholder";
 
 import actuatorControlSource from "./actuator-control-demo.tsx?raw";
+import alarmListSource from "./alarm-list-demo.tsx?raw";
 import bitfieldDiagramSource from "./bitfield-diagram-demo.tsx?raw";
 import characterLcdSource from "./character-lcd-demo.tsx?raw";
 import logicAnalyzerSource from "./logic-analyzer-demo.tsx?raw";
@@ -72,6 +73,11 @@ export const demos: Record<string, Demo> = {
     ),
     source: sensorTileSource,
     placeholder: { base: 756, sm: 392, lg: 256 },
+  },
+  "alarm-list": {
+    component: lazy(() => import("./alarm-list-demo").then((m) => ({ default: m.AlarmListDemo }))),
+    source: alarmListSource,
+    placeholder: { base: 382, sm: 358 },
   },
   "range-bar": {
     component: lazy(() => import("./range-bar-demo").then((m) => ({ default: m.RangeBarDemo }))),
