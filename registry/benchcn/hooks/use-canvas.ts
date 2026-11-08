@@ -118,9 +118,12 @@ export function useCanvas(
     };
   }, [ref, running, fps]);
 
+  // Clearing the id matters: StrictMode remounts reuse this ref, and a stale id would make every
+  // later `redraw()` think a frame is already queued.
   useEffect(() => {
     return () => {
       if (pending.current) cancelAnimationFrame(pending.current);
+      pending.current = 0;
     };
   }, []);
 
