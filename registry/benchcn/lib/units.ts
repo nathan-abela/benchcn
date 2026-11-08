@@ -16,7 +16,7 @@ const MAX_EXPONENT = 9;
 
 /** `formatSi(0.00025, "s")` is `"250 µs"`; `formatSi(1000, "Hz")` is `"1.00 kHz"`. */
 export function formatSi(value: number, unit = "", digits = 3): string {
-  if (!Number.isFinite(value)) return `— ${unit}`.trim();
+  if (!Number.isFinite(value)) return `-- ${unit}`.trim();
   if (value === 0) return `0 ${unit}`.trim();
 
   let exponent = Math.floor(Math.log10(Math.abs(value)) / 3) * 3;

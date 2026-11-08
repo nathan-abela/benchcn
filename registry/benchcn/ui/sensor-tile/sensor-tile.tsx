@@ -196,7 +196,7 @@ export function SensorTile({
               state === "stale" && "text-muted-foreground",
             )}
           >
-            {hasValue ? formatReading(value, precision) : "—"}
+            {hasValue ? formatReading(value, precision) : "--"}
           </span>
           {unit ? <span className="text-muted-foreground text-sm">{unit}</span> : null}
         </div>

@@ -576,14 +576,14 @@ export type ScopeMeasurementsProps = ComponentProps<"div"> & {
 };
 
 function formatMeasurement(key: MeasurementKey, m: Measurements | undefined, unit: string): string {
-  if (!m) return "—";
+  if (!m) return "--";
   switch (key) {
     case "frequency":
-      return m.frequency === null ? "—" : formatSi(m.frequency, "Hz");
+      return m.frequency === null ? "--" : formatSi(m.frequency, "Hz");
     case "period":
-      return m.period === null ? "—" : formatSi(m.period, "s");
+      return m.period === null ? "--" : formatSi(m.period, "s");
     case "dutyCycle":
-      return m.dutyCycle === null ? "—" : `${(m.dutyCycle * 100).toFixed(1)} %`;
+      return m.dutyCycle === null ? "--" : `${(m.dutyCycle * 100).toFixed(1)} %`;
     case "peakToPeak":
       return formatSi(m.peakToPeak, unit);
     case "rms":

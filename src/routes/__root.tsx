@@ -14,7 +14,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: `${siteConfig.name} — ${siteConfig.tagline}` },
+      { title: `${siteConfig.name} · ${siteConfig.tagline}` },
       { name: "description", content: siteConfig.description },
       { name: "theme-color", media: "(prefers-color-scheme: light)", content: "#ffffff" },
       { name: "theme-color", media: "(prefers-color-scheme: dark)", content: "#0c0a09" },

@@ -24,7 +24,7 @@ export const esp32DevkitcV4: BoardDefinition = {
   name: "ESP32-DevKitC V4",
   vendor: "Espressif Systems",
   source: {
-    title: "ESP32-DevKitC V4 - ESP32 - — esp-dev-kits latest documentation",
+    title: "ESP32-DevKitC V4",
     url:
       "https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-devkitc/" +
       "user_guide.html",

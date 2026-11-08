@@ -128,7 +128,7 @@ function Panel({
             label={`Outside temperature ${temp} degrees`}
           />
           <span className="text-muted-foreground font-mono text-xs">
-            dew point {dew === null ? "—" : `${dew.toFixed(1)} °C`}
+            dew point {dew === null ? "--" : `${dew.toFixed(1)} °C`}
           </span>
         </div>
         <SensorTile

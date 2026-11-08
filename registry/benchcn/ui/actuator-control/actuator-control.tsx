@@ -237,7 +237,7 @@ export function ActuatorControl({
             <dt>
               <InstrumentLabel>Commanded</InstrumentLabel>
             </dt>
-            <dd>{commanded === null ? "—" : commanded ? onLabel : offLabel}</dd>
+            <dd>{commanded === null ? "--" : commanded ? onLabel : offLabel}</dd>
           </div>
           <div className="flex flex-col gap-1">
             <dt>
@@ -250,7 +250,7 @@ export function ActuatorControl({
                 status === "confirmed" && "text-success",
               )}
             >
-              {confirmed === null ? "—" : confirmed ? onLabel : offLabel}
+              {confirmed === null ? "--" : confirmed ? onLabel : offLabel}
             </dd>
           </div>
           <div className="flex flex-col gap-1">
@@ -258,7 +258,7 @@ export function ActuatorControl({
               <InstrumentLabel>{error ? "Error" : "Latency"}</InstrumentLabel>
             </dt>
             <dd className={cn(error && "text-destructive")}>
-              {error ? error : latency === null ? "—" : `${Math.round(latency)} ms`}
+              {error ? error : latency === null ? "--" : `${Math.round(latency)} ms`}
             </dd>
           </div>
         </dl>

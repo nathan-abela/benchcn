@@ -32,7 +32,7 @@ describe("formatSi", () => {
 
   it("should print zero and non-finite values plainly", () => {
     // #when / #then
-    expect([formatSi(0, "V"), formatSi(Number.NaN, "Hz")]).toEqual(["0 V", "— Hz"]);
+    expect([formatSi(0, "V"), formatSi(Number.NaN, "Hz")]).toEqual(["0 V", "-- Hz"]);
   });
 });
 
