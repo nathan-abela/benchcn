@@ -109,10 +109,8 @@ function Knob({
   return (
     <div className="flex items-center gap-2">
       <div className="flex flex-col gap-1">
-        <span className="text-muted-foreground font-mono text-[11px] leading-none tracking-[0.12em] uppercase">
-          {label}
-        </span>
-        <span className="font-mono text-sm leading-none tabular-nums">{value}</span>
+        <span className="text-muted-foreground text-xs leading-none">{label}</span>
+        <span className="text-sm leading-none font-medium tabular-nums">{value}</span>
       </div>
       <div className="flex items-center gap-1">{children}</div>
     </div>

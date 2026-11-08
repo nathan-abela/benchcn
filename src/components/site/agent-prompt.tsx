@@ -41,7 +41,7 @@ export function AgentPrompt({ item, children }: AgentPromptProps): ReactElement 
   return (
     <div className="not-prose bg-card relative rounded-xl border">
       <div className="flex items-center justify-between border-b px-4 py-2">
-        <span className="text-muted-foreground font-mono text-[11px] tracking-[0.12em] uppercase">
+        <span className="text-muted-foreground text-xs">
           Prompt for Claude Code, Cursor or Copilot
         </span>
         <CopyButton
