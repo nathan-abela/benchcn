@@ -37,7 +37,9 @@ export function buildAgentPrompt(item: string, extra?: string): string {
 }
 
 export function AgentPrompt({ item, children }: AgentPromptProps): ReactElement {
-  const prompt = buildAgentPrompt(item, Children.toArray(children).map(textOf).join(" "));
+  // MDX keeps the source's soft line wraps inside the children; the prompt wants plain sentences.
+  const extra = Children.toArray(children).map(textOf).join(" ").replace(/\s+/g, " ");
+  const prompt = buildAgentPrompt(item, extra);
   return (
     <div className="not-prose bg-card relative rounded-xl border">
       <div className="flex items-center justify-between border-b px-4 py-2">
