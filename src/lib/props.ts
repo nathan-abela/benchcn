@@ -232,6 +232,25 @@ export const props: Record<string, PropsDoc> = {
       default: "until it clears",
     },
   },
+  "meter-readout": {
+    label: { type: "ReactNode", description: "", required: true },
+    mode: { type: "string", description: "Measurement mode beside the label, such as `DC V`." },
+    value: { type: "number | null", description: "`null` shows dashes.", required: true },
+    unit: { type: "string", description: "Shown beside the display and on the statistics." },
+    precision: { type: "number", description: "Decimal places on the display.", default: "3" },
+    digits: { type: "number", description: "Digit positions on the display.", default: "5" },
+    sampleKey: {
+      type: "unknown",
+      description:
+        "Changes with every reading, such as the sample object, so repeated equal values still count toward the average.",
+      default: "the value",
+    },
+    color: {
+      type: '"red" | "amber" | "green" | "blue" | "white" | string',
+      description: "Segment colour.",
+      default: "`--primary`",
+    },
+  },
   "range-bar": {
     label: { type: "ReactNode", description: "", required: true },
     value: {

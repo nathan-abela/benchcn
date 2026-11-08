@@ -318,6 +318,17 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/range-bar"),
   },
   {
+    name: "meter-readout",
+    type: "registry:ui",
+    title: "Meter readout",
+    description:
+      "Bench multimeter face: seven-segment reading, Hold that freezes the display while recording continues, and min, max and average since reset.",
+    files: [{ path: "registry/benchcn/ui/meter-readout/meter-readout.tsx", type: "registry:ui" }],
+    registryDependencies: ["button", `${ns}/tokens`, `${ns}/instrument`, `${ns}/seven-segment`],
+    categories: ["readouts"],
+    docs: docsUrl("components/meter-readout"),
+  },
+  {
     name: "alarm-list",
     type: "registry:ui",
     title: "Alarm list",

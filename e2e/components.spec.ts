@@ -7,6 +7,7 @@ const COMPONENTS = [
   "setpoint-input",
   "sensor-tile",
   "range-bar",
+  "meter-readout",
   "alarm-list",
   "strip-chart",
   "status-led",

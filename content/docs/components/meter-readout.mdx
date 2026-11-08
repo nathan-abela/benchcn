@@ -1,0 +1,54 @@
+---
+title: Meter readout
+description: Bench multimeter face with a seven-segment reading, Hold that freezes the display while recording continues, and min, max and average since reset.
+---
+
+<ComponentPreview name="meter-readout" />
+
+Press Hold and the display freezes on the current reading while Min, Max and the average keep counting underneath, the way a meter's MIN/MAX mode works. Reset starts the statistics again.
+
+## Installation
+
+<InstallTabs item="meter-readout" />
+
+## Usage
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { MeterReadout } from "@/components/ui/meter-readout";
+
+export function Cell() {
+  const { readings } = useMockDevice();
+  const cell = readings.battery;
+  return (
+    <MeterReadout
+      label="Cell voltage"
+      mode="DC V"
+      value={typeof cell?.v === "number" ? cell.v : null}
+      unit="V"
+      sampleKey={cell}
+    />
+  );
+}
+```
+
+Pass the sample object as `sampleKey` so a reading that repeats the last value still counts toward the average.
+
+## Props
+
+<PropsTable of="meter-readout" />
+
+## Theming
+
+The frame and statistics use shadcn tokens. The segments take a physical `color`, defaulting to `--primary`.
+
+## Accessibility
+
+The display has a text label with the reading and unit, and says "held" while Hold is on. Hold is a toggle button with `aria-pressed`. The statistics are a description list.
+
+## Ask your agent
+
+<AgentPrompt item="meter-readout">
+  Use a meter readout for a value people read precisely, pass the sample as sampleKey, and leave
+  Hold and the statistics to the component.
+</AgentPrompt>

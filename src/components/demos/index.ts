@@ -7,6 +7,7 @@ import alarmListSource from "./alarm-list-demo.tsx?raw";
 import bitfieldDiagramSource from "./bitfield-diagram-demo.tsx?raw";
 import characterLcdSource from "./character-lcd-demo.tsx?raw";
 import logicAnalyzerSource from "./logic-analyzer-demo.tsx?raw";
+import meterReadoutSource from "./meter-readout-demo.tsx?raw";
 import oscilloscopeSource from "./oscilloscope-demo.tsx?raw";
 import pinoutHeaderSource from "./pinout-header-demo.tsx?raw";
 import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
@@ -78,6 +79,13 @@ export const demos: Record<string, Demo> = {
     component: lazy(() => import("./alarm-list-demo").then((m) => ({ default: m.AlarmListDemo }))),
     source: alarmListSource,
     placeholder: { base: 382, sm: 358 },
+  },
+  "meter-readout": {
+    component: lazy(() =>
+      import("./meter-readout-demo").then((m) => ({ default: m.MeterReadoutDemo })),
+    ),
+    source: meterReadoutSource,
+    placeholder: { base: 223, md: 239 },
   },
   "range-bar": {
     component: lazy(() => import("./range-bar-demo").then((m) => ({ default: m.RangeBarDemo }))),
