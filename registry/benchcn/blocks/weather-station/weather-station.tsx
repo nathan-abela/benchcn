@@ -1,6 +1,7 @@
 // benchcn.dev · weather-station
 // A weather station dashboard: a big seven-segment temperature, climate tiles with sparklines, a
-// computed dew point, pressure trend on an LCD and battery state. Mock device until you pass a source.
+// computed dew point, pressure trend on an LCD and a low-battery LED. Mock device until you pass a
+// source.
 import type { ComponentProps, ReactElement } from "react";
 
 import { cn } from "@/lib/utils";
@@ -168,27 +169,16 @@ function Panel({
         />
       </div>
 
-      <div className={cn("grid gap-4", kiosk ? "grid-cols-2" : "md:grid-cols-[2fr_1fr]")}>
-        <div className="bg-card flex items-center justify-center rounded-xl border p-4">
-          <CharacterLcd
-            color="blue"
-            lines={[
-              `${temp === null ? "--.-" : temp.toFixed(1).padStart(5)}°C  ${
-                humidity === null ? "--" : humidity.toFixed(0).padStart(2)
-              }%RH`,
-              `${pressure === null ? "----" : pressure.toFixed(0)}hPa ${TREND_ARROW[trend]}`,
-            ]}
-            scale={kiosk ? 2.5 : 3}
-          />
-        </div>
-        <SensorTile
-          label="Battery"
-          value={battery}
-          unit="V"
-          precision={2}
-          thresholds={{ min: 3, max: 4.2, low: 3.3, warnBelow: 3.5 }}
-          history={history[ch.battery]}
-          updatedAt={timeOf(readings[ch.battery])}
+      <div className="bg-card flex items-center justify-center rounded-xl border p-4">
+        <CharacterLcd
+          color="blue"
+          lines={[
+            `${temp === null ? "--.-" : temp.toFixed(1).padStart(5)}°C  ${
+              humidity === null ? "--" : humidity.toFixed(0).padStart(2)
+            }%RH`,
+            `${pressure === null ? "----" : pressure.toFixed(0)}hPa ${TREND_ARROW[trend]}`,
+          ]}
+          scale={kiosk ? 2.5 : 3}
         />
       </div>
     </section>

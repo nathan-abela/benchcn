@@ -431,7 +431,7 @@ export const registry: RegistryItem[] = [
     type: "registry:block",
     title: "Weather station",
     description:
-      "Weather dashboard block: seven-segment temperature, climate tiles with sparklines, computed dew point, pressure trend on an LCD and battery state, with a kiosk layout.",
+      "Weather dashboard block: seven-segment temperature, climate tiles with sparklines, computed dew point, pressure trend on an LCD and a low-battery LED, with a kiosk layout.",
     files: [
       {
         path: "registry/benchcn/blocks/weather-station/weather-station.tsx",
