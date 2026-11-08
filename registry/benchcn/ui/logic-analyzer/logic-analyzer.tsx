@@ -191,7 +191,7 @@ function roundRect(
   h: number,
   r: number,
 ): void {
-  const radius = Math.min(r, w / 2, h / 2);
+  const radius = Math.max(0, Math.min(r, w / 2, h / 2));
   ctx.beginPath();
   ctx.moveTo(x + radius, y);
   ctx.lineTo(x + w - radius, y);
@@ -536,7 +536,7 @@ export function LogicAnalyzer({
         <div
           ref={wrapperRef}
           aria-hidden
-          className="relative min-w-0 flex-1 cursor-grab touch-none overflow-hidden rounded-lg border border-black/40 select-none active:cursor-grabbing"
+          className="relative min-w-0 flex-1 cursor-grab touch-none overflow-hidden rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] select-none active:cursor-grabbing"
           style={{ height: rows.height }}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}

@@ -12,6 +12,7 @@ export function OpenInV0({ item }: { item: string }): ReactElement {
     <Button
       variant="ghost"
       size="xs"
+      nativeButton={false}
       render={<a href={href} target="_blank" rel="noreferrer" aria-label="Open in v0" />}
       onClick={() => track("open_in_v0", { item })}
     >

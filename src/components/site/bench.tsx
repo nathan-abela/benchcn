@@ -1,4 +1,4 @@
-import { type ReactElement, useEffect, useMemo, useState } from "react";
+import { type ReactElement, useMemo, useState, useSyncExternalStore } from "react";
 
 import { useMockDevice } from "@/registry/benchcn/hooks/use-mock-device";
 import { INITIAL_ACTUATOR_STATE } from "@/registry/benchcn/lib/actuator";
@@ -48,15 +48,21 @@ function i2cLanes(seed: number): LogicLane[] {
   ];
 }
 
-function useClock(): string {
-  const [now, setNow] = useState(() => new Date());
-  useEffect(() => {
-    const timer = window.setInterval(() => setNow(new Date()), 1000);
-    return () => window.clearInterval(timer);
-  }, []);
+function subscribeClock(onChange: () => void): () => void {
+  const timer = window.setInterval(onChange, 1000);
+  return () => window.clearInterval(timer);
+}
+
+function readClock(): string {
+  const now = new Date();
   const hh = String(now.getHours()).padStart(2, "0");
   const mm = String(now.getMinutes()).padStart(2, "0");
   return now.getSeconds() % 2 === 0 ? `${hh}:${mm}` : `${hh} ${mm}`;
+}
+
+/** Wall-clock time as HH:MM with a blinking colon; blank in the prerendered HTML so hydration matches. */
+function useClock(): string {
+  return useSyncExternalStore(subscribeClock, readClock, () => "--:--");
 }
 
 function BenchScope(): ReactElement {
