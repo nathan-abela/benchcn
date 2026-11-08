@@ -66,6 +66,8 @@ const STATUS_DOT: Record<ActuatorStatus, string> = {
   error: "bg-destructive",
 };
 
+const EASE_OUT = "cubic-bezier(0.23, 1, 0.32, 1)";
+
 type HoldOptions = {
   holdMs: number;
   disabled: boolean;
@@ -154,6 +156,15 @@ export function ActuatorControl({
     : holdMs > 0
       ? `Hold to turn ${next ? onLabel.toLowerCase() : offLabel.toLowerCase()}`
       : `Turn ${next ? onLabel.toLowerCase() : offLabel.toLowerCase()}`;
+  const hint = holding ? "Hold" : pending ? "Sent" : next ? onLabel : offLabel;
+
+  // The fill stays full until the device answers, so a sent but unconfirmed command still shows.
+  const filled = holding || pending;
+  const fillTransition = reduced
+    ? "none"
+    : holding
+      ? `clip-path ${holdMs}ms linear`
+      : `clip-path ${pending ? 120 : 220}ms ${EASE_OUT}`;
 
   return (
     <div
@@ -204,8 +215,8 @@ export function ActuatorControl({
           "focus-visible:ring-ring/50 outline-none focus-visible:ring-[3px]",
           "shadow-[inset_0_1px_0_0_rgb(255_255_255/0.06),0_1px_2px_rgb(0_0_0/0.2)] active:shadow-[inset_0_2px_4px_rgb(0_0_0/0.35)]",
           "transition-[box-shadow,transform] duration-100 active:translate-y-px",
-          locked && "cursor-not-allowed opacity-70",
-          disabled && "opacity-50",
+          pending && "cursor-progress",
+          disabled && "cursor-not-allowed opacity-50",
         )}
         onPointerDown={onPointerDown}
         onPointerUp={cancel}
@@ -216,18 +227,18 @@ export function ActuatorControl({
         onBlur={cancel}
         onContextMenu={(event) => event.preventDefault()}
       >
+        <span className="font-medium">{action}</span>
+        <span className="text-muted-foreground text-xs tabular-nums">{hint}</span>
         <span
           aria-hidden
-          className="bg-primary/15 absolute inset-y-0 left-0 -z-10 w-full origin-left transition-transform ease-linear"
+          className="bg-primary text-primary-foreground absolute inset-0 flex items-center justify-between px-4"
           style={{
-            transform: holding ? "scaleX(1)" : "scaleX(0)",
-            transitionDuration: holding ? `${reduced ? 0 : holdMs}ms` : "150ms",
-            transitionTimingFunction: holding ? "linear" : "ease-out",
+            clipPath: filled ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
+            transition: fillTransition,
           }}
-        />
-        <span className="font-medium">{action}</span>
-        <span className="text-muted-foreground text-xs tabular-nums">
-          {holding ? "Hold" : pending ? "…" : next ? onLabel : offLabel}
+        >
+          <span className="font-medium">{action}</span>
+          <span className="text-primary-foreground/70 text-xs tabular-nums">{hint}</span>
         </span>
       </button>
 
