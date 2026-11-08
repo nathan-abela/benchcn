@@ -10,6 +10,7 @@ import { InstallCommand } from "@/components/site/install-command";
 import { InstallTabs } from "@/components/site/install-tabs";
 import { Mark } from "@/components/site/logo";
 import { ScenarioTabs } from "@/components/site/scenario-tabs";
+import { SiteNav } from "@/components/site/site-nav";
 import { ThemeChips } from "@/components/site/theme-chips";
 import { track } from "@/lib/analytics";
 import { baseOptions } from "@/lib/layout.shared";
@@ -46,7 +47,7 @@ function Section({
 
 function Home(): ReactElement {
   return (
-    <HomeLayout {...baseOptions()}>
+    <HomeLayout {...baseOptions()} nav={{ component: <SiteNav /> }}>
       <main className="flex flex-col">
         <section className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 px-4 pt-12 pb-4 md:px-6 lg:pt-16">
           <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">

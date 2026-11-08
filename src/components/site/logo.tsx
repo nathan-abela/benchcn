@@ -25,8 +25,10 @@ export function Mark(props: ComponentProps<"svg">): ReactElement {
 export function Wordmark(): ReactElement {
   return (
     <span className="inline-flex items-center gap-2">
-      <Mark className="text-foreground" />
-      <span className="font-mono text-[15px] font-medium tracking-tight">{siteConfig.name}</span>
+      <Mark className="text-foreground size-6" />
+      <span className="text-[17px] leading-none font-semibold tracking-tight">
+        {siteConfig.name}
+      </span>
     </span>
   );
 }

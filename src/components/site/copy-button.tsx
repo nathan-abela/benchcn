@@ -1,6 +1,6 @@
-import { Check, Copy } from "lucide-react";
 import { type ComponentProps, type ReactElement, useEffect, useState } from "react";
 
+import { CheckIcon, CopyIcon } from "@/components/site/icons";
 import { Button } from "@/components/ui/button";
 
 export type CopyButtonProps = Omit<ComponentProps<typeof Button>, "onClick" | "children"> & {
@@ -41,7 +41,7 @@ export function CopyButton({
       }}
       {...props}
     >
-      {copied ? <Check className="text-success" /> : <Copy />}
+      {copied ? <CheckIcon className="text-success" /> : <CopyIcon />}
       {children}
     </Button>
   );
