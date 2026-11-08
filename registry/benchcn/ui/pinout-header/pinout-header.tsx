@@ -1,7 +1,6 @@
 // benchcn.dev · pinout-header
 // Board pinouts from typed data with an official source, your wiring drawn on top, and
 // conflicts called out before the smoke does.
-import { AlertTriangle } from "lucide-react";
 import {
   type ComponentProps,
   type CSSProperties,
@@ -140,7 +139,18 @@ export function PinoutHeader({
                 conflict.kind === "reserved" ? "text-warning" : "text-destructive",
               )}
             >
-              <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
+              <svg
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+                className="mt-0.5 size-4 shrink-0"
+              >
+                <path d="M10 3.5 2.5 16.5h15L10 3.5ZM10 8v4M10 14.2v.3" />
+              </svg>
               <span>{conflict.message}</span>
             </li>
           ))}

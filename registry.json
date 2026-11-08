@@ -471,9 +471,6 @@
           "type": "registry:ui"
         }
       ],
-      "dependencies": [
-        "lucide-react"
-      ],
       "registryDependencies": [
         "@benchcn/tokens",
         "@benchcn/instrument",
@@ -542,9 +539,6 @@
           "path": "registry/benchcn/lib/pinout.ts",
           "type": "registry:lib"
         }
-      ],
-      "dependencies": [
-        "lucide-react"
       ],
       "registryDependencies": [
         "@benchcn/tokens",

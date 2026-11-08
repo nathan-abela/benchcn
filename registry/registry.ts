@@ -316,7 +316,6 @@ export const registry: RegistryItem[] = [
     description:
       "Device logs and a command line in one panel: levels, timestamps, follow mode that pauses when you scroll up, and command history.",
     files: [{ path: "registry/benchcn/ui/serial-console/serial-console.tsx", type: "registry:ui" }],
-    dependencies: ["lucide-react"],
     registryDependencies: [`${ns}/tokens`, `${ns}/instrument`, `${ns}/wire`],
     categories: ["comms"],
     docs: docsUrl("components/serial-console"),
@@ -372,7 +371,6 @@ export const registry: RegistryItem[] = [
       { path: "registry/benchcn/ui/pinout-header/pinout-header.tsx", type: "registry:ui" },
       { path: "registry/benchcn/lib/pinout.ts", type: "registry:lib" },
     ],
-    dependencies: ["lucide-react"],
     registryDependencies: [`${ns}/tokens`, `${ns}/instrument`, `${ns}/boards`],
     categories: ["board"],
     docs: docsUrl("components/pinout-header"),

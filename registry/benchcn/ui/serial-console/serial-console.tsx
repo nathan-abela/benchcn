@@ -1,7 +1,6 @@
 // benchcn.dev · serial-console
 // Device logs and a command line in one panel: levels, timestamps, follow mode that pauses when
 // you scroll up, and a history you can walk with the arrow keys.
-import { ArrowDown } from "lucide-react";
 import {
   type ComponentProps,
   type FormEvent,
@@ -208,7 +207,18 @@ export function SerialConsole({
             onClick={jumpToBottom}
             className="bg-background/90 hover:bg-accent absolute right-3 bottom-3 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-xs shadow-sm backdrop-blur"
           >
-            <ArrowDown className="size-3" />
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+              className="size-3"
+            >
+              <path d="M10 4v12M5 11l5 5 5-5" />
+            </svg>
             {unseen > 0 ? `${unseen} new` : "Follow"}
           </button>
         ) : null}
