@@ -130,7 +130,7 @@ function Home(): ReactElement {
 
         <Section
           id="agents"
-          title="Readable by people, usable by agents"
+          title="Readable by humans, usable by agents"
           lede="Every page has a Markdown twin, the site serves llms.txt, and a skill teaches an assistant which component and source to reach for."
         >
           <div className="grid gap-3 *:min-w-0 lg:grid-cols-2">
