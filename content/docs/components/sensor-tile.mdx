@@ -67,6 +67,10 @@ Leave out thresholds and history for a plain readout with unit.
 <SensorTile label="Potentiometer" value={2.1} unit="V" thresholds={{ min: 0, max: 3.3 }} />
 ```
 
+### Fahrenheit
+
+Convert on the source with `transform` so every component on the channel agrees, then set `unit` and thresholds in °F. See [Data sources](/docs/data-sources#converting-units).
+
 ### Forced state
 
 `state` overrides the derived one, for example to show Alarm from a device-side flag.

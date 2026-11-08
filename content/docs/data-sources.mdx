@@ -14,6 +14,27 @@ benchcn components take data in and render UI out. A small data layer provides t
 
 All of them deliver [wire protocol](/docs/wire-protocol) messages, so a dashboard switches from mock to real data by changing one line.
 
+## Converting units
+
+Convert in the source, not in each component, so a tile, a seven-segment and an LCD reading the same channel all agree. `transform` takes a converter and the new unit per channel, and applies them to samples, histories, blocks and the `hello` channel list:
+
+```tsx
+import { celsiusToFahrenheit } from "@/lib/units";
+
+const source = useWebSocketSource(url, {
+  transform: { temp: { convert: celsiusToFahrenheit, unit: "°F" } },
+});
+
+<SensorTile
+  label="Air temperature"
+  value={source.readings.temp?.v}
+  unit="°F"
+  thresholds={{ min: 32, max: 104, warnAbove: 95 }}
+/>;
+```
+
+Thresholds are in the display unit. Every hook accepts `transform`.
+
 ## The mock device
 
 ```ts

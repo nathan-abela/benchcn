@@ -23,12 +23,12 @@ Pass `null` as the URL to stay disconnected, for example until the user has type
 
 ## Options
 
-| Option                                                                                                 | Type                 | Default | Meaning                                         |
-| ------------------------------------------------------------------------------------------------------ | -------------------- | ------- | ----------------------------------------------- |
-| `reconnect`                                                                                            | `boolean`            | `true`  | Reconnect after a drop with exponential backoff |
-| `maxBackoff`                                                                                           | `number`             | `10000` | Longest wait between attempts in milliseconds   |
-| `protocols`                                                                                            | `string \| string[]` |         | WebSocket subprotocols                          |
-| plus the store options of `useMockDevice` (`actuatorTimeout`, `failSafe`, `historyLength`, `logLimit`) |
+| Option                                                                                                              | Type                 | Default | Meaning                                         |
+| ------------------------------------------------------------------------------------------------------------------- | -------------------- | ------- | ----------------------------------------------- |
+| `reconnect`                                                                                                         | `boolean`            | `true`  | Reconnect after a drop with exponential backoff |
+| `maxBackoff`                                                                                                        | `number`             | `10000` | Longest wait between attempts in milliseconds   |
+| `protocols`                                                                                                         | `string \| string[]` |         | WebSocket subprotocols                          |
+| plus the store options of `useMockDevice` (`actuatorTimeout`, `failSafe`, `historyLength`, `logLimit`, `transform`) |
 
 ## Returns
 

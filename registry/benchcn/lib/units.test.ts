@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { formatSi, stepValue } from "./units";
+import { celsiusToFahrenheit, formatSi, stepValue } from "./units";
 
 describe("formatSi", () => {
   it("should scale sub-millisecond times to microseconds", () => {
@@ -33,6 +33,19 @@ describe("formatSi", () => {
   it("should print zero and non-finite values plainly", () => {
     // #when / #then
     expect([formatSi(0, "V"), formatSi(Number.NaN, "Hz")]).toEqual(["0 V", "-- Hz"]);
+  });
+});
+
+describe("celsiusToFahrenheit", () => {
+  it("should map the freezing and boiling points of water", () => {
+    // #given
+    const celsius = [0, 100, -40];
+
+    // #when
+    const fahrenheit = celsius.map(celsiusToFahrenheit);
+
+    // #then
+    expect(fahrenheit).toEqual([32, 212, -40]);
   });
 });
 

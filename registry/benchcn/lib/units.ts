@@ -37,6 +37,11 @@ function toSignificant(value: number, digits: number): string {
   return value.toFixed(decimals);
 }
 
+/** For `transform` on a source: `{ temp: { convert: celsiusToFahrenheit, unit: "°F" } }`. */
+export function celsiusToFahrenheit(celsius: number): number {
+  return (celsius * 9) / 5 + 32;
+}
+
 const SERIES = [1, 2, 5];
 
 /** Next value up or down the 1-2-5 series: 200 µs becomes 500 µs or 100 µs. */

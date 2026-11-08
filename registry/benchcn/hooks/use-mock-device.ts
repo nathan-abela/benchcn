@@ -30,7 +30,8 @@ function createMockStore(options: UseMockDeviceOptions): {
   device: MockDevice;
   store: SourceStore;
 } {
-  const { actuatorTimeout, failSafe, logLimit, historyLength, ...deviceOptions } = options;
+  const { actuatorTimeout, failSafe, logLimit, historyLength, transform, ...deviceOptions } =
+    options;
   const device = createMockDevice(deviceOptions);
   const store = createSourceStore(
     {
@@ -46,6 +47,7 @@ function createMockStore(options: UseMockDeviceOptions): {
       failSafe,
       logLimit,
       historyLength,
+      transform,
       actuators: device.channels.filter((c) => c.kind === "actuator").map((c) => c.id),
     },
   );

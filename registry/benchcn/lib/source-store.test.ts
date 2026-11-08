@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createSourceStore, type Transport } from "./source-store";
+import { celsiusToFahrenheit } from "./units";
 import type { WireMessage } from "./wire";
 
 function fakeTransport() {
@@ -139,6 +140,39 @@ describe("createSourceStore", () => {
 
     // #then the command is reflected in the snapshot
     expect(store.getSnapshot().actuators.pump).toMatchObject({ commanded: true, pending: true });
+  });
+
+  it("should convert a channel's samples, history, blocks and hello unit with a transform", () => {
+    // #given
+    const fake = fakeTransport();
+    const store = createSourceStore(fake.transport, {
+      transform: { temp: { convert: celsiusToFahrenheit, unit: "°F" } },
+    });
+    store.start();
+    const blocks: number[][] = [];
+    store.onBlock((block) => blocks.push(block.vs));
+
+    // #when
+    fake.emit({ hello: "benchcn/0", chs: [{ id: "temp", u: "°C", min: 0, max: 100 }] });
+    fake.emit({ ch: "temp", v: 20, u: "°C" });
+    fake.emit({ ch: "humidity", v: 40, u: "%" });
+    fake.emit({ ch: "temp", vs: [0, 100], sr: 1 });
+
+    // #then other channels pass through untouched
+    const snapshot = store.getSnapshot();
+    expect({
+      temp: snapshot.readings.temp,
+      history: snapshot.history.temp,
+      humidity: snapshot.readings.humidity.v,
+      hello: snapshot.hello?.chs?.[0],
+      blocks,
+    }).toEqual({
+      temp: { ch: "temp", v: 68, u: "°F" },
+      history: [68],
+      humidity: 40,
+      hello: { id: "temp", u: "°F", min: 32, max: 212 },
+      blocks: [[32, 212]],
+    });
   });
 
   it("should stop the transport when the returned function is called", () => {

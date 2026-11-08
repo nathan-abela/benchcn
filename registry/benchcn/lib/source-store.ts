@@ -39,6 +39,13 @@ export type SourceSnapshot = {
   received: number;
 };
 
+/** Converts one channel's numbers on arrival, so every component reading it shows the same unit. */
+export type ChannelTransform = {
+  convert: (value: number) => number;
+  /** Unit after conversion. Replaces the unit the device sent. */
+  unit?: string;
+};
+
 export type SourceStoreOptions = {
   /** Milliseconds to wait for an acknowledgement before an actuator reports a timeout. */
   actuatorTimeout?: number;
@@ -48,6 +55,8 @@ export type SourceStoreOptions = {
   historyLength?: number;
   /** Actuator ids to track before the device says hello. */
   actuators?: string[];
+  /** Per-channel conversion applied to samples, blocks and the hello channel list. */
+  transform?: Record<string, ChannelTransform>;
 };
 
 export type SourceStore = {
@@ -78,6 +87,38 @@ export const EMPTY_SNAPSHOT: SourceSnapshot = {
   received: 0,
 };
 
+function applyTransform(
+  message: WireMessage,
+  transform: Record<string, ChannelTransform>,
+): WireMessage {
+  if (isSample(message)) {
+    const t = transform[message.ch];
+    if (!t || typeof message.v !== "number") return message;
+    return { ...message, v: t.convert(message.v), u: t.unit ?? message.u };
+  }
+  if (isBlock(message)) {
+    const t = transform[message.ch];
+    if (!t) return message;
+    return { ...message, vs: message.vs.map(t.convert), u: t.unit ?? message.u };
+  }
+  if (isHello(message) && message.chs) {
+    return {
+      ...message,
+      chs: message.chs.map((channel) => {
+        const t = transform[channel.id];
+        if (!t) return channel;
+        return {
+          ...channel,
+          u: t.unit ?? channel.u,
+          min: channel.min === undefined ? undefined : t.convert(channel.min),
+          max: channel.max === undefined ? undefined : t.convert(channel.max),
+        };
+      }),
+    };
+  }
+  return message;
+}
+
 export function createSourceStore(
   transport: Transport,
   options: SourceStoreOptions = {},
@@ -88,6 +129,7 @@ export function createSourceStore(
     logLimit = 200,
     historyLength = 60,
     actuators = [],
+    transform = {},
   } = options;
 
   const trackers = new Map<string, ActuatorTracker>();
@@ -122,7 +164,8 @@ export function createSourceStore(
 
   for (const id of actuators) trackerFor(id);
 
-  const onMessage = (message: WireMessage) => {
+  const onMessage = (raw: WireMessage) => {
+    const message = applyTransform(raw, transform);
     snapshot = { ...snapshot, received: snapshot.received + 1 };
     if (isSample(message)) {
       const history =
