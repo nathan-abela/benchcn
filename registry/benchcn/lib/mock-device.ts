@@ -1,5 +1,5 @@
 // benchcn.dev · mock-device
-// A simulated bench: slow sensors, a relay and a heater setpoint with acknowledgement latency,
+// A simulated bench: slow sensors, a relay, a heater and a bench supply with acknowledgement latency,
 // waveform channels and
 // log lines, all speaking the wire protocol. Deterministic for a given seed, so demos and tests
 // behave the same every run.
@@ -74,9 +74,11 @@ type Sensor = {
 type SimState = {
   pumpOn: boolean;
   soil: number;
-  /** Heater setpoint and the chamber temperature that follows it. */
-  setpoint: number;
+  /** Confirmed setpoints by channel id: the heater, and the supply's voltage and current limit. */
+  setpoints: Record<string, number>;
   chamber: number;
+  psuOn: boolean;
+  psu: PsuOutput;
   rand: () => number;
 };
 
@@ -109,15 +111,35 @@ const sensors: Sensor[] = [
     info: { id: "chamber", u: "°C", min: 0, max: 50, kind: "sensor", label: "Chamber temperature" },
     read: (_, s) => s.chamber + noise(s, 0.05),
   },
+  {
+    info: { id: "psu-vout", u: "V", min: 0, max: 30, kind: "sensor", label: "Output voltage" },
+    read: (_, s) => (s.psu.v === 0 ? 0 : s.psu.v + noise(s, 0.004)),
+  },
+  {
+    info: { id: "psu-iout", u: "A", min: 0, max: 3, kind: "sensor", label: "Output current" },
+    read: (_, s) => (s.psu.i === 0 ? 0 : s.psu.i + noise(s, 0.002)),
+  },
+  {
+    // A meter at the load reads a little under the supply: current through the test leads drops volts.
+    info: { id: "dmm-v", u: "V", min: 0, max: 30, kind: "sensor", label: "Meter at the load" },
+    read: (_, s) =>
+      s.psu.v === 0 ? noise(s, 0.0004) : s.psu.v - s.psu.i * LEAD_OHMS + noise(s, 0.0008),
+  },
 ];
+
+const LEAD_OHMS = 0.05;
 
 const actuators: WireChannelInfo[] = [
   { id: "pump", kind: "actuator", label: "Water pump" },
   { id: "led", kind: "actuator", label: "Status LED" },
   { id: "heater", kind: "setpoint", u: "°C", min: 15, max: 35, label: "Heater setpoint" },
+  { id: "psu-out", kind: "actuator", label: "Supply output" },
+  { id: "psu-v", kind: "setpoint", u: "V", min: 0, max: 30, label: "Supply voltage" },
+  { id: "psu-i", kind: "setpoint", u: "A", min: 0.05, max: 3, label: "Current limit" },
 ];
 
-const HEATER_START = 20;
+const SETPOINT_START: Record<string, number> = { heater: 20, "psu-v": 5, "psu-i": 1 };
+const HEATER_START = SETPOINT_START.heater;
 /** Seconds for the chamber to close about two thirds of the gap to the setpoint. */
 const HEATER_LAG = 8;
 
@@ -128,6 +150,25 @@ const waveforms: Record<string, { kind: WaveformKind; freq: number; amp: number;
     ch3: { kind: "triangle", freq: 500, amp: 0.5, offset: 0 },
     ch4: { kind: "noise", freq: 0, amp: 0.05, offset: 0 },
   };
+
+export type PsuMode = "CV" | "CC" | "OFF";
+export type PsuOutput = { v: number; i: number; mode: PsuMode };
+
+/**
+ * A bench supply into a resistive load: it holds the set voltage until the load would draw more
+ * than the current limit, then holds the limit and lets the voltage fall (constant current).
+ */
+export function psuOutput(on: boolean, volts: number, limit: number, ohms: number): PsuOutput {
+  if (!on || volts <= 0) return { v: 0, i: 0, mode: "OFF" };
+  const wanted = volts / ohms;
+  if (wanted <= limit) return { v: volts, i: wanted, mode: "CV" };
+  return { v: limit * ohms, i: limit, mode: "CC" };
+}
+
+/** The device under test: a load that drifts between 4 and 20 ohms over 40 seconds. */
+export function loadOhms(tSeconds: number): number {
+  return 12 + 8 * Math.sin((TAU * tSeconds) / 40);
+}
 
 function noise(s: SimState, amplitude: number) {
   return (s.rand() - 0.5) * 2 * amplitude;
@@ -164,8 +205,10 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
   const state: SimState = {
     pumpOn: false,
     soil: 38,
-    setpoint: HEATER_START,
+    setpoints: { ...SETPOINT_START },
     chamber: HEATER_START,
+    psuOn: false,
+    psu: { v: 0, i: 0, mode: "OFF" },
     rand,
   };
   const listeners = new Set<(message: WireMessage) => void>();
@@ -176,7 +219,7 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
       {
         id: a.id,
         commanded: null,
-        confirmed: a.kind === "setpoint" ? HEATER_START : false,
+        confirmed: a.kind === "setpoint" ? (SETPOINT_START[a.id] ?? 0) : false,
         pending: false,
       },
     ]),
@@ -198,7 +241,21 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
     state.soil = state.pumpOn
       ? Math.min(95, state.soil + 1.6 * dt)
       : Math.max(8, state.soil - 0.012 * dt);
-    state.chamber += (state.setpoint - state.chamber) * (1 - Math.exp(-dt / HEATER_LAG));
+    state.chamber += (state.setpoints.heater - state.chamber) * (1 - Math.exp(-dt / HEATER_LAG));
+    const previous = state.psu.mode;
+    state.psu = psuOutput(
+      state.psuOn,
+      state.setpoints["psu-v"],
+      state.setpoints["psu-i"],
+      loadOhms(seconds()),
+    );
+    if (state.psu.mode !== previous && state.psu.mode !== "OFF" && previous !== "OFF") {
+      const text =
+        state.psu.mode === "CC"
+          ? `psu: current limit, CC at ${state.setpoints["psu-i"]} A`
+          : "psu: back in CV";
+      emit({ log: text, lvl: state.psu.mode === "CC" ? "warn" : "info", t: seconds() });
+    }
 
     for (const sensor of sensors) {
       const sample: WireSample = {
@@ -210,6 +267,9 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
       latest[sample.ch] = sample;
       emit(sample);
     }
+    const mode: WireSample = { ch: "psu-mode", v: state.psu.mode, t: seconds() };
+    latest[mode.ch] = mode;
+    emit(mode);
 
     if (rand() < 0.03) {
       emit({ log: `sensor sweep ok (${sensors.length} ch)`, lvl: "debug", t: seconds() });
@@ -262,7 +322,8 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
       actuator.confirmed = target;
       actuator.pending = false;
       if (command.id === "pump") state.pumpOn = target === true;
-      if (typeof target === "number") state.setpoint = target;
+      if (command.id === "psu-out") state.psuOn = target === true;
+      if (typeof target === "number" && command.id) state.setpoints[command.id] = target;
       // The ack carries the value the device applied, which may be clamped.
       emit({ ...ackFor(command, true), v: target });
       const text =

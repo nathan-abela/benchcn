@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { createMockDevice, createRandom, type MockDeviceOptions } from "./mock-device";
+import { createMockDevice, createRandom, type MockDeviceOptions, psuOutput } from "./mock-device";
 import { isAck, isHello, isSample, setCommand, type WireMessage } from "./wire";
 
 function fakeClock(start = 1_700_000_000_000) {
@@ -312,5 +312,58 @@ describe("createMockDevice heater setpoint", () => {
     // #then it has closed most of the gap without overshooting
     const chamber = dev.readings().chamber.v as number;
     expect(chamber > 27 && chamber < 30.2).toBe(true);
+  });
+});
+
+describe("psuOutput", () => {
+  it("should hold the set voltage while the load draws less than the limit", () => {
+    // #when 5 V into 10 ohms with a 1 A limit
+    const out = psuOutput(true, 5, 1, 10);
+
+    // #then
+    expect(out).toEqual({ v: 5, i: 0.5, mode: "CV" });
+  });
+
+  it("should hold the current limit and let the voltage fall under a heavy load", () => {
+    // #when 5 V into 4 ohms would draw 1.25 A against a 1 A limit
+    const out = psuOutput(true, 5, 1, 4);
+
+    // #then
+    expect(out).toEqual({ v: 4, i: 1, mode: "CC" });
+  });
+
+  it("should output nothing while disabled", () => {
+    // #when / #then
+    expect(psuOutput(false, 5, 1, 10)).toEqual({ v: 0, i: 0, mode: "OFF" });
+  });
+});
+
+describe("createMockDevice bench supply", () => {
+  it("should report zero output until the output is enabled", () => {
+    // #given
+    const { dev, clock } = device({ faultRate: 0, ackLatency: [0, 0] });
+    dev.start();
+    const off = dev.readings()["psu-vout"].v;
+
+    // #when
+    dev.send(setCommand("psu-out", true));
+    clock.advance(1000);
+
+    // #then the output follows the 5 V setpoint, or falls under it in current limit
+    const on = dev.readings()["psu-vout"].v as number;
+    expect({ off, on: on > 0 && on <= 5.02 }).toEqual({ off: 0, on: true });
+  });
+
+  it("should report the regulation mode as a sample", () => {
+    // #given
+    const { dev, clock } = device({ faultRate: 0, ackLatency: [0, 0] });
+    dev.start();
+
+    // #when
+    dev.send(setCommand("psu-out", true));
+    clock.advance(1000);
+
+    // #then
+    expect(["CV", "CC"]).toContain(dev.readings()["psu-mode"].v);
   });
 });
