@@ -11,6 +11,7 @@ import meterReadoutSource from "./meter-readout-demo.tsx?raw";
 import oscilloscopeSource from "./oscilloscope-demo.tsx?raw";
 import pinoutHeaderSource from "./pinout-header-demo.tsx?raw";
 import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
+import powerBenchSource from "./power-bench-demo.tsx?raw";
 import rangeBarSource from "./range-bar-demo.tsx?raw";
 import sensorTileSource from "./sensor-tile-demo.tsx?raw";
 import serialConsoleSource from "./serial-console-demo.tsx?raw";
@@ -126,6 +127,13 @@ export const demos: Record<string, Demo> = {
     ),
     source: timingDiagramSource,
     placeholder: { base: 592, sm: 544, xl: 530 },
+  },
+  "power-bench": {
+    component: lazy(() =>
+      import("./power-bench-demo").then((m) => ({ default: m.PowerBenchDemo })),
+    ),
+    source: powerBenchSource,
+    placeholder: { base: 1802, sm: 1422, md: 1216, lg: 1178, xl: 1012 },
   },
   "plant-monitor": {
     component: lazy(() =>

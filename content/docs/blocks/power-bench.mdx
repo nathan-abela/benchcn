@@ -1,0 +1,53 @@
+---
+title: Power bench
+description: A bench supply driving a device under test, with confirmed voltage and current-limit setpoints, a held output switch, CV/CC readback, a meter at the load, a trend and the log.
+---
+
+<ComponentPreview name="power-bench" />
+
+Hold Output to switch the supply on. The load drifts between 4 and 20 ohms, so at the default 5 V and 1 A limit the supply drops into constant current every few seconds: the CC light comes on, the voltage sags, and the log says so. Raise the current limit and it stays in CV. The meter at the load reads a few millivolts under the supply, because current through the test leads drops voltage.
+
+## Installation
+
+<InstallTabs item="power-bench" />
+
+This installs the block and every component it uses.
+
+## Usage
+
+```tsx
+import { PowerBench } from "@/components/power-bench";
+
+<PowerBench />;
+```
+
+With hardware, pass any source handle and the supply's limits:
+
+```tsx
+import { useSerialSource } from "@/hooks/use-serial-source";
+
+const source = useSerialSource({ baudRate: 115200, failSafe: { "psu-out": false } });
+
+<PowerBench source={source} limits={{ volts: 30, amps: 5 }} />;
+```
+
+## Props
+
+| Prop       | Type                                                        | Default         | Meaning                                       |
+| ---------- | ----------------------------------------------------------- | --------------- | --------------------------------------------- |
+| `source`   | `SourceHandle`                                              | its own mock    | Readings, setpoints, actuators and `command`  |
+| `title`    | `string`                                                    | `"Power bench"` |                                               |
+| `layout`   | `"grid" \| "kiosk"`                                         | `"grid"`        | Kiosk fills 800×480 without the chart and log |
+| `channels` | `Partial<{ volts, amps, output, vout, iout, mode, meter }>` | defaults        | Channel ids on your device                    |
+| `limits`   | `{ volts?, amps? }`                                         | 30 V, 3 A       | Highest values the setpoint inputs will send  |
+
+## Firmware
+
+The device declares `psu-v` and `psu-i` as setpoints and `psu-out` as an actuator in its hello, acknowledges `set` commands with the value it applied, and publishes `psu-vout`, `psu-iout`, a `psu-mode` sample of `"CV"`, `"CC"` or `"OFF"`, and `dmm-v` if a meter is attached.
+
+## Ask your agent
+
+<AgentPrompt item="power-bench">
+  Start from PowerBench with the mock, then pass the real source, set limits to the supply's
+  ratings, and map channel ids with the channels prop instead of renaming firmware channels.
+</AgentPrompt>

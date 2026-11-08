@@ -45,6 +45,7 @@ export default defineConfig({
         { path: "/llms.txt", sitemap: { exclude: true } },
         { path: "/llms-full.txt", sitemap: { exclude: true } },
         { path: "/kiosk/plant-monitor", sitemap: { exclude: true } },
+        { path: "/kiosk/power-bench", sitemap: { exclude: true } },
         { path: "/kiosk/weather-station", sitemap: { exclude: true } },
         {
           path: "/404",

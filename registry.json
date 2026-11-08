@@ -757,6 +757,33 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "power-bench",
+      "type": "registry:block",
+      "title": "Power bench",
+      "description": "Bench supply dashboard block: voltage and current-limit setpoints confirmed by the device, a held output switch, readback with CV/CC mode, a meter at the load, a trend and the log, with a kiosk layout for 800x480 screens.",
+      "files": [
+        {
+          "path": "registry/benchcn/blocks/power-bench/power-bench.tsx",
+          "type": "registry:component"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/use-mock-device",
+        "@benchcn/setpoint-input",
+        "@benchcn/actuator-control",
+        "@benchcn/meter-readout",
+        "@benchcn/seven-segment",
+        "@benchcn/strip-chart",
+        "@benchcn/serial-console",
+        "@benchcn/status-led"
+      ],
+      "categories": [
+        "blocks"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/blocks/power-bench"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "weather-station",
       "type": "registry:block",
       "title": "Weather station",

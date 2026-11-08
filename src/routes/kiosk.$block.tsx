@@ -2,10 +2,12 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import type { ReactElement } from "react";
 
 import { PlantMonitor } from "@/registry/benchcn/blocks/plant-monitor/plant-monitor";
+import { PowerBench } from "@/registry/benchcn/blocks/power-bench/power-bench";
 import { WeatherStation } from "@/registry/benchcn/blocks/weather-station/weather-station";
 
 const BLOCKS = {
   "plant-monitor": PlantMonitor,
+  "power-bench": PowerBench,
   "weather-station": WeatherStation,
 } as const;
 

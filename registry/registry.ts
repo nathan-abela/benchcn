@@ -496,6 +496,28 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("blocks/plant-monitor"),
   },
   {
+    name: "power-bench",
+    type: "registry:block",
+    title: "Power bench",
+    description:
+      "Bench supply dashboard block: voltage and current-limit setpoints confirmed by the device, a held output switch, readback with CV/CC mode, a meter at the load, a trend and the log, with a kiosk layout for 800x480 screens.",
+    files: [
+      { path: "registry/benchcn/blocks/power-bench/power-bench.tsx", type: "registry:component" },
+    ],
+    registryDependencies: [
+      `${ns}/use-mock-device`,
+      `${ns}/setpoint-input`,
+      `${ns}/actuator-control`,
+      `${ns}/meter-readout`,
+      `${ns}/seven-segment`,
+      `${ns}/strip-chart`,
+      `${ns}/serial-console`,
+      `${ns}/status-led`,
+    ],
+    categories: ["blocks"],
+    docs: docsUrl("blocks/power-bench"),
+  },
+  {
     name: "weather-station",
     type: "registry:block",
     title: "Weather station",
