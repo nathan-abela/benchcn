@@ -48,10 +48,8 @@ export function ThemeChips({ className }: { className?: string }): ReactElement 
   const theme = useTheme();
 
   return (
-    <div className={cn("flex items-center gap-1.5", className)}>
-      <span className="text-muted-foreground mr-1 font-mono text-[11px] tracking-[0.12em] uppercase">
-        Theme
-      </span>
+    <fieldset className={cn("flex items-center gap-2", className)}>
+      <legend className="sr-only">Theme</legend>
       {THEMES.map((t) => (
         <button
           key={t.id}
@@ -64,13 +62,13 @@ export function ThemeChips({ className }: { className?: string }): ReactElement 
             track("select_theme", { theme: t.id });
           }}
           className={cn(
-            "focus-visible:ring-ring/50 size-5 rounded-full border border-black/20 transition-transform outline-none focus-visible:ring-[3px] active:scale-95 dark:border-white/15",
+            "focus-visible:ring-ring/50 size-5 rounded-full transition-transform duration-150 ease-out outline-none focus-visible:ring-[3px] active:scale-95",
             theme === t.id &&
               "ring-foreground ring-2 ring-offset-2 ring-offset-[var(--background)]",
           )}
           style={{ background: t.swatch }}
         />
       ))}
-    </div>
+    </fieldset>
   );
 }

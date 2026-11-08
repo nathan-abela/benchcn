@@ -3,6 +3,7 @@ import type { ReactElement } from "react";
 
 import { CopyButton } from "@/components/site/copy-button";
 import { track } from "@/lib/analytics";
+import { cn } from "@/lib/utils";
 
 import { siteConfig } from "../../../config/site";
 
@@ -15,14 +16,17 @@ const MANAGERS = [
 
 export type InstallTabsProps = {
   item: string;
+  /** Hide the registry note, for example in the hero where the docs are one click away. */
+  note?: boolean;
+  className?: string;
 };
 
-export function InstallTabs({ item }: InstallTabsProps): ReactElement {
+export function InstallTabs({ item, note = true, className }: InstallTabsProps): ReactElement {
   const itemUrl = siteConfig.registry.itemUrlTemplate.replace("{name}", item);
 
   return (
-    <div className="not-prose flex flex-col gap-3">
-      <Tabs items={MANAGERS.map((m) => m.id)}>
+    <div className={cn("not-prose flex flex-col gap-3", className)}>
+      <Tabs items={MANAGERS.map((m) => m.id)} groupId="package-manager" persist>
         {MANAGERS.map((manager) => {
           const command = `${manager.run} shadcn@latest add ${siteConfig.registry.namespace}/${item}`;
           return (
@@ -35,15 +39,17 @@ export function InstallTabs({ item }: InstallTabsProps): ReactElement {
           );
         })}
       </Tabs>
-      <p className="text-muted-foreground text-sm">
-        Needs <code>{siteConfig.registry.namespace}</code> in the <code>registries</code> field of{" "}
-        <code>components.json</code>. See{" "}
-        <a href="/docs/installation" className="underline underline-offset-4">
-          Installation
-        </a>
-        . Without the namespace, use the item URL directly:{" "}
-        <code className="break-all">{itemUrl}</code>
-      </p>
+      {note ? (
+        <p className="text-muted-foreground text-sm">
+          Needs <code>{siteConfig.registry.namespace}</code> in the <code>registries</code> field of{" "}
+          <code>components.json</code>. See{" "}
+          <a href="/docs/installation" className="underline underline-offset-4">
+            Installation
+          </a>
+          . Without the namespace, use the item URL directly:{" "}
+          <code className="break-all">{itemUrl}</code>
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -58,7 +64,7 @@ function CommandLine({
   return (
     <div className="flex items-center gap-2 px-4 py-3 font-mono text-sm">
       <span className="text-muted-foreground select-none">$</span>
-      <code className="min-w-0 flex-1 overflow-x-auto whitespace-nowrap">{command}</code>
+      <code className="min-w-0 flex-1">{command}</code>
       <CopyButton text={command} label="Copy command" onCopied={onCopied} />
     </div>
   );

@@ -1,13 +1,14 @@
 import { expect, test } from "@playwright/test";
 
 test.describe("landing page", () => {
-  test("shows the live bench with a triggered scope", async ({ page }) => {
+  test("shows the live bench with a triggered scope and a decoded bus", async ({ page }) => {
     // #when
     await page.goto("./");
 
-    // #then the hero bench mounted and the scope found its trigger
+    // #then the bench mounted, the scope found its trigger and the analyzer decoded the I2C read
     await expect(page.locator("[data-slot=bench]")).toBeVisible();
-    await expect(page.locator("[data-slot=scope-status]")).toContainText(/Trig|Auto/);
+    await expect(page.locator("[data-slot=scope-status]").first()).toContainText(/Trig|Auto/);
+    await expect(page.locator("[data-slot=bench]")).toContainText("0x76");
   });
 
   test("switches the theme and remembers it", async ({ page }) => {

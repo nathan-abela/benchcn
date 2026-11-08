@@ -8,7 +8,7 @@ test.describe("static site", () => {
 
     // #then the page is found and shows the tagline
     expect(response?.status()).toBe(200);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Hardware and maker");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Hardware UI");
   });
 
   test("serves a docs page with navigation", async ({ page }) => {

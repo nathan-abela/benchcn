@@ -19,7 +19,6 @@ export const Route = createFileRoute("/")({
   component: Home,
 });
 
-const INSTALL = `pnpm dlx shadcn@latest add ${siteConfig.registry.namespace}/plant-monitor`;
 const SKILL = `npx skills add ${siteConfig.repo.owner}/${siteConfig.repo.name} -s benchcn`;
 
 function Section({
@@ -57,41 +56,33 @@ function Home(): ReactElement {
   return (
     <HomeLayout {...baseOptions()}>
       <main className="flex flex-col">
-        <section className="mx-auto grid w-full max-w-6xl items-start gap-10 px-4 pt-14 pb-16 md:px-6 lg:grid-cols-12 lg:gap-12 lg:pt-20 lg:pb-24">
-          <div className="flex min-w-0 flex-col gap-6 lg:sticky lg:top-24 lg:col-span-5">
-            <span className="text-success inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.14em] uppercase">
-              <span aria-hidden className="bg-success size-1.5 animate-pulse rounded-full" />
-              Everything here is live
-            </span>
-            <h1 className="text-4xl font-medium tracking-tight text-balance sm:text-5xl">
-              {siteConfig.tagline}
+        <section className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 px-4 pt-12 pb-16 md:px-6 lg:pt-16">
+          <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">
+            <h1 className="text-[clamp(2.5rem,7vw,3.75rem)] leading-[1] font-medium tracking-[-0.03em] text-balance">
+              Hardware UI for shadcn/ui
             </h1>
-            <p className="text-muted-foreground max-w-md text-lg text-pretty">
-              Instruments that work, not instruments that look like it. Copy-paste React components
-              built the shadcn way, live against a mock device, ready for your ESP32, Pico or
-              Raspberry Pi.
+            <p className="max-w-[52ch] text-lg text-pretty">
+              Instruments, displays and controls built the shadcn way. Live against a mock device,
+              one line from your ESP32 or Pico.
             </p>
-            <InstallCommand command={INSTALL} item="plant-monitor" />
-            <div className="flex flex-wrap items-center gap-4 text-sm">
+            <div className="flex flex-wrap items-center justify-center gap-3">
               <Link
                 to="/docs/$"
                 params={{ _splat: "" }}
-                className="bg-foreground text-background inline-flex h-9 items-center rounded-lg px-4 font-medium"
+                className="bg-primary text-primary-foreground inline-flex h-10 items-center rounded-lg px-5 text-sm font-medium transition-transform duration-150 ease-out active:scale-[0.97]"
               >
                 Read the docs
               </Link>
-              <a href="#components" className="text-muted-foreground hover:text-foreground">
-                Browse components ↓
+              <a
+                href={siteConfig.repo.url}
+                className="bg-card hover:bg-accent inline-flex h-10 items-center rounded-lg border px-5 text-sm font-medium transition-transform duration-150 ease-out active:scale-[0.97]"
+              >
+                GitHub
               </a>
             </div>
-            <p className="text-muted-foreground font-mono text-[11px] tracking-wide uppercase">
-              MIT · Base UI · Tailwind v4 · No runtime CDN
-            </p>
-            <ThemeChips />
+            <ThemeChips className="mt-1" />
           </div>
-          <div className="min-w-0 lg:col-span-7">
-            <Bench />
-          </div>
+          <Bench />
         </section>
 
         <Section
