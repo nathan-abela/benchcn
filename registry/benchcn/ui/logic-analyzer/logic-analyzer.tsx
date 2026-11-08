@@ -63,6 +63,8 @@ export type LogicAnalyzerProps = ComponentProps<"div"> & {
   title?: ReactNode;
   /** Visible window in seconds. Leave undefined to let the analyzer manage zoom and pan. */
   window?: TimeWindow;
+  /** Window to open on, and to return to when `lanes` change: `"fit"` shows the whole capture, `"first"` the first decoded transaction. */
+  defaultWindow?: TimeWindow | "fit" | "first";
   onWindowChange?: (window: TimeWindow) => void;
   laneHeight?: number;
   /** Render the decoded transactions as a list under the lanes. */
@@ -72,6 +74,8 @@ export type LogicAnalyzerProps = ComponentProps<"div"> & {
 const RULER_HEIGHT = 22;
 const DECODE_HEIGHT = 26;
 const MIN_SAMPLES_ON_SCREEN = 16;
+const ZOOM_STEP = 2;
+const WHEEL_STEP = 1.25;
 const SCREEN_FALLBACK = "oklch(0.17 0.004 80)";
 const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 
@@ -93,6 +97,11 @@ function niceStep(span: number, pixels: number, minPixels = 90): number {
   const decade = 10 ** Math.floor(Math.log10(raw));
   for (const m of [1, 2, 5, 10]) if (m * decade >= raw) return m * decade;
   return 10 * decade;
+}
+
+function paddedWindow({ start, end }: TimeWindow): TimeWindow {
+  const pad = (end - start) * 0.1;
+  return { start: start - pad, end: end + pad };
 }
 
 function groupTransactions(frames: I2cFrame[], sampleRate: number): DecodedTransaction[] {
@@ -319,6 +328,7 @@ export function LogicAnalyzer({
   decode,
   title = "Logic analyzer",
   window: controlledWindow,
+  defaultWindow = "fit",
   onWindowChange,
   laneHeight = 36,
   list = true,
@@ -327,26 +337,6 @@ export function LogicAnalyzer({
   ...props
 }: LogicAnalyzerProps): ReactElement {
   const total = useMemo(() => duration(lanes), [lanes]);
-  const [inner, setInner] = useState<{ total: number; window: TimeWindow }>({
-    total,
-    window: { start: 0, end: total },
-  });
-  const window = useMemo(
-    () => controlledWindow ?? (inner.total === total ? inner.window : { start: 0, end: total }),
-    [controlledWindow, inner, total],
-  );
-
-  const setWindow = useCallback(
-    (next: TimeWindow) => {
-      const span = Math.max(next.end - next.start, minSpan(lanes));
-      const start = Math.min(Math.max(0, next.start), Math.max(0, total - span));
-      const clamped = { start, end: Math.min(total, start + span) };
-      onWindowChange?.(clamped);
-      if (!controlledWindow) setInner({ total, window: clamped });
-    },
-    [controlledWindow, lanes, onWindowChange, total],
-  );
-
   const decoded = useMemo(() => {
     if (!decode) return null;
     const sda = lanes.find((l) => l.id === decode.sda);
@@ -360,6 +350,27 @@ export function LogicAnalyzer({
       laneIndex: lanes.indexOf(sda),
     };
   }, [decode, lanes]);
+
+  const initialWindow = useMemo<TimeWindow>(() => {
+    if (typeof defaultWindow === "object") return defaultWindow;
+    const first = decoded?.transactions[0];
+    if (defaultWindow === "first" && first) return paddedWindow(first);
+    return { start: 0, end: total };
+  }, [defaultWindow, decoded, total]);
+  const [inner, setInner] = useState<{ lanes: LogicLane[]; window: TimeWindow } | null>(null);
+  const window =
+    controlledWindow ?? (inner && inner.lanes === lanes ? inner.window : initialWindow);
+
+  const setWindow = useCallback(
+    (next: TimeWindow) => {
+      const span = Math.max(next.end - next.start, minSpan(lanes));
+      const start = Math.min(Math.max(0, next.start), Math.max(0, total - span));
+      const clamped = { start, end: Math.min(total, start + span) };
+      onWindowChange?.(clamped);
+      if (!controlledWindow) setInner({ lanes, window: clamped });
+    },
+    [controlledWindow, lanes, onWindowChange, total],
+  );
 
   const rows = useMemo(() => {
     const out: { kind: "decode" | "lane"; index: number; top: number; height: number }[] = [];
@@ -445,7 +456,10 @@ export function LogicAnalyzer({
       if (event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
         pan((event.deltaX || event.deltaY) / rect.width);
       } else {
-        zoom(event.deltaY > 0 ? 1.25 : 0.8, (event.clientX - rect.left) / rect.width);
+        zoom(
+          event.deltaY > 0 ? WHEEL_STEP : 1 / WHEEL_STEP,
+          (event.clientX - rect.left) / rect.width,
+        );
       }
     };
     element.addEventListener("wheel", onWheel, { passive: false });
@@ -493,11 +507,16 @@ export function LogicAnalyzer({
               variant="outline"
               size="icon-xs"
               aria-label="Zoom out"
-              onClick={() => zoom(1.25)}
+              onClick={() => zoom(ZOOM_STEP)}
             >
               −
             </Button>
-            <Button variant="outline" size="icon-xs" aria-label="Zoom in" onClick={() => zoom(0.8)}>
+            <Button
+              variant="outline"
+              size="icon-xs"
+              aria-label="Zoom in"
+              onClick={() => zoom(1 / ZOOM_STEP)}
+            >
               +
             </Button>
             <Button
@@ -558,10 +577,7 @@ export function LogicAnalyzer({
               <button
                 type="button"
                 className="hover:bg-accent flex w-full items-center gap-3 rounded-md px-2 py-1 text-left tabular-nums"
-                onClick={() => {
-                  const pad = (transaction.end - transaction.start) * 0.1;
-                  setWindow({ start: transaction.start - pad, end: transaction.end + pad });
-                }}
+                onClick={() => setWindow(paddedWindow(transaction))}
               >
                 <span className="text-muted-foreground w-16 shrink-0">
                   {formatSi(transaction.start, "s")}

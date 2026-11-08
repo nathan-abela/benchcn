@@ -116,6 +116,7 @@ export function Bench(): ReactElement {
         lanes={lanes}
         decode={{ protocol: "i2c", sda: "sda", scl: "scl" }}
         title="Logic analyzer"
+        defaultWindow="first"
         laneHeight={44}
         className="rise-in [--rise-delay:260ms] lg:col-span-5"
       />
