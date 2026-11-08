@@ -175,6 +175,29 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "setpoint-input",
+      "type": "registry:ui",
+      "title": "Setpoint input",
+      "description": "Numeric setpoint for heaters, motors and pumps: edits stay a draft until applied, out-of-range values are blocked, large changes can ask twice, and the acknowledged value shows next to the commanded one with latency, timeout and fail-safe.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/setpoint-input/setpoint-input.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": [
+        "button",
+        "@benchcn/tokens",
+        "@benchcn/instrument",
+        "@benchcn/actuator"
+      ],
+      "categories": [
+        "controls"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/setpoint-input"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "source-store",
       "type": "registry:lib",
       "title": "Source store",

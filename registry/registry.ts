@@ -150,6 +150,17 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/actuator-control"),
   },
   {
+    name: "setpoint-input",
+    type: "registry:ui",
+    title: "Setpoint input",
+    description:
+      "Numeric setpoint for heaters, motors and pumps: edits stay a draft until applied, out-of-range values are blocked, large changes can ask twice, and the acknowledged value shows next to the commanded one with latency, timeout and fail-safe.",
+    files: [{ path: "registry/benchcn/ui/setpoint-input/setpoint-input.tsx", type: "registry:ui" }],
+    registryDependencies: ["button", `${ns}/tokens`, `${ns}/instrument`, `${ns}/actuator`],
+    categories: ["controls"],
+    docs: docsUrl("components/setpoint-input"),
+  },
+  {
     name: "source-store",
     type: "registry:lib",
     title: "Source store",

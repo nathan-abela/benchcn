@@ -1,0 +1,96 @@
+---
+title: Setpoint input
+description: Numeric setpoint that keeps edits as a draft until applied, blocks out-of-range values, can ask twice for large changes, and shows the acknowledged value next to the commanded one.
+---
+
+<ComponentPreview name="setpoint-input" />
+
+Type a value or step it, then apply. The setpoint only turns green once the device acknowledges it, and the chamber trace follows a few seconds later. Changes of more than 5 °C ask for a second press. The mock drops about 4% of commands; when one times out, the heater shows the 15 °C fail-safe the firmware falls back to.
+
+## Installation
+
+<InstallTabs item="setpoint-input" />
+
+## Usage
+
+The input is stateless about the device: it renders what you pass and calls `onCommand` once per applied value. Numbers sent through `command` are tracked as setpoints.
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { SetpointInput } from "@/components/ui/setpoint-input";
+
+export function Heater() {
+  const { setpoints, readings, command } = useMockDevice({ failSafe: { heater: 15 } });
+  const chamber = readings.chamber;
+  return (
+    <SetpointInput
+      label="Heater setpoint"
+      unit="°C"
+      min={15}
+      max={35}
+      step={0.5}
+      value={typeof chamber?.v === "number" ? chamber.v : null}
+      {...setpoints.heater}
+      onCommand={(next) => command("heater", next)}
+    />
+  );
+}
+```
+
+The firmware declares the setpoint in its hello with `"kind": "setpoint"` and acknowledges the value it applied. See [Wire protocol](/docs/wire-protocol).
+
+## Props
+
+<PropsTable of="setpoint-input" />
+
+## States
+
+| Status    | When                                                      |
+| --------- | --------------------------------------------------------- |
+| Unknown   | `confirmed` is `null`                                     |
+| Idle      | Confirmed is known, nothing commanded yet                 |
+| Waiting   | `pending`                                                 |
+| Confirmed | Commanded and confirmed agree within half a step          |
+| Mismatch  | The device applied something else, for example it clamped |
+| Error     | `error` is set, including `"timeout"`                     |
+
+## Examples
+
+### Always confirm
+
+`confirm` turns Apply into a two-press action for every change, for outputs where any change matters.
+
+```tsx
+<SetpointInput label="Motor speed" unit="rpm" min={0} max={3000} step={50} confirm {...motor} />
+```
+
+### No measured value
+
+Leave out `value` and the readouts drop to setpoint, commanded and latency.
+
+## Keyboard
+
+| Key                       | Result                               |
+| ------------------------- | ------------------------------------ |
+| Arrow Up / Down           | Step the draft                       |
+| Shift + Arrow, Page Up/Dn | Ten steps                            |
+| Enter                     | Apply, or confirm when asked         |
+| Escape                    | Revert the draft to the device value |
+
+## Theming
+
+The frame, field and readouts use shadcn tokens. The status dot uses `--success`, `--warning` and `--destructive`, and the Apply button is the primary button.
+
+## Accessibility
+
+The field is a `spinbutton` with its range and current value exposed. Validation text is linked with `aria-describedby` and marks the field invalid. The status is a polite live region, so screen readers hear Waiting and Confirmed. The step buttons are left out of the tab order because the arrow keys do the same.
+
+Under `prefers-reduced-motion` the waiting dot does not pulse.
+
+## Ask your agent
+
+<AgentPrompt item="setpoint-input">
+  Never show a setpoint as applied because the user typed it. Send numbers through command, render
+  confirmed from the ack, and pass a numeric failSafe so a timeout shows what the firmware falls
+  back to.
+</AgentPrompt>

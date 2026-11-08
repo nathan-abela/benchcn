@@ -11,6 +11,7 @@ import pinoutHeaderSource from "./pinout-header-demo.tsx?raw";
 import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
 import sensorTileSource from "./sensor-tile-demo.tsx?raw";
 import serialConsoleSource from "./serial-console-demo.tsx?raw";
+import setpointInputSource from "./setpoint-input-demo.tsx?raw";
 import sevenSegmentSource from "./seven-segment-demo.tsx?raw";
 import statusLedSource from "./status-led-demo.tsx?raw";
 import stripChartSource from "./strip-chart-demo.tsx?raw";
@@ -44,6 +45,13 @@ export const demos: Record<string, Demo> = {
     ),
     source: actuatorControlSource,
     placeholder: { base: 500, sm: 428 },
+  },
+  "setpoint-input": {
+    component: lazy(() =>
+      import("./setpoint-input-demo").then((m) => ({ default: m.SetpointInputDemo })),
+    ),
+    source: setpointInputSource,
+    placeholder: { base: 552, sm: 496 },
   },
   "status-led": {
     component: lazy(() => import("./status-led-demo").then((m) => ({ default: m.StatusLedDemo }))),

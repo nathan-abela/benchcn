@@ -209,6 +209,54 @@ export const props: Record<string, PropsDoc> = {
     },
     label: { type: "string", description: "Accessible description.", default: "the value" },
   },
+  "setpoint-input": {
+    label: { type: "ReactNode", description: "", required: true },
+    description: {
+      type: "ReactNode",
+      description: "Secondary line, such as the output it drives.",
+    },
+    unit: { type: "string", description: "Shown after every value and in the range hint." },
+    min: { type: "number", description: "Lowest value the input will send.", required: true },
+    max: { type: "number", description: "Highest value the input will send.", required: true },
+    step: {
+      type: "number",
+      description: "Arrow keys and buttons move by one step, Shift or Page Up/Down by ten.",
+      default: "1",
+    },
+    precision: { type: "number", description: "Decimal places.", default: "from `step`" },
+    commanded: {
+      type: "number | null",
+      description: "What the user last asked for.",
+      required: true,
+    },
+    confirmed: {
+      type: "number | null",
+      description: "What the device last acknowledged. `null` shows Unknown.",
+      required: true,
+    },
+    pending: {
+      type: "boolean",
+      description: "A command is waiting for its ack.",
+      default: "false",
+    },
+    error: { type: "string | null", description: '`"timeout"` or the device\'s error text.' },
+    latency: { type: "number | null", description: "Round trip of the last ack in milliseconds." },
+    value: {
+      type: "number | null",
+      description: "The measured value the setpoint drives. Leave out to hide the readout.",
+    },
+    onCommand: {
+      type: "(next: number) => void",
+      description: "Called once per applied value.",
+      required: true,
+    },
+    confirm: {
+      type: "boolean | number",
+      description: "Ask for a second press: always with `true`, or for changes larger than this.",
+      default: "false",
+    },
+    disabled: { type: "boolean", description: "", default: "false" },
+  },
   "strip-chart": {
     series: {
       type: "{ id, label?, unit?, color?, min?, max?, points }[]",
