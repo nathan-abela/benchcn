@@ -45,6 +45,8 @@ Evenly spaced numeric samples for scopes and logic analyzers. `sr` is the sample
 
 An actuator is **commanded** when the dashboard sends `set` and **confirmed** only when the matching `ack` arrives with `ok: true`. No ack within the timeout is a failure the UI must show.
 
+A setpoint works the same way with a number: `{"cmd":"set","n":19,"id":"heater","v":24.5}`. The ack carries the value the device actually applied, so a firmware that clamps 40 to its 35 °C limit answers `"v":35` and the dashboard shows the mismatch instead of the request.
+
 ### Log (device to dashboard)
 
 ```json
@@ -63,7 +65,8 @@ Sent once on connect. Lets dashboards and agents discover channels without readi
   "dev": "pico-weather",
   "chs": [
     { "id": "soil", "u": "%", "min": 0, "max": 100, "kind": "sensor" },
-    { "id": "pump", "kind": "actuator" }
+    { "id": "pump", "kind": "actuator" },
+    { "id": "heater", "u": "°C", "min": 15, "max": 35, "kind": "setpoint" }
   ]
 }
 ```

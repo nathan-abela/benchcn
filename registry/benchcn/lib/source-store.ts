@@ -34,6 +34,8 @@ export type SourceSnapshot = {
   history: Record<string, number[]>;
   logs: WireLog[];
   actuators: Record<string, ActuatorState>;
+  /** Numeric setpoints, tracked through acknowledgements like actuators. */
+  setpoints: Record<string, ActuatorState<number>>;
   hello: WireHello | null;
   /** Counts every message, so consumers can tell a quiet link from a dead one. */
   received: number;
@@ -49,12 +51,14 @@ export type ChannelTransform = {
 export type SourceStoreOptions = {
   /** Milliseconds to wait for an acknowledgement before an actuator reports a timeout. */
   actuatorTimeout?: number;
-  /** Per-actuator fail-safe state assumed after a timeout. */
-  failSafe?: Record<string, boolean>;
+  /** Per-actuator or per-setpoint fail-safe value assumed after a timeout. */
+  failSafe?: Record<string, boolean | number>;
   logLimit?: number;
   historyLength?: number;
   /** Actuator ids to track before the device says hello. */
   actuators?: string[];
+  /** Setpoint ids to track before the device says hello. */
+  setpoints?: string[];
   /** Per-channel conversion applied to samples, blocks and the hello channel list. */
   transform?: Record<string, ChannelTransform>;
 };
@@ -62,8 +66,8 @@ export type SourceStoreOptions = {
 export type SourceStore = {
   getSnapshot: () => SourceSnapshot;
   subscribe: (listener: () => void) => () => void;
-  /** Sends `{"cmd":"set"}` for an actuator and follows its acknowledgement. */
-  command: (id: string, value: boolean) => void;
+  /** Sends `{"cmd":"set"}` and follows its acknowledgement: booleans to actuators, numbers to setpoints. */
+  command: (id: string, value: boolean | number) => void;
   send: (message: WireMessage) => void;
   /** Subscribes to the transport and opens it. Returns a function that closes it. */
   start: () => () => void;
@@ -73,7 +77,7 @@ export type SourceStore = {
 
 /** What every source hook returns, and what blocks accept as `source`. */
 export type SourceHandle = SourceSnapshot & {
-  command: (id: string, value: boolean) => void;
+  command: (id: string, value: boolean | number) => void;
   send: (message: WireMessage) => void;
   store: SourceStore;
 };
@@ -83,6 +87,7 @@ export const EMPTY_SNAPSHOT: SourceSnapshot = {
   history: {},
   logs: [],
   actuators: {},
+  setpoints: {},
   hello: null,
   received: 0,
 };
@@ -129,10 +134,12 @@ export function createSourceStore(
     logLimit = 200,
     historyLength = 60,
     actuators = [],
+    setpoints = [],
     transform = {},
   } = options;
 
   const trackers = new Map<string, ActuatorTracker>();
+  const setpointTrackers = new Map<string, ActuatorTracker<number>>();
   const queries = new Map<number, string>();
   const listeners = new Set<() => void>();
   const blockListeners = new Set<(block: WireBlock) => void>();
@@ -145,13 +152,35 @@ export function createSourceStore(
   const trackerFor = (id: string): ActuatorTracker => {
     let tracker = trackers.get(id);
     if (!tracker) {
-      tracker = createActuatorTracker({ timeout: actuatorTimeout, failSafe: failSafe[id] ?? null });
+      const safe = failSafe[id];
+      tracker = createActuatorTracker({
+        timeout: actuatorTimeout,
+        failSafe: typeof safe === "boolean" ? safe : null,
+      });
       tracker.subscribe((state) => {
         snapshot = { ...snapshot, actuators: { ...snapshot.actuators, [id]: state } };
         notify();
       });
       snapshot = { ...snapshot, actuators: { ...snapshot.actuators, [id]: tracker.get() } };
       trackers.set(id, tracker);
+    }
+    return tracker;
+  };
+
+  const setpointTrackerFor = (id: string): ActuatorTracker<number> => {
+    let tracker = setpointTrackers.get(id);
+    if (!tracker) {
+      const safe = failSafe[id];
+      tracker = createActuatorTracker<number>({
+        timeout: actuatorTimeout,
+        failSafe: typeof safe === "number" ? safe : null,
+      });
+      tracker.subscribe((state) => {
+        snapshot = { ...snapshot, setpoints: { ...snapshot.setpoints, [id]: state } };
+        notify();
+      });
+      snapshot = { ...snapshot, setpoints: { ...snapshot.setpoints, [id]: tracker.get() } };
+      setpointTrackers.set(id, tracker);
     }
     return tracker;
   };
@@ -163,6 +192,7 @@ export function createSourceStore(
   };
 
   for (const id of actuators) trackerFor(id);
+  for (const id of setpoints) setpointTrackerFor(id);
 
   const onMessage = (raw: WireMessage) => {
     const message = applyTransform(raw, transform);
@@ -184,6 +214,8 @@ export function createSourceStore(
       };
       const tracker = trackers.get(message.ch);
       if (tracker && typeof message.v === "boolean") tracker.report(message.v);
+      const setpoint = setpointTrackers.get(message.ch);
+      if (setpoint && typeof message.v === "number") setpoint.report(message.v);
     } else if (isLog(message)) {
       snapshot = { ...snapshot, logs: [...snapshot.logs, message].slice(-logLimit) };
     } else if (isAck(message)) {
@@ -191,13 +223,19 @@ export function createSourceStore(
       if (queried !== undefined) {
         queries.delete(message.ack);
         if (message.ok && typeof message.v === "boolean") trackerFor(queried).report(message.v);
+        if (message.ok && typeof message.v === "number")
+          setpointTrackerFor(queried).report(message.v);
       }
       for (const tracker of trackers.values()) tracker.ack(message);
+      for (const tracker of setpointTrackers.values()) tracker.ack(message);
     } else if (isHello(message)) {
       snapshot = { ...snapshot, hello: message };
       for (const channel of message.chs ?? []) {
         if (channel.kind === "actuator") {
           trackerFor(channel.id);
+          query(channel.id);
+        } else if (channel.kind === "setpoint") {
+          setpointTrackerFor(channel.id);
           query(channel.id);
         }
       }
@@ -215,7 +253,8 @@ export function createSourceStore(
     },
     command(id, value) {
       const message = setCommand(id, value);
-      trackerFor(id).command(value, message.n);
+      if (typeof value === "number") setpointTrackerFor(id).command(value, message.n);
+      else trackerFor(id).command(value, message.n);
       transport.send(message);
     },
     send: (message) => transport.send(message),
@@ -223,14 +262,17 @@ export function createSourceStore(
       // A restart (React strict mode, a reconnect) needs fresh trackers: disposing one drops
       // the store's own subscription to it, so a disposed tracker is never reused.
       for (const id of actuators) trackerFor(id);
+      for (const id of setpoints) setpointTrackerFor(id);
       const unsubscribe = transport.subscribe(onMessage);
       const stop = transport.start();
-      for (const id of actuators) query(id);
+      for (const id of [...actuators, ...setpoints]) query(id);
       return () => {
         unsubscribe();
         stop();
-        for (const tracker of trackers.values()) tracker.dispose();
+        for (const tracker of [...trackers.values(), ...setpointTrackers.values()])
+          tracker.dispose();
         trackers.clear();
+        setpointTrackers.clear();
       };
     },
     onBlock(listener) {

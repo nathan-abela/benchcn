@@ -1,5 +1,6 @@
 // benchcn.dev · mock-device
-// A simulated bench: slow sensors, a relay with acknowledgement latency, waveform channels and
+// A simulated bench: slow sensors, a relay and a heater setpoint with acknowledgement latency,
+// waveform channels and
 // log lines, all speaking the wire protocol. Deterministic for a given seed, so demos and tests
 // behave the same every run.
 import {
@@ -28,8 +29,8 @@ export type MockDeviceOptions = {
 
 export type MockActuatorState = {
   id: string;
-  commanded: boolean | null;
-  confirmed: boolean;
+  commanded: boolean | number | null;
+  confirmed: boolean | number;
   pending: boolean;
 };
 
@@ -73,6 +74,9 @@ type Sensor = {
 type SimState = {
   pumpOn: boolean;
   soil: number;
+  /** Heater setpoint and the chamber temperature that follows it. */
+  setpoint: number;
+  chamber: number;
   rand: () => number;
 };
 
@@ -101,12 +105,21 @@ const sensors: Sensor[] = [
     info: { id: "pressure", u: "hPa", min: 950, max: 1050, kind: "sensor", label: "Pressure" },
     read: (t, s) => 1013 + 4 * Math.sin((TAU * t) / 172800) + noise(s, 0.1),
   },
+  {
+    info: { id: "chamber", u: "°C", min: 0, max: 50, kind: "sensor", label: "Chamber temperature" },
+    read: (_, s) => s.chamber + noise(s, 0.05),
+  },
 ];
 
 const actuators: WireChannelInfo[] = [
   { id: "pump", kind: "actuator", label: "Water pump" },
   { id: "led", kind: "actuator", label: "Status LED" },
+  { id: "heater", kind: "setpoint", u: "°C", min: 15, max: 35, label: "Heater setpoint" },
 ];
+
+const HEATER_START = 20;
+/** Seconds for the chamber to close about two thirds of the gap to the setpoint. */
+const HEATER_LAG = 8;
 
 const waveforms: Record<string, { kind: WaveformKind; freq: number; amp: number; offset: number }> =
   {
@@ -148,11 +161,25 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
   } = options;
 
   const rand = createRandom(seed);
-  const state: SimState = { pumpOn: false, soil: 38, rand };
+  const state: SimState = {
+    pumpOn: false,
+    soil: 38,
+    setpoint: HEATER_START,
+    chamber: HEATER_START,
+    rand,
+  };
   const listeners = new Set<(message: WireMessage) => void>();
   const latest: Record<string, WireSample> = {};
   const actuatorState = new Map<string, MockActuatorState>(
-    actuators.map((a) => [a.id, { id: a.id, commanded: null, confirmed: false, pending: false }]),
+    actuators.map((a) => [
+      a.id,
+      {
+        id: a.id,
+        commanded: null,
+        confirmed: a.kind === "setpoint" ? HEATER_START : false,
+        pending: false,
+      },
+    ]),
   );
   let timer: unknown = null;
   let running = false;
@@ -171,6 +198,7 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
     state.soil = state.pumpOn
       ? Math.min(95, state.soil + 1.6 * dt)
       : Math.max(8, state.soil - 0.012 * dt);
+    state.chamber += (state.setpoint - state.chamber) * (1 - Math.exp(-dt / HEATER_LAG));
 
     for (const sensor of sensors) {
       const sample: WireSample = {
@@ -218,7 +246,9 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
       return;
     }
 
-    const target = toBoolean(command.v);
+    const info = actuators.find((a) => a.id === command.id);
+    const target =
+      info?.kind === "setpoint" ? clampTo(Number(command.v), info) : toBoolean(command.v);
     actuator.commanded = target;
     actuator.pending = true;
 
@@ -231,9 +261,13 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
     schedule(() => {
       actuator.confirmed = target;
       actuator.pending = false;
-      if (command.id === "pump") state.pumpOn = target;
-      emit(ackFor(command, true));
-      emit({ log: `${command.id} ${target ? "on" : "off"}`, lvl: "info", t: seconds() });
+      if (command.id === "pump") state.pumpOn = target === true;
+      if (typeof target === "number") state.setpoint = target;
+      // The ack carries the value the device applied, which may be clamped.
+      emit({ ...ackFor(command, true), v: target });
+      const text =
+        typeof target === "number" ? `${target} ${info?.u ?? ""}`.trim() : target ? "on" : "off";
+      emit({ log: `${command.id} ${text}`, lvl: "info", t: seconds() });
     }, latency);
   };
 
@@ -283,6 +317,11 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
       return out;
     },
   };
+}
+
+function clampTo(value: number, info: WireChannelInfo): number {
+  const safe = Number.isFinite(value) ? value : (info.min ?? 0);
+  return Math.min(info.max ?? safe, Math.max(info.min ?? safe, safe));
 }
 
 function toBoolean(v: WireValue | undefined): boolean {

@@ -1,11 +1,13 @@
 // benchcn.dev · actuator
-// Tracks one actuator through the command/acknowledge round trip so the UI can tell what was
-// asked for apart from what the device confirmed. Pure, with an injectable clock for tests.
-export type ActuatorState = {
+// Tracks one actuator or setpoint through the command/acknowledge round trip so the UI can tell
+// what was asked for apart from what the device confirmed. Pure, with an injectable clock for tests.
+export type ActuatorValue = boolean | number;
+
+export type ActuatorState<T extends ActuatorValue = boolean> = {
   /** What the user last asked for. */
-  commanded: boolean | null;
+  commanded: T | null;
   /** What the device last reported. `null` until the first acknowledgement or report. */
-  confirmed: boolean | null;
+  confirmed: T | null;
   pending: boolean;
   /** `"timeout"`, or the device's error text for a rejected command. */
   error: string | null;
@@ -22,29 +24,29 @@ export type ActuatorAck = {
   err?: string;
 };
 
-export type ActuatorTrackerOptions = {
+export type ActuatorTrackerOptions<T extends ActuatorValue = boolean> = {
   /** Milliseconds to wait for an acknowledgement. */
   timeout?: number;
   /** State the device falls back to on its own when it loses the link; shown after a timeout. */
-  failSafe?: boolean | null;
+  failSafe?: T | null;
   now?: () => number;
   setTimeout?: (fn: () => void, ms: number) => unknown;
   clearTimeout?: (handle: unknown) => void;
 };
 
-export type ActuatorTracker = {
-  get(): ActuatorState;
-  subscribe(listener: (state: ActuatorState) => void): () => void;
+export type ActuatorTracker<T extends ActuatorValue = boolean> = {
+  get(): ActuatorState<T>;
+  subscribe(listener: (state: ActuatorState<T>) => void): () => void;
   /** Records a request that went out with this nonce and starts the timeout. */
-  command(value: boolean, nonce: number): void;
+  command(value: T, nonce: number): void;
   /** Feed every acknowledgement; those for other nonces are ignored. */
   ack(ack: ActuatorAck): void;
   /** State the device reported outside an acknowledgement, such as a telemetry sample. */
-  report(value: boolean): void;
+  report(value: T): void;
   dispose(): void;
 };
 
-export const INITIAL_ACTUATOR_STATE: ActuatorState = {
+export const INITIAL_ACTUATOR_STATE: ActuatorState<never> = {
   commanded: null,
   confirmed: null,
   pending: false,
@@ -53,7 +55,9 @@ export const INITIAL_ACTUATOR_STATE: ActuatorState = {
   updatedAt: 0,
 };
 
-export function createActuatorTracker(options: ActuatorTrackerOptions = {}): ActuatorTracker {
+export function createActuatorTracker<T extends ActuatorValue = boolean>(
+  options: ActuatorTrackerOptions<T> = {},
+): ActuatorTracker<T> {
   const {
     timeout = 2000,
     failSafe = null,
@@ -62,13 +66,13 @@ export function createActuatorTracker(options: ActuatorTrackerOptions = {}): Act
     clearTimeout: cancel = (handle) => globalThis.clearTimeout(handle as number),
   } = options;
 
-  let state = INITIAL_ACTUATOR_STATE;
+  let state: ActuatorState<T> = INITIAL_ACTUATOR_STATE;
   let nonce: number | null = null;
   let sentAt = 0;
   let timer: unknown = null;
-  const listeners = new Set<(state: ActuatorState) => void>();
+  const listeners = new Set<(state: ActuatorState<T>) => void>();
 
-  const set = (patch: Partial<ActuatorState>) => {
+  const set = (patch: Partial<ActuatorState<T>>) => {
     state = { ...state, ...patch, updatedAt: now() };
     for (const listener of listeners) listener(state);
   };
@@ -107,7 +111,8 @@ export function createActuatorTracker(options: ActuatorTrackerOptions = {}): Act
       if (ack.ok) {
         set({
           pending: false,
-          confirmed: typeof ack.v === "boolean" ? ack.v : state.commanded,
+          // A device may clamp or round; what it acknowledges wins over what was asked.
+          confirmed: typeof ack.v === typeof state.commanded ? (ack.v as T) : state.commanded,
           error: null,
           latency,
         });

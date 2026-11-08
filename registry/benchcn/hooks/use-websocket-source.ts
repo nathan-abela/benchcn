@@ -114,11 +114,11 @@ export function createWebSocketTransport(
 }
 
 export type UseWebSocketSourceOptions = WebSocketTransportOptions &
-  Omit<SourceStoreOptions, "actuators">;
+  Omit<SourceStoreOptions, "actuators" | "setpoints">;
 
 export type WebSocketSourceHandle = SourceSnapshot & {
   status: SourceStatus;
-  command: (id: string, value: boolean) => void;
+  command: (id: string, value: boolean | number) => void;
   send: (message: WireMessage) => void;
   store: SourceStore;
 };

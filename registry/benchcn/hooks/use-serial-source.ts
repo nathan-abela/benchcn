@@ -136,14 +136,15 @@ export function createSerialTransport({
   };
 }
 
-export type UseSerialSourceOptions = SerialTransportOptions & Omit<SourceStoreOptions, "actuators">;
+export type UseSerialSourceOptions = SerialTransportOptions &
+  Omit<SourceStoreOptions, "actuators" | "setpoints">;
 
 export type SerialSourceHandle = SourceSnapshot & {
   status: SourceStatus;
   /** Call from a click handler. */
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
-  command: (id: string, value: boolean) => void;
+  command: (id: string, value: boolean | number) => void;
   send: (message: WireMessage) => void;
   store: SourceStore;
 };

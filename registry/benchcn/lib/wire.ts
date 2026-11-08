@@ -57,7 +57,7 @@ export type WireChannelInfo = {
   u?: string;
   min?: number;
   max?: number;
-  kind?: "sensor" | "actuator" | "waveform" | "digital";
+  kind?: "sensor" | "actuator" | "setpoint" | "waveform" | "digital";
   label?: string;
 };
 

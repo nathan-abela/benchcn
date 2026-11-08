@@ -17,11 +17,12 @@ import {
 } from "@/registry/benchcn/lib/source-store";
 import type { WireMessage } from "@/registry/benchcn/lib/wire";
 
-export type UseMockDeviceOptions = MockDeviceOptions & Omit<SourceStoreOptions, "actuators">;
+export type UseMockDeviceOptions = MockDeviceOptions &
+  Omit<SourceStoreOptions, "actuators" | "setpoints">;
 
 export type MockDeviceHandle = SourceSnapshot & {
   device: MockDevice;
-  command: (id: string, value: boolean) => void;
+  command: (id: string, value: boolean | number) => void;
   send: (message: WireMessage) => void;
   store: SourceStore;
 };
@@ -49,6 +50,7 @@ function createMockStore(options: UseMockDeviceOptions): {
       historyLength,
       transform,
       actuators: device.channels.filter((c) => c.kind === "actuator").map((c) => c.id),
+      setpoints: device.channels.filter((c) => c.kind === "setpoint").map((c) => c.id),
     },
   );
   return { device, store };

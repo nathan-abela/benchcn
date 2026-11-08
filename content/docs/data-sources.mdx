@@ -45,7 +45,7 @@ device.subscribe((message) => console.log(message));
 device.start();
 ```
 
-It emits a `hello` with its channel list, then a sample per sensor every second: `temp`, `humidity`, `soil`, `light`, `battery`, `pressure`. Send it a command and it acknowledges after 120 to 400 ms, unless the command is one of the roughly 4% that get dropped, which is exactly the situation an actuator control has to handle.
+It emits a `hello` with its channel list, then a sample per sensor every second: `temp`, `humidity`, `soil`, `light`, `battery`, `pressure`, and `chamber`, which follows the `heater` setpoint with an eight-second lag. Send it a command and it acknowledges after 120 to 400 ms, unless the command is one of the roughly 4% that get dropped, which is exactly the situation an actuator control has to handle.
 
 Waveform channels `ch1` to `ch4` are sampled on demand for scopes:
 

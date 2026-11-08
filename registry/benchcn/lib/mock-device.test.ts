@@ -285,3 +285,32 @@ describe("createMockDevice", () => {
     });
   });
 });
+
+describe("createMockDevice heater setpoint", () => {
+  it("should clamp a setpoint outside the channel range and acknowledge the applied value", () => {
+    // #given the heater accepts 15 to 35 °C
+    const { dev, clock, messages } = device({ faultRate: 0, ackLatency: [100, 100] });
+    dev.start();
+
+    // #when
+    dev.send(setCommand("heater", 50));
+    clock.advance(100);
+
+    // #then
+    expect(messages.filter(isAck)[0]).toMatchObject({ ok: true, id: "heater", v: 35 });
+  });
+
+  it("should move the chamber temperature towards the setpoint", () => {
+    // #given the chamber starts at 20 °C
+    const { dev, clock } = device({ faultRate: 0, ackLatency: [0, 0] });
+    dev.start();
+
+    // #when the setpoint goes to 30 °C for 20 seconds
+    dev.send(setCommand("heater", 30));
+    clock.advance(20_000);
+
+    // #then it has closed most of the gap without overshooting
+    const chamber = dev.readings().chamber.v as number;
+    expect(chamber > 27 && chamber < 30.2).toBe(true);
+  });
+});

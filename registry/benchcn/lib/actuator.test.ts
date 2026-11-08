@@ -156,3 +156,40 @@ describe("createActuatorTracker", () => {
     expect(seen).toEqual([true, false]);
   });
 });
+
+describe("createActuatorTracker with a numeric setpoint", () => {
+  it("should confirm the value the device acknowledged, even when it clamped the request", () => {
+    // #given a setpoint of 40 sent with nonce 3
+    const clock = fakeClock();
+    const { now, setTimeout, clearTimeout } = clock.options;
+    const tracker = createActuatorTracker<number>({ now, setTimeout, clearTimeout });
+    tracker.command(40, 3);
+
+    // #when the device applies its maximum instead
+    clock.advance(120);
+    tracker.ack({ ack: 3, ok: true, v: 35 });
+
+    // #then commanded and confirmed disagree, which the UI shows as a mismatch
+    expect(tracker.get()).toMatchObject({ commanded: 40, confirmed: 35, pending: false });
+  });
+
+  it("should fall back to a numeric fail-safe after a timeout", () => {
+    // #given
+    const clock = fakeClock();
+    const { now, setTimeout, clearTimeout } = clock.options;
+    const tracker = createActuatorTracker<number>({
+      timeout: 1000,
+      failSafe: 15,
+      now,
+      setTimeout,
+      clearTimeout,
+    });
+    tracker.command(28, 4);
+
+    // #when no ack arrives
+    clock.advance(1000);
+
+    // #then
+    expect(tracker.get()).toMatchObject({ confirmed: 15, error: "timeout", pending: false });
+  });
+});

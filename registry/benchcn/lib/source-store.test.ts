@@ -187,3 +187,43 @@ describe("createSourceStore", () => {
     expect(fake.isStarted()).toBe(false);
   });
 });
+
+describe("createSourceStore setpoints", () => {
+  it("should track setpoints announced in hello and query them", () => {
+    // #given
+    const fake = fakeTransport();
+    const store = createSourceStore(fake.transport);
+    store.start();
+
+    // #when
+    fake.emit({
+      hello: "benchcn/0",
+      chs: [{ id: "heater", kind: "setpoint", u: "°C", min: 15, max: 35 }],
+    });
+
+    // #then
+    expect({
+      queried: fake.sent.filter((m) => "cmd" in m && m.cmd === "get").map((m) => "id" in m && m.id),
+      tracked: Object.keys(store.getSnapshot().setpoints),
+    }).toEqual({ queried: ["heater"], tracked: ["heater"] });
+  });
+
+  it("should route a numeric command to the setpoint and confirm it from the ack", () => {
+    // #given
+    const fake = fakeTransport();
+    const store = createSourceStore(fake.transport, { setpoints: ["heater"] });
+    store.start();
+
+    // #when
+    store.command("heater", 24);
+    const sent = fake.sent.find((m) => "cmd" in m && m.cmd === "set");
+    fake.emit({ ack: sent && "n" in sent ? sent.n : -1, ok: true, v: 24 });
+
+    // #then the setpoint is confirmed and no boolean actuator was created
+    const snapshot = store.getSnapshot();
+    expect({
+      setpoint: snapshot.setpoints.heater,
+      actuators: Object.keys(snapshot.actuators),
+    }).toMatchObject({ setpoint: { commanded: 24, confirmed: 24, pending: false }, actuators: [] });
+  });
+});
