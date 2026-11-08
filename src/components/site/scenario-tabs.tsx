@@ -117,7 +117,7 @@ function Robot(): ReactElement {
 
 const PLACEHOLDERS: Record<ScenarioId, PlaceholderHeights> = {
   plant: { base: 1103, sm: 831, lg: 566 },
-  weather: { base: 869, md: 419 },
+  weather: { base: 880, sm: 916, md: 475 },
   bench: { base: 1034, md: 1196, lg: 1086, xl: 1273 },
   robot: { base: 816, lg: 472, xl: 416 },
   datasheet: { base: 2057, lg: 1477, xl: 1461 },

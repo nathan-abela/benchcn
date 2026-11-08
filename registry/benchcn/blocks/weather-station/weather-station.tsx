@@ -178,7 +178,7 @@ function Panel({
             }%RH`,
             `${pressure === null ? "----" : pressure.toFixed(0)}hPa ${TREND_ARROW[trend]}`,
           ]}
-          scale={kiosk ? 2.5 : 3}
+          scale={kiosk ? 2.5 : 6}
         />
       </div>
     </section>

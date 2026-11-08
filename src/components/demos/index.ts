@@ -103,7 +103,7 @@ export const demos: Record<string, Demo> = {
       import("./weather-station-demo").then((m) => ({ default: m.WeatherStationDemo })),
     ),
     source: weatherStationSource,
-    placeholder: { base: 862, md: 431, lg: 419 },
+    placeholder: { base: 870, sm: 910, md: 455, lg: 475 },
   },
   "serial-console": {
     component: lazy(() =>
