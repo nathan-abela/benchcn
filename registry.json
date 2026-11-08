@@ -437,6 +437,38 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "strip-chart",
+      "type": "registry:ui",
+      "title": "Strip chart",
+      "description": "Rolling multi-series trend for slow channels: time axis, overlay or stacked lanes by unit, pause, hover readout, line breaks where samples stopped, and CSV export of everything recorded.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/strip-chart/strip-chart.tsx",
+          "type": "registry:ui"
+        },
+        {
+          "path": "registry/benchcn/hooks/use-strip-series.ts",
+          "type": "registry:hook"
+        },
+        {
+          "path": "registry/benchcn/lib/strip-chart.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "button",
+        "@benchcn/tokens",
+        "@benchcn/instrument",
+        "@benchcn/use-canvas",
+        "@benchcn/source-store"
+      ],
+      "categories": [
+        "readouts"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/strip-chart"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "character-lcd",
       "type": "registry:ui",
       "title": "Character LCD",

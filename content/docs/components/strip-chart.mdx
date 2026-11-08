@@ -1,0 +1,90 @@
+---
+title: Strip chart
+description: Rolling multi-series trend for slow channels, with pause, a hover readout, line breaks where samples stopped, and CSV export of everything recorded.
+---
+
+<ComponentPreview name="strip-chart" />
+
+Hold the pump and the soil trace climbs. Drop the link and both traces stop at the last sample they really received, go Stale, and resume with a gap instead of a line drawn across time nobody measured.
+
+## Installation
+
+<InstallTabs item="strip-chart" />
+
+## Usage
+
+`useStripSeries` records the channels you name from any source, stamped on arrival, and keeps an hour per channel at one sample a second.
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { useStripSeries } from "@/hooks/use-strip-series";
+import { StripChart } from "@/components/ui/strip-chart";
+
+export function Trend() {
+  const source = useMockDevice();
+  const series = useStripSeries(source, ["soil", "humidity"]);
+  return <StripChart title="Soil and humidity" series={series} />;
+}
+```
+
+Swap `useMockDevice()` for `useWebSocketSource(url)` or `useSerialSource()`; the chart does not change.
+
+## Props
+
+<PropsTable of="strip-chart" />
+
+## Examples
+
+### Different units
+
+Series with different units get their own lane and their own scale, so a temperature never shares an axis with a percentage. Force one layout with `layout="overlay"` or `layout="stacked"`.
+
+```tsx
+const series = useStripSeries(source, ["temp", "humidity", "pressure"]);
+<StripChart series={series} seconds={300} />;
+```
+
+### Fixed range
+
+A fixed range stops the axis from rescaling as values move. In a stacked chart, set `min` and `max` on each series instead.
+
+```tsx
+<StripChart series={series} min={0} max={100} />
+```
+
+### Your own data
+
+`series` is plain data. Build it yourself for readings that did not come from a benchcn source.
+
+```tsx
+<StripChart
+  series={[{ id: "rpm", label: "Fan", unit: "rpm", points: [{ t: Date.now(), v: 1200 }] }]}
+/>
+```
+
+## Behaviour
+
+| Situation               | What the chart does                                        |
+| ----------------------- | ---------------------------------------------------------- |
+| Samples stop            | The line ends at the last sample and the legend says Stale |
+| Samples resume          | A new line starts; the gap stays visible                   |
+| Paused                  | The plot and legend freeze while recording continues       |
+| Export CSV              | Every recorded point, one row per timestamp, ISO time      |
+| A series has no samples | Its legend shows `--`                                      |
+
+## Theming
+
+The frame, grid and labels use shadcn tokens. Series take `--channel-1` to `--channel-4` from `@benchcn/tokens` in order, then `--chart-n`, or a `color` per series.
+
+## Accessibility
+
+The plot is a decorative canvas. The legend is real text with each series' latest value and unit, and a visually hidden summary repeats it with the stale state. Pause and Export CSV are buttons.
+
+Under `prefers-reduced-motion` the chart redraws a few times a second instead of every frame.
+
+## Ask your agent
+
+<AgentPrompt item="strip-chart">
+  Use useStripSeries to record channels from the source and pass the result to StripChart. Keep
+  series with the same unit on one chart; mixed units stack into lanes on their own.
+</AgentPrompt>

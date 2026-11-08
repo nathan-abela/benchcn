@@ -13,6 +13,7 @@ import sensorTileSource from "./sensor-tile-demo.tsx?raw";
 import serialConsoleSource from "./serial-console-demo.tsx?raw";
 import sevenSegmentSource from "./seven-segment-demo.tsx?raw";
 import statusLedSource from "./status-led-demo.tsx?raw";
+import stripChartSource from "./strip-chart-demo.tsx?raw";
 import timingDiagramSource from "./timing-diagram-demo.tsx?raw";
 import weatherStationSource from "./weather-station-demo.tsx?raw";
 
@@ -62,6 +63,13 @@ export const demos: Record<string, Demo> = {
     ),
     source: sensorTileSource,
     placeholder: { base: 756, sm: 392, lg: 256 },
+  },
+  "strip-chart": {
+    component: lazy(() =>
+      import("./strip-chart-demo").then((m) => ({ default: m.StripChartDemo })),
+    ),
+    source: stripChartSource,
+    placeholder: { base: 643, sm: 567, lg: 361 },
   },
   "character-lcd": {
     component: lazy(() =>

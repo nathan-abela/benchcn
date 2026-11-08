@@ -296,6 +296,27 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/sensor-tile"),
   },
   {
+    name: "strip-chart",
+    type: "registry:ui",
+    title: "Strip chart",
+    description:
+      "Rolling multi-series trend for slow channels: time axis, overlay or stacked lanes by unit, pause, hover readout, line breaks where samples stopped, and CSV export of everything recorded.",
+    files: [
+      { path: "registry/benchcn/ui/strip-chart/strip-chart.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/hooks/use-strip-series.ts", type: "registry:hook" },
+      { path: "registry/benchcn/lib/strip-chart.ts", type: "registry:lib" },
+    ],
+    registryDependencies: [
+      "button",
+      `${ns}/tokens`,
+      `${ns}/instrument`,
+      `${ns}/use-canvas`,
+      `${ns}/source-store`,
+    ],
+    categories: ["readouts"],
+    docs: docsUrl("components/strip-chart"),
+  },
+  {
     name: "character-lcd",
     type: "registry:ui",
     title: "Character LCD",

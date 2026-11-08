@@ -5,6 +5,7 @@ const COMPONENTS = [
   "logic-analyzer",
   "actuator-control",
   "sensor-tile",
+  "strip-chart",
   "status-led",
   "seven-segment",
   "character-lcd",

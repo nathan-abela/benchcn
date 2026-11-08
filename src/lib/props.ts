@@ -209,6 +209,44 @@ export const props: Record<string, PropsDoc> = {
     },
     label: { type: "string", description: "Accessible description.", default: "the value" },
   },
+  "strip-chart": {
+    series: {
+      type: "{ id, label?, unit?, color?, min?, max?, points }[]",
+      description:
+        "Series to draw. `points` are `{ t, v }` with `t` in milliseconds, oldest first. `useStripSeries` builds them from any source.",
+      required: true,
+    },
+    title: { type: "ReactNode", description: "", default: '"Trend"' },
+    seconds: { type: "number", description: "Width of the visible window.", default: "60" },
+    min: {
+      type: "number",
+      description: "Fixed lower bound for an overlay chart.",
+      default: "from the data",
+    },
+    max: {
+      type: "number",
+      description: "Fixed upper bound for an overlay chart.",
+      default: "from the data",
+    },
+    layout: {
+      type: '"auto" | "overlay" | "stacked"',
+      description: "`auto` gives each series its own lane when units differ.",
+      default: '"auto"',
+    },
+    staleAfter: {
+      type: "number",
+      description: "Milliseconds without a sample before a series is stale and its line breaks.",
+      default: "5000",
+    },
+    height: { type: "number", description: "Plot height in pixels.", default: "200" },
+    paused: { type: "boolean", description: "Control pausing from outside." },
+    onPausedChange: { type: "(paused: boolean) => void", description: "" },
+    exportName: {
+      type: "string",
+      description: "CSV file name without the extension.",
+      default: '"benchcn-trend"',
+    },
+  },
   "sensor-tile": {
     label: { type: "ReactNode", description: "", required: true },
     value: {
