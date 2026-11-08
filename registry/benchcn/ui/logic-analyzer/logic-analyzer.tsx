@@ -27,6 +27,7 @@ import {
   INSTRUMENT_FRAME,
   InstrumentLabel,
   resolveCssColor,
+  useReducedMotion,
 } from "@/registry/benchcn/lib/instrument";
 import { formatSi } from "@/registry/benchcn/lib/units";
 
@@ -76,6 +77,7 @@ const DECODE_HEIGHT = 26;
 const MIN_SAMPLES_ON_SCREEN = 16;
 const ZOOM_STEP = 2;
 const WHEEL_STEP = 1.25;
+const TWEEN_MS = 200;
 const SCREEN_FALLBACK = "oklch(0.17 0.004 80)";
 const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
 
@@ -102,6 +104,16 @@ function niceStep(span: number, pixels: number, minPixels = 90): number {
 function paddedWindow({ start, end }: TimeWindow): TimeWindow {
   const pad = (end - start) * 0.1;
   return { start: start - pad, end: end + pad };
+}
+
+const centreOf = ({ start, end }: TimeWindow): number => (start + end) / 2;
+
+/** Moves the centre linearly and the span geometrically, so a 2x zoom reads as a steady stretch. */
+export function tweenWindow(from: TimeWindow, to: TimeWindow, t: number): TimeWindow {
+  const fromSpan = from.end - from.start;
+  const span = fromSpan * ((to.end - to.start) / fromSpan) ** t;
+  const centre = centreOf(from) + (centreOf(to) - centreOf(from)) * t;
+  return { start: centre - span / 2, end: centre + span / 2 };
 }
 
 function groupTransactions(frames: I2cFrame[], sampleRate: number): DecodedTransaction[] {
@@ -357,19 +369,59 @@ export function LogicAnalyzer({
     if (defaultWindow === "first" && first) return paddedWindow(first);
     return { start: 0, end: total };
   }, [defaultWindow, decoded, total]);
-  const [inner, setInner] = useState<{ lanes: LogicLane[]; window: TimeWindow } | null>(null);
-  const window =
-    controlledWindow ?? (inner && inner.lanes === lanes ? inner.window : initialWindow);
+  // `focus` is the time the user is looking at. Clamping at the capture edges moves the window
+  // but not the focus, so zooming out and back in returns to the same transaction.
+  const [inner, setInner] = useState<{
+    lanes: LogicLane[];
+    window: TimeWindow;
+    focus: number;
+  } | null>(null);
+  const current = inner && inner.lanes === lanes ? inner : null;
+  const window = controlledWindow ?? current?.window ?? initialWindow;
+  const focus = current?.focus ?? centreOf(initialWindow);
+
+  const reduced = useReducedMotion();
+  const [tween, setTween] = useState<TimeWindow | null>(null);
+  const tweenFrame = useRef<number | null>(null);
+  const shown = tween ?? window;
+
+  useEffect(
+    () => () => {
+      if (tweenFrame.current !== null) cancelAnimationFrame(tweenFrame.current);
+    },
+    [],
+  );
 
   const setWindow = useCallback(
-    (next: TimeWindow) => {
+    (next: TimeWindow, options: { animate?: boolean; focus?: number } = {}) => {
       const span = Math.max(next.end - next.start, minSpan(lanes));
       const start = Math.min(Math.max(0, next.start), Math.max(0, total - span));
       const clamped = { start, end: Math.min(total, start + span) };
+
+      if (tweenFrame.current !== null) cancelAnimationFrame(tweenFrame.current);
+      tweenFrame.current = null;
+      if (options.animate && !reduced) {
+        const from = shown;
+        const began = performance.now();
+        const step = (now: number) => {
+          const t = Math.min(1, (now - began) / TWEEN_MS);
+          if (t < 1) {
+            setTween(tweenWindow(from, clamped, 1 - (1 - t) ** 3));
+            tweenFrame.current = requestAnimationFrame(step);
+          } else {
+            setTween(null);
+            tweenFrame.current = null;
+          }
+        };
+        tweenFrame.current = requestAnimationFrame(step);
+      } else {
+        setTween(null);
+      }
+
       onWindowChange?.(clamped);
-      if (!controlledWindow) setInner({ lanes, window: clamped });
+      setInner({ lanes, window: clamped, focus: options.focus ?? centreOf(next) });
     },
-    [controlledWindow, lanes, onWindowChange, total],
+    [lanes, onWindowChange, total, reduced, shown],
   );
 
   const rows = useMemo(() => {
@@ -403,7 +455,7 @@ export function LogicAnalyzer({
       };
       ctx.fillStyle = styles.getPropertyValue("--scope-screen").trim() || SCREEN_FALLBACK;
       ctx.fillRect(0, 0, width, height);
-      drawRuler(ctx, window, width, height, palette.muted);
+      drawRuler(ctx, shown, width, height, palette.muted);
 
       for (const row of rows.rows) {
         if (row.kind === "lane") {
@@ -414,17 +466,17 @@ export function LogicAnalyzer({
           ctx.lineTo(width, row.top + row.height - 0.5);
           ctx.stroke();
           const color = resolveCssColor(styles, laneColor(lane, row.index));
-          drawLane(ctx, lane, window, width, row.top, row.height, color);
+          drawLane(ctx, lane, shown, width, row.top, row.height, color);
         } else if (decoded) {
-          drawDecode(ctx, decoded.frames, decoded.sampleRate, window, width, row.top, palette);
+          drawDecode(ctx, decoded.frames, decoded.sampleRate, shown, width, row.top, palette);
         }
       }
 
       if (hover.current !== null) {
-        drawCursor(ctx, hover.current, window, width, height, palette.foreground);
+        drawCursor(ctx, hover.current, shown, width, height, palette.foreground);
       }
     },
-    [lanes, decoded, rows, window],
+    [lanes, decoded, rows, shown],
   );
 
   const { redraw } = useCanvas(canvasRef, { draw, running: false });
@@ -438,6 +490,14 @@ export function LogicAnalyzer({
     },
     [window, setWindow],
   );
+
+  const zoomOnFocus = (factor: number) => {
+    const half = ((window.end - window.start) * factor) / 2;
+    setWindow({ start: focus - half, end: focus + half }, { animate: true, focus });
+  };
+  const windowSpan = window.end - window.start;
+  const canZoomIn = windowSpan > minSpan(lanes) * 1.001;
+  const canZoomOut = windowSpan < total * 0.999;
 
   const pan = useCallback(
     (fraction: number) => {
@@ -490,7 +550,6 @@ export function LogicAnalyzer({
     redraw();
   };
 
-  const span = window.end - window.start;
   const summary = decoded ? summarizeI2c(decoded.frames) : "";
 
   return (
@@ -500,14 +559,15 @@ export function LogicAnalyzer({
         <div className="flex items-center gap-3">
           <span className="text-muted-foreground text-xs tabular-nums">
             {decode ? `${decode.protocol} · ` : ""}
-            {formatSi(span, "s")} shown · {formatSi(lanes[0]?.sampleRate ?? 0, "S/s")}
+            {formatSi(windowSpan, "s")} shown · {formatSi(lanes[0]?.sampleRate ?? 0, "S/s")}
           </span>
           <div className="flex items-center gap-1">
             <Button
               variant="outline"
               size="icon-xs"
               aria-label="Zoom out"
-              onClick={() => zoom(ZOOM_STEP)}
+              disabled={!canZoomOut}
+              onClick={() => zoomOnFocus(ZOOM_STEP)}
             >
               −
             </Button>
@@ -515,7 +575,8 @@ export function LogicAnalyzer({
               variant="outline"
               size="icon-xs"
               aria-label="Zoom in"
-              onClick={() => zoom(1 / ZOOM_STEP)}
+              disabled={!canZoomIn}
+              onClick={() => zoomOnFocus(1 / ZOOM_STEP)}
             >
               +
             </Button>
@@ -523,7 +584,8 @@ export function LogicAnalyzer({
               variant="outline"
               size="xs"
               aria-label="Fit to capture"
-              onClick={() => setWindow({ start: 0, end: total })}
+              disabled={!canZoomOut}
+              onClick={() => setWindow({ start: 0, end: total }, { animate: true, focus })}
             >
               Fit
             </Button>
@@ -572,20 +634,32 @@ export function LogicAnalyzer({
 
       {list && decoded ? (
         <ol className="flex flex-col gap-0.5 font-mono text-xs">
-          {decoded.transactions.map((transaction) => (
-            <li key={transaction.start}>
-              <button
-                type="button"
-                className="hover:bg-accent flex w-full items-center gap-3 rounded-md px-2 py-1 text-left tabular-nums"
-                onClick={() => setWindow(paddedWindow(transaction))}
-              >
-                <span className="text-muted-foreground w-16 shrink-0">
-                  {formatSi(transaction.start, "s")}
-                </span>
-                <span className="truncate">{transaction.text}</span>
-              </button>
-            </li>
-          ))}
+          {decoded.transactions.map((transaction) => {
+            const inView = transaction.end >= window.start && transaction.start <= window.end;
+            return (
+              <li key={transaction.start}>
+                <button
+                  type="button"
+                  data-in-view={inView}
+                  className={cn(
+                    "hover:bg-accent flex w-full items-center gap-3 rounded-md px-2 py-1 text-left tabular-nums transition-colors duration-150",
+                    !inView && "text-muted-foreground/60",
+                  )}
+                  onClick={() =>
+                    setWindow(paddedWindow(transaction), {
+                      animate: true,
+                      focus: centreOf(transaction),
+                    })
+                  }
+                >
+                  <span className={cn("w-16 shrink-0", inView && "text-muted-foreground")}>
+                    {formatSi(transaction.start, "s")}
+                  </span>
+                  <span className="truncate">{transaction.text}</span>
+                </button>
+              </li>
+            );
+          })}
         </ol>
       ) : null}
       {children}
