@@ -1,0 +1,92 @@
+---
+title: Range bar
+description: The analog indicator high-performance HMIs use instead of a dial, grey while normal, coloured only past a limit, with confirmed and commanded setpoints and the recent spread.
+---
+
+<ComponentPreview name="range-bar" />
+
+Send the heater to 32 °C and the chamber walks out of the grey band into High. Send it to 36 °C and the device clamps to its 35 °C limit: the solid triangle stops at 35, the hollow one stays at 36, and the value crosses into High alarm. The thin line under the track is the spread of the last 30 seconds.
+
+## Installation
+
+<InstallTabs item="range-bar" />
+
+## Usage
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { RangeBar } from "@/components/ui/range-bar";
+
+export function Chamber() {
+  const { readings, history, setpoints } = useMockDevice();
+  const chamber = readings.chamber;
+  return (
+    <RangeBar
+      label="Chamber temperature"
+      unit="°C"
+      min={10}
+      max={40}
+      thresholds={{ low: 15, warnBelow: 18, warnAbove: 30, high: 34 }}
+      value={typeof chamber?.v === "number" ? chamber.v : null}
+      recent={history.chamber}
+      setpoint={setpoints.heater?.confirmed}
+      commanded={setpoints.heater?.commanded}
+    />
+  );
+}
+```
+
+## Why not a gauge
+
+Operators read position faster than angle, and a bar fits a grid of readings where a dial wastes its corners. ISA-101 style displays keep normal values grey so that the only colour on screen means something is wrong. The range bar follows that: the marker is the foreground colour until the value leaves the normal band.
+
+## Props
+
+<PropsTable of="range-bar" />
+
+## States
+
+| State      | When                         | Marker and text |
+| ---------- | ---------------------------- | --------------- |
+| Normal     | Inside the warning limits    | Foreground      |
+| Low, High  | Past `warnBelow`/`warnAbove` | `--warning`     |
+| Low alarm  | Below `low`                  | `--destructive` |
+| High alarm | Above `high`                 | `--destructive` |
+| No data    | `value` is `null`            | No marker       |
+
+A value beyond `min` or `max` pins to that end with a small triangle pointing the way it went.
+
+## Examples
+
+### Vertical
+
+`orientation="vertical"` for levels and tanks.
+
+```tsx
+<RangeBar orientation="vertical" label="Tank" unit="%" min={0} max={100} value={62} />
+```
+
+### Plain scale
+
+Without thresholds there is no band and the marker never changes colour.
+
+```tsx
+<RangeBar label="Supply" unit="V" min={0} max={5} value={3.31} precision={2} />
+```
+
+## Theming
+
+The track uses `--muted`, the normal band and limit ticks `--muted-foreground`, the setpoint triangles and normal marker `--foreground`. Only abnormal states use `--warning` and `--destructive`.
+
+## Accessibility
+
+A visually hidden native `meter` carries the value, range and a text such as "32.4 °C, high, setpoint 32.0 °C". The state is also written as a word next to the label, so colour is never the only signal.
+
+Under `prefers-reduced-motion` the marker jumps instead of gliding.
+
+## Ask your agent
+
+<AgentPrompt item="range-bar">
+  Prefer a range bar to a gauge. Pass warning and alarm limits so the normal band is grey, and pass
+  the setpoint's confirmed and commanded values so an unconfirmed change shows as a hollow triangle.
+</AgentPrompt>

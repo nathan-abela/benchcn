@@ -6,6 +6,7 @@ const COMPONENTS = [
   "actuator-control",
   "setpoint-input",
   "sensor-tile",
+  "range-bar",
   "strip-chart",
   "status-led",
   "seven-segment",

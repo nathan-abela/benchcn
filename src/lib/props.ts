@@ -209,6 +209,39 @@ export const props: Record<string, PropsDoc> = {
     },
     label: { type: "string", description: "Accessible description.", default: "the value" },
   },
+  "range-bar": {
+    label: { type: "ReactNode", description: "", required: true },
+    value: {
+      type: "number | null",
+      description: "`null` shows `--` and No data.",
+      required: true,
+    },
+    unit: { type: "string", description: "Shown after the value, the setpoint and the scale." },
+    min: { type: "number", description: "Low end of the scale.", required: true },
+    max: { type: "number", description: "High end of the scale.", required: true },
+    precision: { type: "number", description: "Decimal places.", default: "by magnitude" },
+    thresholds: {
+      type: "{ low?, high?, warnBelow?, warnAbove? }",
+      description: "Alarm and warning limits. The warning limits bound the grey normal band.",
+    },
+    setpoint: {
+      type: "number | null",
+      description: "Confirmed setpoint, drawn as a solid triangle.",
+    },
+    commanded: {
+      type: "number | null",
+      description: "Setpoint sent but not confirmed, drawn hollow while it differs.",
+    },
+    recent: {
+      type: "ArrayLike<number>",
+      description: "Recent values; their spread is drawn as a line beside the track.",
+    },
+    orientation: {
+      type: '"horizontal" | "vertical"',
+      description: "Vertical suits levels and tanks.",
+      default: '"horizontal"',
+    },
+  },
   "setpoint-input": {
     label: { type: "ReactNode", description: "", required: true },
     description: {

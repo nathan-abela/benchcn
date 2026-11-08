@@ -307,6 +307,17 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/sensor-tile"),
   },
   {
+    name: "range-bar",
+    type: "registry:ui",
+    title: "Range bar",
+    description:
+      "High-performance HMI analog indicator: grey normal band, colour only past a limit, solid and hollow setpoint triangles for confirmed and commanded, recent spread, off-scale pins, horizontal or vertical.",
+    files: [{ path: "registry/benchcn/ui/range-bar/range-bar.tsx", type: "registry:ui" }],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`],
+    categories: ["readouts"],
+    docs: docsUrl("components/range-bar"),
+  },
+  {
     name: "strip-chart",
     type: "registry:ui",
     title: "Strip chart",

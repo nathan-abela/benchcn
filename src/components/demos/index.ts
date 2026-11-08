@@ -9,6 +9,7 @@ import logicAnalyzerSource from "./logic-analyzer-demo.tsx?raw";
 import oscilloscopeSource from "./oscilloscope-demo.tsx?raw";
 import pinoutHeaderSource from "./pinout-header-demo.tsx?raw";
 import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
+import rangeBarSource from "./range-bar-demo.tsx?raw";
 import sensorTileSource from "./sensor-tile-demo.tsx?raw";
 import serialConsoleSource from "./serial-console-demo.tsx?raw";
 import setpointInputSource from "./setpoint-input-demo.tsx?raw";
@@ -71,6 +72,11 @@ export const demos: Record<string, Demo> = {
     ),
     source: sensorTileSource,
     placeholder: { base: 756, sm: 392, lg: 256 },
+  },
+  "range-bar": {
+    component: lazy(() => import("./range-bar-demo").then((m) => ({ default: m.RangeBarDemo }))),
+    source: rangeBarSource,
+    placeholder: { base: 462, sm: 234 },
   },
   "strip-chart": {
     component: lazy(() =>

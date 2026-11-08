@@ -460,6 +460,27 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "range-bar",
+      "type": "registry:ui",
+      "title": "Range bar",
+      "description": "High-performance HMI analog indicator: grey normal band, colour only past a limit, solid and hollow setpoint triangles for confirmed and commanded, recent spread, off-scale pins, horizontal or vertical.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/range-bar/range-bar.tsx",
+          "type": "registry:ui"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens",
+        "@benchcn/instrument"
+      ],
+      "categories": [
+        "readouts"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/range-bar"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "strip-chart",
       "type": "registry:ui",
       "title": "Strip chart",
