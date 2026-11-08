@@ -9,6 +9,8 @@
   },
   "ignorePatterns": [
     "public/r/",
+    "registry.json",
+    ".claude/",
     "src/routeTree.gen.ts",
     ".source/",
     "dist/",
