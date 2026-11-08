@@ -195,7 +195,7 @@ export function SerialConsole({
                       {line.direction === "out" ? "→" : line.level}
                     </span>
                   ) : null}
-                  <span className="min-w-0 break-all">{line.text}</span>
+                  <span className="min-w-0 [overflow-wrap:anywhere]">{line.text}</span>
                 </li>
               ))}
             </ol>

@@ -211,6 +211,8 @@ export function StripChart({
         ctx.textBaseline = "middle";
         laneTicks[laneIndex].forEach((v, i) => {
           const y = Math.round(toY(v)) + 0.5;
+          // A tick on a lane edge would collide with the next lane's label.
+          if (stacked && (y < lane.top + 5 || y > lane.top + lane.height - 5)) return;
           ctx.beginPath();
           ctx.moveTo(gutter, y);
           ctx.lineTo(width, y);

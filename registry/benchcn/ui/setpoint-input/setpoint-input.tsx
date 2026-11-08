@@ -202,8 +202,8 @@ export function SetpointInput({
         </span>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <div className="flex items-stretch gap-2">
+      <div className="@container flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2 @[19rem]:flex-row @[19rem]:items-stretch">
           <div
             className={cn(
               "bg-background focus-within:ring-ring/50 flex h-12 min-w-0 flex-1 items-center rounded-lg border focus-within:ring-[3px]",
