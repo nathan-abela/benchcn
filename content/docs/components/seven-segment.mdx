@@ -39,6 +39,14 @@ Digits `0` to `9`, `-`, `_`, space, `.`, `:`, `°` and the letters `A b C c d E 
 <SevenSegment value={7} digits={3} leadingZeros />
 ```
 
+### Blinking colon
+
+Keep the value as `HH:MM` and toggle `colon`. An unlit colon is drawn at `offOpacity` in the same place, so the digits never move.
+
+```tsx
+<SevenSegment value="12:34" colon={seconds % 2 === 0} color="amber" />
+```
+
 ### Without the bezel
 
 `bezel={false}` drops the dark window so the digits sit on your own surface.

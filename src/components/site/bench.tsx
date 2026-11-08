@@ -1,5 +1,6 @@
-import { type ReactElement, useMemo, useState, useSyncExternalStore } from "react";
+import { type ReactElement, useMemo, useState } from "react";
 
+import { useClock } from "@/components/demos/use-clock";
 import { useMockDevice } from "@/registry/benchcn/hooks/use-mock-device";
 import { INITIAL_ACTUATOR_STATE } from "@/registry/benchcn/lib/actuator";
 import { encodeI2c, type I2cTransaction } from "@/registry/benchcn/lib/decoders/i2c";
@@ -46,23 +47,6 @@ function i2cLanes(seed: number): LogicLane[] {
     { id: "scl", label: "SCL", data: trace.scl, sampleRate: I2C_SAMPLE_RATE },
     { id: "sda", label: "SDA", data: trace.sda, sampleRate: I2C_SAMPLE_RATE },
   ];
-}
-
-function subscribeClock(onChange: () => void): () => void {
-  const timer = window.setInterval(onChange, 1000);
-  return () => window.clearInterval(timer);
-}
-
-function readClock(): string {
-  const now = new Date();
-  const hh = String(now.getHours()).padStart(2, "0");
-  const mm = String(now.getMinutes()).padStart(2, "0");
-  return now.getSeconds() % 2 === 0 ? `${hh}:${mm}` : `${hh} ${mm}`;
-}
-
-/** Wall-clock time as HH:MM with a blinking colon; blank in the prerendered HTML so hydration matches. */
-function useClock(): string {
-  return useSyncExternalStore(subscribeClock, readClock, () => "--:--");
 }
 
 function BenchScope(): ReactElement {
@@ -138,7 +122,13 @@ export function Bench(): ReactElement {
 
       <div className="bg-card rise-in flex flex-col justify-between gap-5 rounded-xl border p-3 [--rise-delay:320ms] lg:col-span-4">
         <span className="text-sm font-medium">Front panel</span>
-        <SevenSegment value={clock} color="amber" size={56} label="Clock" />
+        <SevenSegment
+          value={clock.time}
+          colon={clock.colon}
+          color="amber"
+          size={56}
+          label="Clock"
+        />
         <div className="flex flex-wrap items-end gap-4">
           <SevenSegment
             value={temp ?? "--.-"}
@@ -193,7 +183,7 @@ export function Bench(): ReactElement {
           />
           <CharacterLcd
             lines={[
-              `PUMP ${pump.confirmed ? "ON " : "OFF"}  ${clock}`,
+              `PUMP ${pump.confirmed ? "ON " : "OFF"}  ${clock.time}`,
               `SOIL ${soil === null ? "--" : soil.toFixed(0)}%`,
             ]}
             color="amber"

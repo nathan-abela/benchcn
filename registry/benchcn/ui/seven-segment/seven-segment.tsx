@@ -30,6 +30,8 @@ export type SevenSegmentProps = Omit<ComponentProps<"div">, "color"> & {
   size?: number;
   /** Opacity of unlit segments. */
   offOpacity?: number;
+  /** Light the colons. Set false to blink them in place without the digits moving. */
+  colon?: boolean;
   /** Dark display window behind the digits. */
   bezel?: boolean;
   /** Accessible description. Defaults to the value. */
@@ -178,6 +180,7 @@ export function SevenSegment({
   color,
   size = 40,
   offOpacity = 0.09,
+  colon = true,
   bezel = true,
   label,
   className,
@@ -223,7 +226,12 @@ export function SevenSegment({
           const x0 = offsets[i];
           if ("colon" in cell) {
             return (
-              <g key={x0} transform={`translate(${x0} 0) skewX(-6)`} fill="var(--segment)">
+              <g
+                key={x0}
+                transform={`translate(${x0} 0) skewX(-6)`}
+                fill="var(--segment)"
+                opacity={colon ? 1 : offOpacity}
+              >
                 <rect
                   x={colonW / 2 - THICK / 2}
                   y={MID - 22 - THICK / 2}
