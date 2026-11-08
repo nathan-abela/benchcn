@@ -85,7 +85,7 @@ function BenchScope(): ReactElement {
       timebase={0.0002}
       trigger={{ source: "ch1", level }}
       onTriggerLevelChange={setLevel}
-      className="bg-card flex flex-col gap-3 rounded-xl border p-3 lg:col-span-7"
+      className="bg-card rise-in flex flex-col gap-3 rounded-xl border p-3 [--rise-delay:200ms] lg:col-span-7"
     >
       <div className="flex items-center justify-between">
         <span className="text-sm font-medium">Oscilloscope</span>
@@ -127,10 +127,10 @@ export function Bench(): ReactElement {
         decode={{ protocol: "i2c", sda: "sda", scl: "scl" }}
         title="Logic analyzer"
         laneHeight={44}
-        className="lg:col-span-5"
+        className="rise-in [--rise-delay:260ms] lg:col-span-5"
       />
 
-      <div className="bg-card flex flex-col justify-between gap-5 rounded-xl border p-3 lg:col-span-4">
+      <div className="bg-card rise-in flex flex-col justify-between gap-5 rounded-xl border p-3 [--rise-delay:320ms] lg:col-span-4">
         <span className="text-sm font-medium">Front panel</span>
         <SevenSegment value={clock} color="amber" size={56} label="Clock" />
         <div className="flex flex-wrap items-end gap-4">
@@ -173,7 +173,7 @@ export function Bench(): ReactElement {
         </div>
       </div>
 
-      <div className="bg-card flex flex-col gap-4 rounded-xl border p-3 lg:col-span-4">
+      <div className="bg-card rise-in flex flex-col gap-4 rounded-xl border p-3 [--rise-delay:380ms] lg:col-span-4">
         <span className="text-sm font-medium">Character LCD</span>
         <div className="flex flex-col items-start gap-4">
           <CharacterLcd
@@ -201,7 +201,7 @@ export function Bench(): ReactElement {
         description="Fail-safe off"
         {...pump}
         onCommand={(next) => command("pump", next)}
-        className="lg:col-span-4"
+        className="rise-in [--rise-delay:440ms] lg:col-span-4"
       />
     </div>
   );

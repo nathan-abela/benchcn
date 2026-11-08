@@ -36,11 +36,11 @@ function Section({
 }): ReactElement {
   return (
     <section id={id} className="mx-auto w-full max-w-[1400px] px-4 pt-20 pb-4 md:px-6 lg:pt-28">
-      <div className="mb-8 flex max-w-2xl flex-col gap-3">
+      <div className="rise-on-view mb-8 flex max-w-2xl flex-col gap-3">
         <h2 className="text-2xl font-medium tracking-tight sm:text-3xl">{title}</h2>
         {lede ? <p className="text-lg text-pretty">{lede}</p> : null}
       </div>
-      {children}
+      <div className="rise-on-view">{children}</div>
     </section>
   );
 }
@@ -50,15 +50,15 @@ function Home(): ReactElement {
     <HomeLayout {...baseOptions()} nav={{ component: <SiteNav /> }}>
       <main className="flex flex-col">
         <section className="mx-auto flex w-full max-w-[1400px] flex-col gap-10 px-4 pt-12 pb-4 md:px-6 lg:pt-16">
-          <div className="mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">
+          <div className="*:rise-in mx-auto flex max-w-3xl flex-col items-center gap-5 text-center">
             <h1 className="text-[clamp(2.5rem,7vw,3.75rem)] leading-[1] font-medium tracking-[-0.03em] text-balance">
               Hardware UI for shadcn/ui
             </h1>
-            <p className="max-w-[52ch] text-lg text-pretty">
+            <p className="max-w-[52ch] text-lg text-pretty [--rise-delay:60ms]">
               Instruments, displays and controls built the shadcn way. Live against a mock device,
               one line from your ESP32 or Pico.
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-3">
+            <div className="flex flex-wrap items-center justify-center gap-3 [--rise-delay:120ms]">
               <Link
                 to="/docs/$"
                 params={{ _splat: "" }}
@@ -73,7 +73,7 @@ function Home(): ReactElement {
                 GitHub
               </a>
             </div>
-            <ThemeChips className="mt-1" />
+            <ThemeChips className="mt-1 [--rise-delay:180ms]" />
           </div>
           <Bench />
         </section>

@@ -41,7 +41,10 @@ export function CopyButton({
       }}
       {...props}
     >
-      {copied ? <CheckIcon className="text-success" /> : <CopyIcon />}
+      <span className="relative grid size-4 place-items-center *:col-start-1 *:row-start-1 *:transition-[opacity,scale,filter] *:duration-150 *:ease-out">
+        <CopyIcon className={copied ? "scale-75 opacity-0 blur-[2px]" : ""} />
+        <CheckIcon className={copied ? "text-success" : "scale-75 opacity-0 blur-[2px]"} />
+      </span>
       {children}
     </Button>
   );

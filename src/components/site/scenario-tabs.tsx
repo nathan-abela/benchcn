@@ -1,3 +1,4 @@
+import { motion, useReducedMotion } from "motion/react";
 import { lazy, type ReactElement, Suspense, useState } from "react";
 
 import { cn } from "@/lib/utils";
@@ -121,6 +122,7 @@ function Fallback(): ReactElement {
 
 export function ScenarioTabs(): ReactElement {
   const [active, setActive] = useState<ScenarioId>("plant");
+  const reduced = useReducedMotion();
   const scenario = SCENARIOS.find((s) => s.id === active) ?? SCENARIOS[0];
 
   return (
@@ -135,12 +137,22 @@ export function ScenarioTabs(): ReactElement {
               aria-selected={active === s.id}
               onClick={() => setActive(s.id)}
               className={cn(
-                "focus-visible:ring-ring/50 rounded-full border px-3 py-1.5 text-sm transition-colors outline-none focus-visible:ring-[3px]",
+                "focus-visible:ring-ring/50 relative isolate rounded-full px-3 py-1.5 text-sm transition-[color,transform] duration-150 ease-out outline-none focus-visible:ring-[3px] active:scale-[0.97]",
                 active === s.id
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-accent border-transparent",
+                  ? "text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-accent",
               )}
             >
+              {active === s.id ? (
+                <motion.span
+                  layoutId="scenario-pill"
+                  aria-hidden
+                  className="bg-primary absolute inset-0 -z-10 rounded-full"
+                  transition={
+                    reduced ? { duration: 0 } : { type: "spring", duration: 0.35, bounce: 0 }
+                  }
+                />
+              ) : null}
               {s.label}
             </button>
           ))}
@@ -149,26 +161,28 @@ export function ScenarioTabs(): ReactElement {
       </div>
       <div role="tabpanel" className="min-h-72">
         <Suspense fallback={<Fallback />}>
-          {active === "plant" ? <PlantMonitor key="plant" /> : null}
-          {active === "weather" ? <WeatherStation key="weather" /> : null}
-          {active === "bench" ? (
-            <div className="grid gap-4 lg:grid-cols-[3fr_2fr]">
-              <OscilloscopeDemo />
-              <div className="lg:col-span-2">
-                <LogicAnalyzerDemo />
+          <div key={active} className="rise-in">
+            {active === "plant" ? <PlantMonitor key="plant" /> : null}
+            {active === "weather" ? <WeatherStation key="weather" /> : null}
+            {active === "bench" ? (
+              <div className="grid gap-4 lg:grid-cols-[3fr_2fr]">
+                <OscilloscopeDemo />
+                <div className="lg:col-span-2">
+                  <LogicAnalyzerDemo />
+                </div>
               </div>
-            </div>
-          ) : null}
-          {active === "robot" ? <Robot key="robot" /> : null}
-          {active === "datasheet" ? (
-            <div className="grid gap-4 lg:grid-cols-2">
-              <div className="lg:col-span-2">
-                <PinoutHeaderDemo />
+            ) : null}
+            {active === "robot" ? <Robot key="robot" /> : null}
+            {active === "datasheet" ? (
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div className="lg:col-span-2">
+                  <PinoutHeaderDemo />
+                </div>
+                <BitfieldDiagramDemo />
+                <TimingDiagramDemo />
               </div>
-              <BitfieldDiagramDemo />
-              <TimingDiagramDemo />
-            </div>
-          ) : null}
+            ) : null}
+          </div>
         </Suspense>
       </div>
     </div>
