@@ -17,6 +17,13 @@ for (const item of registry) {
   }
 }
 
+// Components install flat, as `components/ui/<name>.tsx`, the path the docs import from. Without a
+// target the CLI keeps the repo's folder and imports would need `ui/<name>/<name>`.
+const withTargets = (file: { path: string; type: string; target?: string }) => {
+  const ui = /^registry\/benchcn\/ui\/[\w-]+\/([\w-]+\.tsx)$/.exec(file.path);
+  return ui && !file.target ? { ...file, target: `components/ui/${ui[1]}` } : file;
+};
+
 const manifest = {
   $schema: "https://ui.shadcn.com/schema/registry.json",
   name: siteConfig.name,
@@ -24,6 +31,7 @@ const manifest = {
   items: registry.map((item) => ({
     $schema: "https://ui.shadcn.com/schema/registry-item.json",
     ...item,
+    files: item.files?.map(withTargets),
   })),
 };
 

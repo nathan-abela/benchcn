@@ -33,7 +33,7 @@ import {
   toCsv,
   valueRange,
   visibleSlice,
-} from "@/registry/benchcn/lib/strip-chart";
+} from "@/registry/benchcn/lib/strip-math";
 
 export type { StripSeries } from "@/registry/benchcn/hooks/use-strip-series";
 

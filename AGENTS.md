@@ -29,7 +29,7 @@ registry/registry.ts      Registry manifest (source of truth for registry.json).
 registry/benchcn/
   ui/<name>/              Components. Composable parts + a batteries-included default where it helps.
   lib/                    Pure logic: wire.ts (protocol), source-store.ts, actuator.ts (commanded vs. confirmed,
-                          booleans and numeric setpoints), alarms.ts, strip-chart.ts, ring-buffer.ts,
+                          booleans and numeric setpoints), alarms.ts, strip-math.ts, ring-buffer.ts,
                           mock-device.ts, decoders/, units.ts
   hooks/                  use-mock-device, use-websocket-source, use-serial-source, use-ring-buffer,
                           use-strip-series, use-alarms, use-canvas

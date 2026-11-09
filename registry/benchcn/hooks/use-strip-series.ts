@@ -4,7 +4,7 @@
 import { useEffect, useState, useSyncExternalStore } from "react";
 
 import type { SourceStore } from "@/registry/benchcn/lib/source-store";
-import type { StripPoint } from "@/registry/benchcn/lib/strip-chart";
+import type { StripPoint } from "@/registry/benchcn/lib/strip-math";
 import type { WireSample } from "@/registry/benchcn/lib/wire";
 
 export type StripSeries = {

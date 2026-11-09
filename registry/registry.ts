@@ -352,7 +352,7 @@ export const registry: RegistryItem[] = [
     files: [
       { path: "registry/benchcn/ui/strip-chart/strip-chart.tsx", type: "registry:ui" },
       { path: "registry/benchcn/hooks/use-strip-series.ts", type: "registry:hook" },
-      { path: "registry/benchcn/lib/strip-chart.ts", type: "registry:lib" },
+      { path: "registry/benchcn/lib/strip-math.ts", type: "registry:lib" },
     ],
     registryDependencies: [
       "button",

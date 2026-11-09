@@ -8,7 +8,7 @@ import {
   toCsv,
   valueRange,
   visibleSlice,
-} from "./strip-chart";
+} from "./strip-math";
 
 const at = (pairs: [number, number][]): StripPoint[] => pairs.map(([t, v]) => ({ t, v }));
 

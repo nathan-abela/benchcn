@@ -192,7 +192,7 @@ export function SevenSegment({
   const dotW = THICK * 1.6;
   const colonW = THICK * 1.4;
   const widths = cells.map((c) => ("colon" in c ? colonW : DIGIT_W + (c.dot ? dotW : 0)));
-  const offsets = widths.reduce<number[]>((acc, w, i) => {
+  const offsets = widths.reduce<number[]>((acc, _width, i) => {
     acc.push(i === 0 ? 0 : acc[i - 1] + widths[i - 1] + 6);
     return acc;
   }, []);

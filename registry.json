@@ -182,7 +182,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/setpoint-input/setpoint-input.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/setpoint-input.tsx"
         }
       ],
       "registryDependencies": [
@@ -334,7 +335,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/oscilloscope/oscilloscope.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/oscilloscope.tsx"
         },
         {
           "path": "registry/benchcn/lib/scope-math.ts",
@@ -361,7 +363,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/logic-analyzer/logic-analyzer.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/logic-analyzer.tsx"
         }
       ],
       "registryDependencies": [
@@ -386,7 +389,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/status-led/status-led.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/status-led.tsx"
         }
       ],
       "css": {
@@ -429,7 +433,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/seven-segment/seven-segment.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/seven-segment.tsx"
         }
       ],
       "categories": [
@@ -446,7 +451,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/sensor-tile/sensor-tile.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/sensor-tile.tsx"
         }
       ],
       "registryDependencies": [
@@ -467,7 +473,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/range-bar/range-bar.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/range-bar.tsx"
         }
       ],
       "registryDependencies": [
@@ -488,7 +495,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/meter-readout/meter-readout.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/meter-readout.tsx"
         }
       ],
       "registryDependencies": [
@@ -511,7 +519,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/alarm-list/alarm-list.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/alarm-list.tsx"
         },
         {
           "path": "registry/benchcn/hooks/use-alarms.ts",
@@ -542,14 +551,15 @@
       "files": [
         {
           "path": "registry/benchcn/ui/strip-chart/strip-chart.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/strip-chart.tsx"
         },
         {
           "path": "registry/benchcn/hooks/use-strip-series.ts",
           "type": "registry:hook"
         },
         {
-          "path": "registry/benchcn/lib/strip-chart.ts",
+          "path": "registry/benchcn/lib/strip-math.ts",
           "type": "registry:lib"
         }
       ],
@@ -574,7 +584,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/character-lcd/character-lcd.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/character-lcd.tsx"
         },
         {
           "path": "registry/benchcn/lib/hd44780-rom.ts",
@@ -598,7 +609,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/serial-console/serial-console.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/serial-console.tsx"
         }
       ],
       "registryDependencies": [
@@ -663,7 +675,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/pinout-header/pinout-header.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/pinout-header.tsx"
         },
         {
           "path": "registry/benchcn/lib/pinout.ts",
@@ -689,7 +702,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/bitfield-diagram/bitfield-diagram.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/bitfield-diagram.tsx"
         },
         {
           "path": "registry/benchcn/lib/bitfield.ts",
@@ -714,7 +728,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/timing-diagram/timing-diagram.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/timing-diagram.tsx"
         },
         {
           "path": "registry/benchcn/lib/wavejson.ts",
@@ -815,7 +830,8 @@
       "files": [
         {
           "path": "registry/benchcn/ui/actuator-control/actuator-control.tsx",
-          "type": "registry:ui"
+          "type": "registry:ui",
+          "target": "components/ui/actuator-control.tsx"
         }
       ],
       "dependencies": [
