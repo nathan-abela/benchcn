@@ -13,15 +13,21 @@
 
 Hardware and maker UI components for shadcn/ui. Instruments that work, not instruments that look like it.
 
-Oscilloscope, logic analyzer with I²C decode, seven-segment and character-LCD displays, GPIO pinout maps, register and timing diagrams, a serial console, and actuator controls that know the difference between _commanded_ and _confirmed_. Every component is live against a mock device out of the box and connects to real hardware through small data-source hooks.
+Oscilloscope, logic analyzer with I²C decode, strip chart, meter, seven-segment and character-LCD displays, GPIO pinout maps, register and timing diagrams, a serial console, an alarm list, and actuator and setpoint controls that know the difference between _commanded_ and _confirmed_. Every component is live against a mock device out of the box and connects to real hardware through small data-source hooks.
 
 **Docs:** https://nathan-abela.github.io/benchcn
 
-> Status: the eleven v1 components, the data-source hooks and the decoders are in. The landing page and the two dashboard blocks are next. See [ROADMAP.md](ROADMAP.md).
+> Status: sixteen components, three dashboard blocks, the data-source hooks and the decoders are in. Launch prep is next. See [ROADMAP.md](ROADMAP.md).
 
-## What is in v1
+## What is in it
 
-Oscilloscope, logic analyzer with I²C decode, actuator control, sensor tile, status LED, seven-segment display, character LCD, serial console, pinout header with four boards, bitfield diagram and timing diagram. Hooks for the mock device, WebSocket and Web Serial sources and a ring buffer. Pure I²C, SPI and UART decoders with encoders and tests.
+- **Signals:** oscilloscope, logic analyzer with I²C decode, strip chart with CSV export.
+- **Readouts:** sensor tile, range bar, meter readout, alarm list with acknowledgement and shelving.
+- **Controls:** actuator control and setpoint input, both tracking commanded vs. confirmed through the device's acknowledgements.
+- **Displays:** status LED, seven-segment display, character LCD, serial console.
+- **Board and docs:** pinout header with four boards, bitfield diagram, timing diagram.
+- **Blocks:** power bench, plant monitor and weather station, each with an 800×480 kiosk layout.
+- **Data:** hooks for the mock device, WebSocket and Web Serial sources, a ring buffer, strip-chart series and alarm rules. Pure I²C, SPI and UART decoders with encoders and tests.
 
 ## Install
 
@@ -51,7 +57,7 @@ Devices speak a tiny newline-delimited JSON protocol, `benchcn/0`:
 {"ack":17,"ok":true,"id":"pump","v":true}
 ```
 
-Firmware snippets for Raspberry Pi (Python), MicroPython and Arduino ship in `device/`. See the [wire protocol](https://nathan-abela.github.io/benchcn/docs/wire-protocol).
+The [wire protocol](https://nathan-abela.github.io/benchcn/docs/wire-protocol) page has every message, including numeric setpoints and the hello that announces channels.
 
 ## Theming
 

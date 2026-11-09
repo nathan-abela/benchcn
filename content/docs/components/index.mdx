@@ -1,16 +1,20 @@
 ---
 title: Overview
-description: The v1 catalog. Each page has a live preview, install command, usage, API and accessibility notes.
+description: The catalog. Each page has a live preview, install command, usage, API and accessibility notes.
 ---
 
 ## Signals
 
 - [Oscilloscope](/docs/components/oscilloscope): triggered waveform display with measurements.
 - [Logic analyzer](/docs/components/logic-analyzer): digital lanes with zoom and I²C decode.
+- [Strip chart](/docs/components/strip-chart): rolling multi-series trend with honest gaps and CSV export.
 
 ## Readouts and displays
 
 - [Sensor tile](/docs/components/sensor-tile): one reading with thresholds, sparkline and stale detection.
+- [Range bar](/docs/components/range-bar): where a value sits against its limits and setpoint, grey until abnormal.
+- [Meter readout](/docs/components/meter-readout): multimeter face with hold and min, max and average.
+- [Alarm list](/docs/components/alarm-list): rule-driven alarms with acknowledgement and shelving.
 - [Seven-segment display](/docs/components/seven-segment): SVG digits in physical colours.
 - [Character LCD](/docs/components/character-lcd): HD44780 text display from the real character ROM.
 - [Status LED](/docs/components/status-led): panel LED with patterns.
@@ -18,6 +22,7 @@ description: The v1 catalog. Each page has a live preview, install command, usag
 ## Controls
 
 - [Actuator control](/docs/components/actuator-control): press-and-hold with commanded versus confirmed state.
+- [Setpoint input](/docs/components/setpoint-input): numeric setpoint that stays a draft until the device confirms it.
 
 ## Boards and docs
 
@@ -29,4 +34,4 @@ description: The v1 catalog. Each page has a live preview, install command, usag
 
 - [Serial console](/docs/components/serial-console): logs and a command line.
 
-Everything else, from OLED and LED matrix to strip charts and robotics panels, is tracked in the [roadmap](https://github.com/nathan-abela/benchcn/blob/main/ROADMAP.md).
+Everything else, from OLED and LED matrix to robotics panels, is tracked in the [roadmap](https://github.com/nathan-abela/benchcn/blob/main/ROADMAP.md).

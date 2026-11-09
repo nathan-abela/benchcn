@@ -28,22 +28,25 @@ config/site.ts            siteConfig: name, url, basepath, registry namespace/UR
 registry/registry.ts      Registry manifest (source of truth for registry.json). One entry per installable item.
 registry/benchcn/
   ui/<name>/              Components. Composable parts + a batteries-included default where it helps.
-  lib/                    Pure logic: wire.ts (protocol), ring-buffer.ts, mock-device.ts, decoders-*.ts, units.ts
-  hooks/                  use-websocket-source, use-serial-source, use-ring-buffer, use-mock-device
+  lib/                    Pure logic: wire.ts (protocol), source-store.ts, actuator.ts (commanded vs. confirmed,
+                          booleans and numeric setpoints), alarms.ts, strip-chart.ts, ring-buffer.ts,
+                          mock-device.ts, decoders/, units.ts
+  hooks/                  use-mock-device, use-websocket-source, use-serial-source, use-ring-buffer,
+                          use-strip-series, use-alarms, use-canvas
   boards/                 Pinout data files, one per board, each with a `source` URL to the official doc
-  blocks/                 Full dashboards (plant-monitor, weather-station)
-src/routes/               TanStack Start file routes: landing, docs/$, api/search, llms.txt, 404
+  blocks/                 Full dashboards (power-bench, plant-monitor, weather-station), each with a kiosk layout
+src/routes/               TanStack Start file routes: landing, docs/$, kiosk/$block, api/search, llms.txt, og, 404
 src/components/site/      Site chrome: nav, install tabs, copy-prompt button, scenario tabs
 src/components/demos/     One demo per component, shared by landing and docs
 src/styles/               app.css (tokens, fonts), themes.css (generated)
 content/docs/             Fumadocs MDX. One page per component, hook and block.
 scripts/                  build-registry.mts, build-themes.mts, serve-static.mts (Node runs .mts directly)
 e2e/                      Playwright
-device/                   Firmware snippets that speak the wire protocol (Python, MicroPython, Arduino)
+device/                   Firmware snippets that speak the wire protocol (Python, MicroPython, Arduino). Not created yet.
 .agents/skills/           Agent skills (agent-agnostic location). benchcn/ is the public skill users install;
                           add-component, write-docs-page and add-board-definition are for contributors;
                           shadcn and migrate-radix-to-base are vendored from shadcn/ui (see skills-lock.json)
-evals/                    Realistic agent prompts and results log
+evals/                    Realistic agent prompts and results log. Not created yet.
 ```
 
 ## Stack facts that are easy to get wrong

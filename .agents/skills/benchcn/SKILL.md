@@ -1,64 +1,72 @@
 ---
 name: benchcn
-description: Build hardware, IoT, robotics and maker dashboards with the @benchcn shadcn/ui registry: which component to use for which reading or control, which data source fits the situation, the benchcn wire protocol the firmware must speak, and the domain rules (commanded vs. confirmed, units, pin conflicts). Use when a user asks for a dashboard, telemetry UI, sensor display, instrument panel or device control page for a Raspberry Pi, Pico, ESP32, Arduino, robot or home-automation project.
+description: Build hardware, IoT, robotics and maker dashboards with the @benchcn shadcn/ui registry: which component to use for which reading or control, which data source fits the situation, the benchcn wire protocol the firmware must speak, and the domain rules (commanded vs. confirmed, setpoints, alarms, units, pin conflicts). Use when a user asks for a dashboard, telemetry UI, sensor display, instrument panel, bench or lab tool, alarm panel or device control page for a Raspberry Pi, Pico, ESP32, Arduino, robot or home-automation project.
 ---
 
 # benchcn
 
-Docs: https://nathan-abela.github.io/benchcn (every page also at `<url>.md`; index at `/llms.txt`, full text at `/llms-full.txt`).
+Docs: https://nathan-abela.github.io/benchcn (every page also at `<url>.md`; index at `/llms.txt`, full text at `/llms-full.txt`). When a prop is unclear, read the component's `.md` page rather than guessing.
 
 ## Setup (once per project)
 
-1. The project needs shadcn/ui with Tailwind v4. If it does not have `components.json`, run `pnpm dlx shadcn@latest init`.
+1. The project needs shadcn/ui with Tailwind v4. If it does not have `components.json`, run `npx shadcn@latest init`.
 2. Add the registry to `components.json`:
    ```json
    { "registries": { "@benchcn": "https://nathan-abela.github.io/benchcn/r/{name}.json" } }
    ```
-3. Install items with `pnpm dlx shadcn@latest add @benchcn/<item>`. Dependencies (`tokens`, `mock-device`, `wire`) come along automatically.
+3. Install items with `npx shadcn@latest add @benchcn/<item>`. Dependencies (`tokens`, `instrument`, `mock-device`, `wire`, hooks) come along automatically.
 
 ## Pick components by what the user needs to see or do
 
-| Need                                                        | Component                                             | Notes                                                                                      |
-| ----------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------------------------------------------------ |
-| A slow reading with a unit (temperature, humidity, battery) | `sensor-tile`                                         | Big value, unit, state text, threshold bar, sparkline. Pass `thresholds` for colour zones. |
-| Analog waveform (audio, ADC, motor current)                 | `oscilloscope`                                        | Needs a `block` source or `device.waveform()`. Set `timebase`, `voltsPerDiv`, `trigger`.   |
-| Digital lines, bus traffic                                  | `logic-analyzer`                                      | Pass lanes; enable `decode: "i2c"` for SDA/SCL.                                            |
-| Turn something on/off safely (relay, pump, motor enable)    | `actuator-control`                                    | Press-and-hold. Shows commanded vs. confirmed. Set `timeout` and `failSafe`.               |
-| Numeric readout that looks like hardware                    | `seven-segment`                                       | `value`, `digits`, `decimals`, `color`.                                                    |
-| Text display like a 16x2 LCD                                | `character-lcd`                                       | `lines`, `cols`, `rows`, `backlight`. HD44780 glyphs.                                      |
-| On/off/fault indicator                                      | `status-led`                                          | `state`, `color`, `pattern` (steady, blink, pulse).                                        |
-| Device logs and a command line                              | `serial-console`                                      | Feed it `log` messages; `onCommand` sends raw lines.                                       |
-| Explain wiring in docs                                      | `pinout-header`, `bitfield-diagram`, `timing-diagram` | Data-driven from board files, register specs and WaveJSON-style specs.                     |
-| Whole dashboard in one go                                   | blocks `plant-monitor`, `weather-station`             | Start here, then edit.                                                                     |
+| Need                                                             | Component                                             | Key props                                                                                                             |
+| ---------------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| A slow reading with a unit (temperature, humidity, battery)      | `sensor-tile`                                         | `label`, `value`, `unit`, `thresholds` `{ min, max, low, high, warnBelow, warnAbove }`, `history`, `updatedAt`.      |
+| Where a value sits against its limits and setpoint               | `range-bar`                                           | `value`, `min`, `max`, `thresholds`, `setpoint`, `commanded`, `recent`, `orientation`. Prefer it to a round gauge.    |
+| How slow channels move over the last minute, with CSV export     | `strip-chart`                                         | `series` from `useStripSeries(source, ["soil", "temp"])`, `seconds`, `staleAfter`. Mixed units stack into lanes.      |
+| A value people read precisely, with hold and min/max/avg         | `meter-readout`                                       | `label`, `mode`, `value`, `unit`, `sampleKey` (pass the sample object).                                               |
+| Numeric readout that looks like hardware                         | `seven-segment`                                       | `value`, `digits`, `decimals`, `color`, `colon`.                                                                      |
+| Text display like a 16x2 LCD                                     | `character-lcd`                                       | `lines`, `cols`, `rows`, `color`, `backlight`, `customGlyphs`. HD44780 glyphs.                                        |
+| On/off/fault indicator                                           | `status-led`                                          | `label`, `on`, `color`, `pattern` (`steady`, `blink`, `pulse`, `heartbeat`), `rate`.                                  |
+| Turn something on/off safely (relay, pump, motor enable)         | `actuator-control`                                    | Spread `actuators.<id>` and pass `onCommand={(on) => command(id, on)}`. Press-and-hold by default (`holdMs`).        |
+| Set a number on the device (heater, supply voltage, motor speed) | `setpoint-input`                                      | Spread `setpoints.<id>`, pass `min`, `max`, `step`, `unit`, `onCommand={(v) => command(id, v)}`, optional `confirm`. |
+| Alarms an operator must acknowledge                              | `alarm-list`                                          | `alarms` from `useAlarms(source, rules)`, plus `onAcknowledge`, `onAcknowledgeAll`, `onShelve`, `onUnshelve`.         |
+| Analog waveform (audio, ADC, motor current)                      | `oscilloscope`                                        | `channels` `[{ id, data, sampleRate, voltsPerDiv }]`, `timebase`, `trigger` `{ level, edge }`.                       |
+| Digital lines, bus traffic                                       | `logic-analyzer`                                      | `lanes`, `decode={{ protocol: "i2c", sda: "sda", scl: "scl" }}`, `defaultWindow="first"`.                             |
+| Device logs and a command line                                   | `serial-console`                                      | `lines` mapped from `logs`, `onCommand` sends raw lines.                                                              |
+| Explain wiring in docs                                           | `pinout-header`, `bitfield-diagram`, `timing-diagram` | Data-driven from board files, register specs and WaveJSON-style signals.                                              |
+| Whole dashboard in one go                                        | blocks `power-bench`, `plant-monitor`, `weather-station` | Start here, then edit. Each takes `source`, `channels` and `layout="kiosk"`.                                       |
 
 ## Pick a data source by the situation
 
-- **No hardware yet, demo, tests:** `createMockDevice()` via `useMockDevice()`. Deterministic; includes a pump relay with ack latency and faults.
+- **No hardware yet, demo, tests:** `useMockDevice()`. Deterministic, with sensors, a pump relay, a heater setpoint, a bench supply that switches between CV and CC, ack latency and dropped commands.
 - **Device on the network (ESP32, Pico W, Raspberry Pi):** `useWebSocketSource("ws://<host>/ws")`. The firmware serves a WebSocket and prints wire-protocol lines.
-- **Board plugged into this computer over USB:** `useSerialSource({ baudRate: 115200 })`. Web Serial is Chromium-only and must be opened from a click handler.
-- **Existing MQTT broker:** `useMqttSource` (planned; until then bridge MQTT to WebSocket).
+- **Board plugged into this computer over USB:** `useSerialSource({ baudRate: 115200 })`. Web Serial works in Chromium and Firefox desktop, not Safari or iOS, and must be opened from a click handler. Prefer WebSocket when the device has a network.
+- **Existing MQTT broker:** not built yet; bridge MQTT to WebSocket.
 
-Components never connect by themselves. Create one source at the top of the page and pass readings and `send` down.
+Every source returns the same handle: `readings`, `history`, `logs`, `actuators`, `setpoints`, `hello`, `received`, `command(id, value)`, `send`, `store`. Components never connect by themselves. Create one source at the top of the page and pass it down. For waveforms from a real device, feed `useRingBuffer(source.store, "ch1")` to the scope.
 
 ## The wire protocol (what the firmware prints)
 
 Newline-delimited JSON, one object per line. Keep keys exactly as below.
 
 ```
-{"hello":"benchcn/0","dev":"my-device","chs":[{"id":"temp","u":"°C","kind":"sensor"},{"id":"pump","kind":"actuator"}]}
+{"hello":"benchcn/0","dev":"my-device","chs":[{"id":"temp","u":"°C","kind":"sensor"},{"id":"pump","kind":"actuator"},{"id":"heater","u":"°C","min":15,"max":35,"kind":"setpoint"}]}
 {"ch":"temp","v":21.4,"u":"°C","t":1731000000}
 {"ch":"ch1","vs":[0.1,0.5,0.9],"sr":10000,"u":"V"}
 {"log":"boot ok","lvl":"info"}
 ```
 
-Dashboard sends `{"cmd":"set","n":17,"id":"pump","v":true}`; the device must reply `{"ack":17,"ok":true,"id":"pump","v":true}` (or `"ok":false,"err":"..."`). Plain text lines are shown as logs, so existing `print()` debugging keeps working. `t` is seconds since the epoch, or seconds since boot if the device has no clock.
+The dashboard sends `{"cmd":"set","n":17,"id":"pump","v":true}` for an actuator or `{"cmd":"set","n":18,"id":"heater","v":24.5}` for a setpoint. The device must reply with the value it actually applied: `{"ack":18,"ok":true,"id":"heater","v":24.5}`, or `"ok":false,"err":"..."`. A device that clamps 40 to 35 acks `"v":35` and the UI shows the mismatch. Plain text lines show as logs, so existing `print()` debugging keeps working. `t` is seconds since the epoch, or seconds since boot if the device has no clock.
 
 ## Domain rules the UI must respect
 
-- **Commanded is not confirmed.** Never render an actuator as "on" because the user pressed it. Show pending until the matching `ack` arrives; on timeout show an error and fall back to the `failSafe` state.
-- **Units travel with values.** Pass `u` through; do not hard-code units in labels. Thresholds are in the same unit as the value.
-- **Pin conflicts.** When composing a wiring page, a physical pin can carry one function. `pinout-header` flags conflicts when two parts claim the same pin or a bus role is duplicated.
-- **Timestamps.** Use the sample's `t` for charts, not arrival time, so network jitter does not distort plots.
+- **Commanded is not confirmed.** Never render an actuator or setpoint as applied because the user pressed or typed it. Show pending until the matching `ack`. Set `actuatorTimeout` and `failSafe` on the source so a timeout shows the state the firmware falls back to.
+- **Setpoints are drafts until applied.** Out-of-range values never leave the page; use `confirm` for changes that matter.
+- **Alarms come from rules, not ad hoc state.** Give each rule a `deadband`, add a `staleAfter` rule for every channel an operator depends on, and never drop an alarm nobody acknowledged.
+- **Colour means abnormal.** Normal values stay neutral; warning and alarm colours appear only past a limit, and the state is always written as a word too.
+- **Units travel with values.** Pass `u` through; do not hard-code units in labels. Thresholds are in the same unit as the value. Convert units on the source with `transform`, not per component.
+- **Pin conflicts.** A physical pin carries one function. `pinout-header` flags conflicts when two parts claim the same pin or a bus role is duplicated.
+- **Time.** Send `t` from the device; tiles use it for staleness. Strip charts stamp samples on arrival on purpose, so a device with a wrong or missing clock still scrolls in step with the page.
 - **Offline first.** No CDN scripts or web fonts at runtime; dashboards often run on a Raspberry Pi with no internet.
 - **Touch and kiosk.** Prefer targets of at least 44 px and the `kiosk` layout for 800x480 screens.
 
@@ -68,17 +76,28 @@ Dashboard sends `{"cmd":"set","n":17,"id":"pump","v":true}`; the device must rep
 import { ActuatorControl } from "@/components/ui/actuator-control";
 import { SensorTile } from "@/components/ui/sensor-tile";
 import { useMockDevice } from "@/hooks/use-mock-device";
+import { INITIAL_ACTUATOR_STATE } from "@/lib/actuator";
 
 export function Dashboard() {
-  const { readings, actuators, send } = useMockDevice();
+  const { readings, history, actuators, command } = useMockDevice({
+    actuatorTimeout: 2000,
+    failSafe: { pump: false },
+  });
+  const soil = readings.soil;
   return (
     <div className="grid gap-4 p-4 sm:grid-cols-2">
-      <SensorTile label="Soil moisture" reading={readings.soil} thresholds={[20, 40, 70]} />
+      <SensorTile
+        label="Soil moisture"
+        value={typeof soil?.v === "number" ? soil.v : null}
+        unit={soil?.u}
+        thresholds={{ min: 0, max: 100, low: 20, warnBelow: 30 }}
+        history={history.soil}
+        updatedAt={soil?.t ? soil.t * 1000 : undefined}
+      />
       <ActuatorControl
         label="Pump"
-        state={actuators.pump}
-        onCommand={(on) => send("pump", on)}
-        timeout={2000}
+        {...(actuators.pump ?? INITIAL_ACTUATOR_STATE)}
+        onCommand={(on) => command("pump", on)}
       />
     </div>
   );

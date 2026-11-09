@@ -7,15 +7,16 @@ v1 is the starred list from the original brief. Everything else lives here so it
 ### Components
 
 - Displays: `oled-display` (128×64 SSD1306-style framebuffer), `led-matrix` (8×8, chained, scrolling text), `led-bar`.
-- Signals: `strip-chart`, `multimeter`; SPI and UART decode overlays on the logic analyzer (the pure decoders ship in v1).
+- Signals: SPI and UART decode overlays on the logic analyzer (the pure decoders ship in v1); a Modbus RTU decoder with a general frame list, reusing the analyzer's transaction view.
 - Readouts: `battery-indicator`, `signal-strength`, `connection-status`.
 - Controls: `toggle-switch`, `rotary-encoder`, `pwm-slider`, `momentary-button`, `d-pad`.
 - Board and docs: `wiring-table`.
 - Comms: `hex-dump`.
+- Small additions: min and max markers on the sensor-tile sparkline, ordered threshold rules with a fallback, WaveJSON input for the timing and bitfield diagrams.
 
 ### Robotics
 
-- `emergency-stop`, `gamepad-teleop`, `camera-feed`, `odometry-plot`, `motor-panel`.
+- `emergency-stop` (an `actuator-control` variant: latched, always visible, two-step reset), `gamepad-teleop` (on-screen pad plus the Gamepad API, stop on release), `camera-feed`, `odometry-plot`, `motor-panel`, a map.
 - Data sources: `rosbridge` (ROS 2 topics over WebSocket, spec: rosbridge v2 protocol) and FIRST NetworkTables NT4. Verify both against the official specs before building.
 
 ### Data sources
@@ -28,10 +29,9 @@ v1 is the starred list from the original brief. Everything else lives here so it
 - Robot telemetry: promote the Robot scenario already composed in `src/components/site/scenario-tabs.tsx`, with a kiosk route.
 - Smart-home relay panel: a bank of relays with commanded vs. confirmed state, plus room sensors.
 - 3D printer or CNC panel: temperatures, axis positions, job progress, pause and stop.
-- Bench power supply: set vs. measured voltage and current, output enable, CV/CC status.
+- Test report: pass/fail phases and measurements with limits, in the shape of OpenHTF.
 - Auto dashboard: built at runtime from the channel list in the device's `hello` message.
 - Embedded docs page (pinout + bitfield + timing in prose).
-- Kiosk layout for 800×480 touchscreens.
 
 ### Site
 
