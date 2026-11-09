@@ -42,7 +42,6 @@ src/styles/               app.css (tokens, fonts), themes.css (generated)
 content/docs/             Fumadocs MDX. One page per component, hook and block.
 scripts/                  build-registry.mts, build-themes.mts, serve-static.mts (Node runs .mts directly)
 e2e/                      Playwright
-device/                   Firmware snippets that speak the wire protocol (Python, MicroPython, Arduino). Not created yet.
 .agents/skills/           Agent skills (agent-agnostic location). benchcn/ is the public skill users install;
                           add-component, write-docs-page and add-board-definition are for contributors;
                           shadcn and migrate-radix-to-base are vendored from shadcn/ui (see skills-lock.json)

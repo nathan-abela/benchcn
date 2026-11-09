@@ -57,7 +57,7 @@ A setpoint works the same way with a number: `{"cmd":"set","n":19,"id":"heater",
 
 ### Hello (device to dashboard)
 
-Sent once on connect. Lets dashboards and agents discover channels without reading the firmware.
+Sent on connect. Lets dashboards and agents discover channels without reading the firmware. Over serial the device cannot see a dashboard open the port, so it repeats the hello every few seconds instead.
 
 ```json
 {
