@@ -6,18 +6,19 @@ Out-of-scope work goes to [ROADMAP.md](ROADMAP.md), not into the codebase.
 
 ## Commands
 
-| Command                                     | What it does                                                            |
-| ------------------------------------------- | ----------------------------------------------------------------------- |
-| `pnpm dev`                                  | Vite dev server on port 3000 (`/benchcn/` basepath)                     |
-| `pnpm build`                                | `registry:build` then `vite build`; static output in `dist/client`      |
-| `pnpm preview`                              | Serve `dist/client` the way GitHub Pages will (basepath, `404.html`)    |
-| `pnpm registry:build`                       | `registry/registry.ts` to `registry.json` to `public/r/*.json`          |
-| `pnpm themes:build`                         | Regenerate `src/styles/themes.css` from the shadcn zinc base colour     |
-| `pnpm lint` / `pnpm fmt` / `pnpm fmt:check` | oxlint / oxfmt (no ESLint, no Prettier)                                 |
-| `pnpm typecheck`                            | `tsc --noEmit` (TypeScript 7)                                           |
-| `pnpm test`                                 | Vitest: decoders, wire protocol, ring buffer, mock device, unit maths   |
-| `pnpm e2e`                                  | Playwright smoke test against the static build (run `pnpm build` first) |
-| `pnpm check`                                | lint, fmt:check, typecheck, test                                        |
+| Command                                     | What it does                                                                                                            |
+| ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `pnpm dev`                                  | Vite dev server on port 3000 (`/benchcn/` basepath)                                                                     |
+| `pnpm build`                                | `registry:build` then `vite build`; static output in `dist/client`                                                      |
+| `pnpm preview`                              | Serve `dist/client` the way GitHub Pages will (basepath, `404.html`)                                                    |
+| `pnpm registry:build`                       | `registry/registry.ts` to `registry.json` to `public/r/*.json`                                                          |
+| `pnpm themes:build`                         | Regenerate `src/styles/themes.css` from the shadcn zinc base colour                                                     |
+| `pnpm lint` / `pnpm fmt` / `pnpm fmt:check` | oxlint / oxfmt (no ESLint, no Prettier)                                                                                 |
+| `pnpm typecheck`                            | `tsc --noEmit` (TypeScript 7)                                                                                           |
+| `pnpm test`                                 | Vitest: decoders, wire protocol, ring buffer, mock device, unit maths                                                   |
+| `pnpm e2e`                                  | Playwright smoke test against the static build (run `pnpm build` first)                                                 |
+| `pnpm registry:test`                        | Installs every item into a fresh Vite + shadcn project, then typechecks, builds and renders it (run `pnpm build` first) |
+| `pnpm check`                                | lint, fmt:check, typecheck, test                                                                                        |
 
 Use `pnpm`. `pnpm dlx` is unreliable under pnpm 11 on this machine; use `npx -y <pkg>` for one-off CLIs, and `pnpm exec shadcn` for the registry CLI (it is a dev dependency).
 
@@ -40,7 +41,7 @@ src/components/site/      Site chrome: nav, install tabs, copy-prompt button, sc
 src/components/demos/     One demo per component, shared by landing and docs
 src/styles/               app.css (tokens, fonts), themes.css (generated)
 content/docs/             Fumadocs MDX. One page per component, hook and block.
-scripts/                  build-registry.mts, build-themes.mts, serve-static.mts (Node runs .mts directly)
+scripts/                  build-registry.mts, build-themes.mts, serve-static.mts, registry-test.mts (Node runs .mts directly)
 e2e/                      Playwright
 .agents/skills/           Agent skills (agent-agnostic location). benchcn/ is the public skill users install;
                           add-component, write-docs-page and add-board-definition are for contributors;
@@ -79,13 +80,13 @@ evals/                    Realistic agent prompts and results log. Not created y
 3. **Tests**: any pure logic (measurements, decoding, formatting) in a sibling `*.test.ts`.
 4. **Demo**: `src/components/demos/<name>-demo.tsx`, used by the docs page and, if it belongs there, the landing bench.
 5. **Docs page**: `content/docs/components/<name>.mdx` with preview, install tabs, usage, props table, examples, accessibility notes, and the copy-prompt block.
-6. **Verify**: `pnpm check && pnpm build && pnpm e2e`, then open the page in both colour schemes and at phone width.
+6. **Verify**: `pnpm check && pnpm build && pnpm e2e && pnpm registry:test`, then open the page in both colour schemes and at phone width.
 
 The `add-component` skill in `.agents/skills/` walks through the same steps with templates. Skills live under `.agents/skills/` so any agent can use them; read the relevant `SKILL.md` before starting one of these tasks, since not every agent discovers that directory on its own.
 
 ## Definition of done (per component)
 
-- Installs cleanly with `pnpm dlx shadcn@latest add @benchcn/<name>` into a fresh Vite + shadcn project.
+- Installs cleanly into a fresh Vite + shadcn project: `pnpm registry:test` checks this for every item, including the documented import paths.
 - Works against `createMockDevice()` with zero config; documented props for real data.
 - Dark and light themes, any shadcn base colour, responsive, reduced motion respected.
 - Keyboard and screen-reader support documented on the page.

@@ -55,6 +55,9 @@ Run the `write-docs-page` skill, or copy `content/docs/components/_template.mdx`
 ```bash
 pnpm check
 pnpm e2e
+pnpm registry:test
 ```
+
+`registry:test` installs every item into a fresh Vite + shadcn project from the built registry and fails on a missing documented import path, a type error under the template's strict settings, a build error, or any console error or warning while the blocks render. Two files in one item must not share a base name: the CLI rewrites imports by file name.
 
 Open `/docs/components/<name>` in light and dark, at 375 px and 1280 px wide, and with reduced motion enabled. Fix what you see before reporting done.
