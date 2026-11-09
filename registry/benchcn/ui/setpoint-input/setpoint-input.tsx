@@ -36,6 +36,8 @@ export type SetpointInputProps = Omit<ComponentProps<"div">, "onChange"> & {
   error?: string | null;
   /** Round trip of the last acknowledgement, in milliseconds. */
   latency?: number | null;
+  /** Time of the last change. Accepted so a tracked state can be spread in, not rendered. */
+  updatedAt?: number;
   /** The measured value the setpoint drives, such as the temperature a heater controls. */
   value?: number | null;
   onCommand: (next: number) => void;
@@ -108,6 +110,7 @@ export function SetpointInput({
   pending = false,
   error = null,
   latency = null,
+  updatedAt: _updatedAt,
   value,
   onCommand,
   confirm = false,

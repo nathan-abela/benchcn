@@ -30,6 +30,8 @@ export type ActuatorControlProps = Omit<ComponentProps<"div">, "onChange"> & {
   error?: string | null;
   /** Round trip of the last acknowledgement, in milliseconds. */
   latency?: number | null;
+  /** Time of the last change. Accepted so a tracked state can be spread in, not rendered. */
+  updatedAt?: number;
   onCommand: (next: boolean) => void;
   /** How long the button must be held before the command is sent. 0 makes it a plain tap. */
   holdMs?: number;
@@ -116,6 +118,7 @@ export function ActuatorControl({
   pending = false,
   error = null,
   latency = null,
+  updatedAt: _updatedAt,
   onCommand,
   holdMs = 600,
   disabled = false,
