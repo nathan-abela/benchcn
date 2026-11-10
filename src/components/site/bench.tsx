@@ -1,5 +1,6 @@
 import { type ReactElement, useMemo, useState } from "react";
 
+import { drawStation } from "@/components/demos/oled-display-demo";
 import { useClock } from "@/components/demos/use-clock";
 import { useMockDevice } from "@/registry/benchcn/hooks/use-mock-device";
 import { INITIAL_ACTUATOR_STATE } from "@/registry/benchcn/lib/actuator";
@@ -8,7 +9,9 @@ import { createMockDevice, createRandom } from "@/registry/benchcn/lib/mock-devi
 import type { WireSample } from "@/registry/benchcn/lib/wire";
 import { ActuatorControl } from "@/registry/benchcn/ui/actuator-control/actuator-control";
 import { CharacterLcd } from "@/registry/benchcn/ui/character-lcd/character-lcd";
+import { LedBar } from "@/registry/benchcn/ui/led-bar/led-bar";
 import { LogicAnalyzer, type LogicLane } from "@/registry/benchcn/ui/logic-analyzer/logic-analyzer";
+import { OledDisplay } from "@/registry/benchcn/ui/oled-display/oled-display";
 import { Scope, type ScopeChannel } from "@/registry/benchcn/ui/oscilloscope/oscilloscope";
 import { SevenSegment } from "@/registry/benchcn/ui/seven-segment/seven-segment";
 import { StatusLed } from "@/registry/benchcn/ui/status-led/status-led";
@@ -17,11 +20,14 @@ const BUFFER = 8192;
 const SAMPLE_RATE = 1_000_000;
 const I2C_SAMPLE_RATE = 1_000_000;
 
-const THERMOMETER = [0b00100, 0b01010, 0b01010, 0b01110, 0b01110, 0b11111, 0b11111, 0b01110];
 const DROP = [0b00100, 0b00100, 0b01010, 0b01010, 0b10001, 0b10001, 0b10001, 0b01110];
 
 function numberOf(sample: WireSample | undefined): number | null {
   return sample && typeof sample.v === "number" ? sample.v : null;
+}
+
+function spoken(value: number | null, digits: number): string {
+  return value === null ? "--" : value.toFixed(digits);
 }
 
 function bme280Burst(rand: () => number): I2cTransaction[] {
@@ -95,7 +101,7 @@ function BenchScope(): ReactElement {
 
 /** The opening bench: the two signature instruments, the emissive displays and the pump. */
 export function Bench(): ReactElement {
-  const { readings, actuators, command, received } = useMockDevice({
+  const { readings, history, actuators, command, received } = useMockDevice({
     seed: 42,
     failSafe: { pump: false },
   });
@@ -107,6 +113,10 @@ export function Bench(): ReactElement {
   const temp = numberOf(readings.temp);
   const humidity = numberOf(readings.humidity);
   const battery = numberOf(readings.battery);
+  const station = useMemo(
+    () => drawStation(clock.time, temp ?? undefined, humidity ?? undefined, history.temp),
+    [clock.time, temp, humidity, history.temp],
+  );
 
   return (
     <div data-slot="bench" className="grid gap-3 *:min-w-0 lg:grid-cols-12">
@@ -148,6 +158,17 @@ export function Bench(): ReactElement {
             label={`Battery ${battery} volts`}
           />
         </div>
+        <div className="flex items-center gap-3">
+          <span className="text-muted-foreground text-xs">Soil</span>
+          <LedBar
+            label="Soil moisture"
+            unit="%"
+            value={soil === null ? null : Math.round(soil)}
+            segments={16}
+            color="green"
+            thresholds={{ low: 20, warnBelow: 30 }}
+          />
+        </div>
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
           <StatusLed label="Power" color="green" showLabel />
           <StatusLed
@@ -171,23 +192,19 @@ export function Bench(): ReactElement {
       </div>
 
       <div className="bg-card rise-in flex flex-col gap-4 rounded-xl border p-3 [--rise-delay:380ms] lg:col-span-4">
-        <span className="text-sm font-medium">Character LCD</span>
+        <span className="text-sm font-medium">Displays</span>
         <div className="flex flex-col items-start gap-4">
-          <CharacterLcd
-            lines={[
-              ` ${temp === null ? "--.-" : temp.toFixed(1)}°C`.padEnd(16),
-              ` ${humidity === null ? "--" : humidity.toFixed(0)}% RH`.padEnd(16),
-            ]}
-            customGlyphs={{ "": THERMOMETER, "": DROP }}
-            scale={3}
-            label={`Temperature ${temp} degrees, humidity ${humidity} percent`}
+          <OledDisplay
+            bitmap={station}
+            color="yellow-blue"
+            label={`Temperature ${spoken(temp, 1)} degrees, humidity ${spoken(humidity, 0)} percent`}
           />
           <CharacterLcd
             lines={[
               `PUMP ${pump.confirmed ? "ON " : "OFF"}  ${clock.time}`,
-              `SOIL ${soil === null ? "--" : soil.toFixed(0)}%`,
+              `\u0002 SOIL ${soil === null ? "--" : soil.toFixed(0)}%`,
             ]}
-            color="amber"
+            customGlyphs={{ "\u0002": DROP }}
             scale={3}
           />
         </div>
