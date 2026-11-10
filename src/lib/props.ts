@@ -139,6 +139,93 @@ export const props: Record<string, PropsDoc> = {
     },
     label: { type: "string", description: "Accessible description.", default: "the display text" },
   },
+  "oled-display": {
+    bitmap: {
+      type: "Bitmap",
+      description: "What to show, from `createBitmap`. Pass a new bitmap when the picture changes.",
+    },
+    buffer: {
+      type: "ArrayLike<number>",
+      description:
+        "Raw SSD1306 display RAM instead of a bitmap: one byte per column of each 8 pixel page.",
+    },
+    width: {
+      type: "number",
+      description: "Panel width in pixels, used with `buffer`.",
+      default: "128",
+    },
+    height: {
+      type: "number",
+      description: "Panel height in pixels, used with `buffer`.",
+      default: "64",
+    },
+    color: {
+      type: '"white" | "blue" | "amber" | "green" | "red" | "yellow-blue" | string',
+      description: "Emitter colour preset or any CSS colour.",
+      default: '"white"',
+    },
+    scale: { type: "number", description: "CSS pixels per display pixel.", default: "2" },
+    on: { type: "boolean", description: "Blanks the panel when false.", default: "true" },
+    invert: { type: "boolean", description: "Swaps lit and unlit pixels.", default: "false" },
+    label: {
+      type: "string",
+      description: "Accessible description of what the screen shows.",
+      default: '"OLED display"',
+    },
+  },
+  "led-matrix": {
+    text: {
+      type: "string",
+      description: "Text in the 5×8 font. Scrolls when wider than the panel, centred when not.",
+    },
+    bitmap: {
+      type: "Bitmap",
+      description: "Pixels to show instead of text, drawn from the top left.",
+    },
+    cols: { type: "number", description: "Eight per chained module.", default: "32" },
+    rows: { type: "number", description: "", default: "8" },
+    color: {
+      type: '"red" | "amber" | "green" | "blue" | "white" | string',
+      description: "A physical colour preset or any CSS colour.",
+      default: "var(--primary)",
+    },
+    shape: { type: '"round" | "square"', description: "Lens shape.", default: '"round"' },
+    size: { type: "number", description: "CSS pixels per LED.", default: "8" },
+    scroll: {
+      type: "boolean",
+      description: "Scroll text that does not fit. Off, it is clipped.",
+      default: "true",
+    },
+    speed: { type: "number", description: "Columns per second.", default: "14" },
+    label: { type: "string", description: "Accessible description.", default: "the text" },
+  },
+  "led-bar": {
+    label: { type: "string", description: "Accessible name.", required: true },
+    value: {
+      type: "number | null",
+      description: "`null` leaves every segment dark.",
+      required: true,
+    },
+    min: { type: "number", description: "", default: "0" },
+    max: { type: "number", description: "", default: "100" },
+    segments: { type: "number", description: "", default: "10" },
+    mode: {
+      type: '"bar" | "dot"',
+      description: "Fill up to the value, or light only the segment it reaches.",
+      default: '"bar"',
+    },
+    thresholds: {
+      type: "{ low?, high?, warnBelow?, warnAbove? }",
+      description: "Segments past these limits are amber (warning) or red (alarm).",
+    },
+    color: {
+      type: '"red" | "amber" | "green" | "blue" | "white" | string',
+      description: "Colour of the normal segments: a preset or any CSS colour.",
+      default: "var(--primary)",
+    },
+    orientation: { type: '"horizontal" | "vertical"', description: "", default: '"horizontal"' },
+    unit: { type: "string", description: "Read out after the value." },
+  },
   "serial-console": {
     lines: {
       type: "ConsoleLine[]",

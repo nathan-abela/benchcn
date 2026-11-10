@@ -1,0 +1,73 @@
+---
+title: LED matrix
+description: Dot-matrix LED panel of chained 8×8 modules that shows a bitmap, or text that scrolls when it is wider than the panel.
+---
+
+<ComponentPreview name="led-matrix" />
+
+The red panel is four 8×8 modules in a row with a message longer than its 32 columns, so it scrolls. The clock fits and sits still. The heart is a single module showing a bitmap.
+
+## Installation
+
+<InstallTabs item="led-matrix" />
+
+## Usage
+
+```tsx
+import { LedMatrix } from "@/components/ui/led-matrix";
+
+<LedMatrix text="HELLO" color="red" />
+<LedMatrix text={`TEMP ${temp.toFixed(1)}°C`} cols={64} />
+```
+
+Text that fits is centred. Text that does not fit enters from the right edge, leaves by the left and starts again.
+
+### Bitmaps
+
+Pass a bitmap for icons and animation frames. It is drawn from the top left and clipped to the panel.
+
+```tsx
+import { createBitmap, setPixel } from "@/lib/bitmap";
+
+const dot = createBitmap(8, 8);
+setPixel(dot, 3, 3);
+
+<LedMatrix bitmap={dot} cols={8} label="Dot" />;
+```
+
+## Props
+
+<PropsTable of="led-matrix" />
+
+## Examples
+
+### Square LEDs
+
+`shape="square"` draws the square-lens modules; `size` is the pitch of one LED in CSS pixels.
+
+```tsx
+<LedMatrix text="OK" cols={16} shape="square" size={12} />
+```
+
+### Speed
+
+`speed` is in columns per second. `scroll={false}` clips the text at the right edge.
+
+```tsx
+<LedMatrix text="Departures 14:32 platform 4" speed={24} />
+```
+
+## Theming
+
+`color` takes the LED presets (`red`, `amber`, `green`, `blue`, `white`) or any CSS colour, and defaults to `--primary`. Unlit LEDs keep a trace of their colour, as they do on a real panel.
+
+## Accessibility
+
+The panel is decorative. A visually hidden text carries `label`, or the text itself, so a screen reader hears the whole message once and not a column at a time. Under `prefers-reduced-motion` text does not scroll and the panel shows its start.
+
+## Ask your agent
+
+<AgentPrompt item="led-matrix">
+  Pass the message as `text` and set `cols` to eight times the number of modules. Use `bitmap` from
+  `@/lib/bitmap` only for icons, and give it a `label`.
+</AgentPrompt>

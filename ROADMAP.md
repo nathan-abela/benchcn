@@ -6,7 +6,6 @@ v1 is the starred list from the original brief. Everything else lives here so it
 
 ### Components
 
-- Displays: `oled-display` (128×64 SSD1306-style framebuffer), `led-matrix` (8×8, chained, scrolling text), `led-bar`.
 - Signals: a Modbus RTU decoder with a general frame list, reusing the analyzer's transaction view.
 - Readouts: `battery-indicator`, `signal-strength`, `connection-status`.
 - Controls: `toggle-switch`, `rotary-encoder`, `pwm-slider`, `momentary-button`, `d-pad`.

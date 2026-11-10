@@ -1,0 +1,64 @@
+---
+title: LED bar
+description: Segmented LED bar graph with bar and dot modes, and warning and alarm segments in fixed amber and red.
+---
+
+<ComponentPreview name="led-bar" />
+
+Soil and battery go red at the low end, where the trouble is. Humidity is in dot mode, which lights only the segment the value reaches. The temperature bar stands upright with its warning and alarm segments at the top.
+
+## Installation
+
+<InstallTabs item="led-bar" />
+
+## Usage
+
+```tsx
+import { LedBar } from "@/components/ui/led-bar";
+
+<LedBar label="Level" value={62} />
+<LedBar label="Battery" unit="V" value={3.71} min={3} max={4.2} thresholds={{ low: 3.3 }} />
+```
+
+A segment comes on once the value reaches its step, the way a ladder of comparators works: with ten segments from 0 to 100, the third lights at 30.
+
+## Props
+
+<PropsTable of="led-bar" />
+
+## Examples
+
+### Thresholds
+
+Segments past `warnBelow` or `warnAbove` are amber and segments past `low` or `high` are red. The colour belongs to the segment, not the reading, so the bar shows where the limits are even when it is dark.
+
+```tsx
+<LedBar label="Temperature" value={temp} max={40} thresholds={{ warnAbove: 28, high: 34 }} />
+```
+
+### Dot mode
+
+```tsx
+<LedBar label="Tuning" value={value} mode="dot" />
+```
+
+### Vertical
+
+```tsx
+<LedBar label="Tank" value={level} orientation="vertical" segments={16} />
+```
+
+## Theming
+
+`color` sets the normal segments: an LED preset or any CSS colour, defaulting to `--primary`. Warning and alarm segments are always amber and red.
+
+## Accessibility
+
+The segments are decorative. A visually hidden `meter` carries `label`, the range and the value with its `unit`, or "no reading" when `value` is `null`.
+
+## Ask your agent
+
+<AgentPrompt item="led-bar">
+  Use LedBar for a coarse level that reads at a glance. Pass min and max in the value's unit and put
+  limits in `thresholds`. For a precise value, pair it with a number or use a range bar.
+</AgentPrompt>

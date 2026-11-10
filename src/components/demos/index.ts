@@ -8,9 +8,12 @@ import bitfieldDiagramSource from "./bitfield-diagram-demo.tsx?raw";
 import characterLcdSource from "./character-lcd-demo.tsx?raw";
 import emergencyStopSource from "./emergency-stop-demo.tsx?raw";
 import joystickSource from "./joystick-demo.tsx?raw";
+import ledBarSource from "./led-bar-demo.tsx?raw";
+import ledMatrixSource from "./led-matrix-demo.tsx?raw";
 import logicAnalyzerSource from "./logic-analyzer-demo.tsx?raw";
 import meterReadoutSource from "./meter-readout-demo.tsx?raw";
 import odometryPlotSource from "./odometry-plot-demo.tsx?raw";
+import oledDisplaySource from "./oled-display-demo.tsx?raw";
 import oscilloscopeSource from "./oscilloscope-demo.tsx?raw";
 import pinoutHeaderSource from "./pinout-header-demo.tsx?raw";
 import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
@@ -134,6 +137,23 @@ export const demos: Record<string, Demo> = {
     ),
     source: characterLcdSource,
     placeholder: { base: 435, md: 400, lg: 347, xl: 280 },
+  },
+  "oled-display": {
+    component: lazy(() =>
+      import("./oled-display-demo").then((m) => ({ default: m.OledDisplayDemo })),
+    ),
+    source: oledDisplaySource,
+    placeholder: { base: 300, lg: 196 },
+  },
+  "led-matrix": {
+    component: lazy(() => import("./led-matrix-demo").then((m) => ({ default: m.LedMatrixDemo }))),
+    source: ledMatrixSource,
+    placeholder: { base: 308, sm: 208, md: 308, lg: 208 },
+  },
+  "led-bar": {
+    component: lazy(() => import("./led-bar-demo").then((m) => ({ default: m.LedBarDemo }))),
+    source: ledBarSource,
+    placeholder: { base: 283, sm: 140, md: 283, lg: 140 },
   },
   "pinout-header": {
     component: lazy(() =>

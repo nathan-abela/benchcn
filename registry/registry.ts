@@ -436,6 +436,42 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/oled-display"),
   },
   {
+    name: "oled-display",
+    type: "registry:ui",
+    title: "OLED display",
+    description:
+      "Monochrome OLED module such as a 128x64 SSD1306, drawn pixel for pixel from a one-bit bitmap or from the raw display RAM a driver sends, in white, blue or two-colour.",
+    files: [{ path: "registry/benchcn/ui/oled-display/oled-display.tsx", type: "registry:ui" }],
+    registryDependencies: [`${ns}/instrument`, `${ns}/use-canvas`, `${ns}/bitmap`],
+    categories: ["displays"],
+    docs: docsUrl("components/oled-display"),
+  },
+  {
+    name: "led-matrix",
+    type: "registry:ui",
+    title: "LED matrix",
+    description:
+      "Dot-matrix LED panel of chained 8x8 modules that shows a bitmap or text, scrolling the text when it is wider than the panel.",
+    files: [{ path: "registry/benchcn/ui/led-matrix/led-matrix.tsx", type: "registry:ui" }],
+    registryDependencies: [`${ns}/instrument`, `${ns}/status-led`, `${ns}/bitmap`],
+    categories: ["displays"],
+    docs: docsUrl("components/led-matrix"),
+  },
+  {
+    name: "led-bar",
+    type: "registry:ui",
+    title: "LED bar",
+    description:
+      "Segmented LED bar graph for a coarse level, with bar and dot modes and warning and alarm segments in fixed amber and red.",
+    files: [
+      { path: "registry/benchcn/ui/led-bar/led-bar.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/lib/led-segments.ts", type: "registry:lib" },
+    ],
+    registryDependencies: [`${ns}/status-led`],
+    categories: ["displays"],
+    docs: docsUrl("components/led-bar"),
+  },
+  {
     name: "serial-console",
     type: "registry:ui",
     title: "Serial console",

@@ -1,0 +1,97 @@
+---
+title: OLED display
+description: Monochrome OLED module drawn pixel for pixel from a one-bit bitmap or from raw SSD1306 display RAM, in white, blue or two-colour.
+---
+
+<ComponentPreview name="oled-display" />
+
+The first module is drawn in the browser with the same calls a firmware graphics library has. The second is fed the bytes an SSD1306 driver would send over I²C, so a buffer captured from a real device shows the same picture here.
+
+## Installation
+
+<InstallTabs item="oled-display" />
+
+## Usage
+
+Draw into a bitmap, then hand it over. The drawing functions are plain and have no DOM, so the same code runs in tests.
+
+```tsx
+import { OledDisplay } from "@/components/ui/oled-display";
+import { createBitmap, drawLine, drawText } from "@/lib/bitmap";
+
+const bitmap = createBitmap(128, 64);
+drawText(bitmap, "Temp", 0, 0);
+drawText(bitmap, "21.5", 0, 16, { scale: 3 });
+drawLine(bitmap, 0, 63, 127, 48);
+
+<OledDisplay bitmap={bitmap} label="Temperature 21.5 degrees" />;
+```
+
+Build the bitmap in `useMemo` from the values it shows. The display redraws when it receives a new bitmap, not when an old one is changed in place.
+
+### From a device
+
+If the firmware already keeps a frame buffer, send those bytes and pass them as `buffer`.
+
+```tsx
+<OledDisplay buffer={frame} width={128} height={64} />
+```
+
+The layout is SSD1306 display RAM as the Adafruit_SSD1306 driver holds it: one byte per column of each 8 pixel page, least significant bit at the top, so pixel (x, y) is bit `y & 7` of byte `x + (y >> 3) * width`. A 128×64 panel is 1024 bytes and a 128×32 panel 512.
+
+## Props
+
+<PropsTable of="oled-display" />
+
+## Drawing
+
+Everything in `@/lib/bitmap` takes the bitmap first. Coordinates are in pixels from the top left, and anything outside the bitmap is clipped.
+
+| Function                                 | Draws                                                          |
+| ---------------------------------------- | -------------------------------------------------------------- |
+| `createBitmap(width, height)`            | A blank bitmap                                                 |
+| `setPixel(bitmap, x, y, on?)`            | One pixel                                                      |
+| `drawLine(bitmap, x0, y0, x1, y1, on?)`  | A line, both ends included                                     |
+| `drawRect(bitmap, x, y, w, h, on?)`      | An outline                                                     |
+| `fillRect(bitmap, x, y, w, h, on?)`      | A filled box; `on: false` erases                               |
+| `drawText(bitmap, text, x, y, options?)` | 5×8 text, `{ scale, on }`; returns the x of the next character |
+| `textWidth(text, scale?)`                | Width in pixels, for right alignment and centring              |
+| `toSsd1306(bitmap)`                      | The bytes to send to a real panel                              |
+| `fromSsd1306(buffer, width?, height?)`   | A bitmap from those bytes                                      |
+
+Text uses the HD44780 character ROM that the [character LCD](/docs/components/character-lcd) ships, so `°` and the rest of its character set work here too.
+
+## Examples
+
+### Two-colour module
+
+`color="yellow-blue"` is the common two-colour module whose top quarter is yellow and the rest blue. Keep a header in the top 16 rows, as the preview does.
+
+```tsx
+<OledDisplay bitmap={bitmap} color="yellow-blue" />
+```
+
+### 128×32
+
+```tsx
+<OledDisplay bitmap={createBitmap(128, 32)} />
+```
+
+### Off and inverted
+
+`on={false}` blanks the panel and `invert` swaps lit and unlit pixels, like the SSD1306 display and inverse commands.
+
+## Theming
+
+Presets are emitter colours, not theme colours: `white`, `blue`, `amber`, `green`, `red` and `yellow-blue`. Any other CSS colour works, including `var(--primary)`. The glass is always near black.
+
+## Accessibility
+
+The canvas is decorative and a visually hidden text carries `label`. A bitmap has no text to read, so describe what the screen shows, as the preview does with its readings.
+
+## Ask your agent
+
+<AgentPrompt item="oled-display">
+  Draw the screen into a bitmap from `@/lib/bitmap` inside useMemo and pass it as `bitmap`. If the
+  device sends its SSD1306 frame buffer, pass the bytes as `buffer` instead. Always set `label`.
+</AgentPrompt>
