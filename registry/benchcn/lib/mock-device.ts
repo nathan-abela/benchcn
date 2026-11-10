@@ -1,5 +1,6 @@
 // benchcn.dev · mock-device
-// A simulated bench: slow sensors, a relay, a heater and a bench supply with acknowledgement latency,
+// A simulated bench: slow sensors, a relay, a heater, a bench supply and a small robot, all with
+// acknowledgement latency,
 // waveform channels and
 // log lines, all speaking the wire protocol. Deterministic for a given seed, so demos and tests
 // behave the same every run.
@@ -79,6 +80,7 @@ type SimState = {
   chamber: number;
   psuOn: boolean;
   psu: PsuOutput;
+  robot: RobotState;
   rand: () => number;
 };
 
@@ -127,7 +129,82 @@ const sensors: Sensor[] = [
   },
 ];
 
+const robotSensors: Sensor[] = [
+  {
+    info: { id: "speed", u: "m/s", min: -0.5, max: 0.5, kind: "sensor", label: "Speed" },
+    read: (_, s) => s.robot.v,
+  },
+  {
+    info: { id: "turn-rate", u: "rad/s", min: -1.5, max: 1.5, kind: "sensor", label: "Turn rate" },
+    read: (_, s) => s.robot.w,
+  },
+  {
+    info: { id: "pose-x", u: "m", kind: "sensor", label: "Position x" },
+    read: (_, s) => s.robot.x,
+  },
+  {
+    info: { id: "pose-y", u: "m", kind: "sensor", label: "Position y" },
+    read: (_, s) => s.robot.y,
+  },
+  {
+    info: { id: "heading", u: "°", min: -180, max: 180, kind: "sensor", label: "Heading" },
+    read: (_, s) => {
+      const deg = (s.robot.heading * 180) / Math.PI;
+      return ((((deg + 180) % 360) + 360) % 360) - 180;
+    },
+  },
+];
+sensors.push(...robotSensors);
+
 const LEAD_OHMS = 0.05;
+
+/** A differential-drive robot: commanded velocities, what it actually does, and where it has been. */
+export type RobotState = {
+  driveOn: boolean;
+  estop: boolean;
+  /** Measured linear (m/s) and angular (rad/s) velocity. */
+  v: number;
+  w: number;
+  x: number;
+  y: number;
+  /** Heading in radians, counterclockwise from +x. */
+  heading: number;
+  /** Time of the last drive command, for the watchdog. */
+  lastDrive: number;
+  watchdogTripped: boolean;
+};
+
+/** Milliseconds without a drive command before the robot stops on its own. */
+export const DRIVE_WATCHDOG_MS = 500;
+const LINEAR_ACCEL = 1.2;
+const ANGULAR_ACCEL = 4;
+
+/**
+ * Moves the robot one step: velocities ramp toward the target at a limited acceleration, and the
+ * pose integrates them. The target is zero unless the drive is on, the e-stop is clear and drive
+ * commands are still arriving.
+ */
+export function stepRobot(
+  robot: RobotState,
+  target: { v: number; w: number },
+  dt: number,
+  now: number,
+): RobotState {
+  const live = robot.driveOn && !robot.estop && now - robot.lastDrive <= DRIVE_WATCHDOG_MS;
+  const toward = (current: number, goal: number, rate: number) =>
+    current + Math.max(-rate * dt, Math.min(rate * dt, goal - current));
+  const v = robot.estop ? 0 : toward(robot.v, live ? target.v : 0, LINEAR_ACCEL);
+  const w = robot.estop ? 0 : toward(robot.w, live ? target.w : 0, ANGULAR_ACCEL);
+  const heading = robot.heading + w * dt;
+  return {
+    ...robot,
+    v,
+    w,
+    heading,
+    x: robot.x + v * Math.cos(heading) * dt,
+    y: robot.y + v * Math.sin(heading) * dt,
+  };
+}
 
 const actuators: WireChannelInfo[] = [
   { id: "pump", kind: "actuator", label: "Water pump" },
@@ -136,9 +213,19 @@ const actuators: WireChannelInfo[] = [
   { id: "psu-out", kind: "actuator", label: "Supply output" },
   { id: "psu-v", kind: "setpoint", u: "V", min: 0, max: 30, label: "Supply voltage" },
   { id: "psu-i", kind: "setpoint", u: "A", min: 0.05, max: 3, label: "Current limit" },
+  { id: "drive", kind: "actuator", label: "Drive enable" },
+  { id: "estop", kind: "actuator", label: "Emergency stop" },
+  { id: "linear", kind: "setpoint", u: "m/s", min: -0.5, max: 0.5, label: "Linear velocity" },
+  { id: "angular", kind: "setpoint", u: "rad/s", min: -1.5, max: 1.5, label: "Angular velocity" },
 ];
 
-const SETPOINT_START: Record<string, number> = { heater: 20, "psu-v": 5, "psu-i": 1 };
+const SETPOINT_START: Record<string, number> = {
+  heater: 20,
+  "psu-v": 5,
+  "psu-i": 1,
+  linear: 0,
+  angular: 0,
+};
 const HEATER_START = SETPOINT_START.heater;
 /** Seconds for the chamber to close about two thirds of the gap to the setpoint. */
 const HEATER_LAG = 8;
@@ -209,6 +296,17 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
     chamber: HEATER_START,
     psuOn: false,
     psu: { v: 0, i: 0, mode: "OFF" },
+    robot: {
+      driveOn: false,
+      estop: false,
+      v: 0,
+      w: 0,
+      x: 0,
+      y: 0,
+      heading: Math.PI / 2,
+      lastDrive: 0,
+      watchdogTripped: false,
+    },
     rand,
   };
   const listeners = new Set<(message: WireMessage) => void>();
@@ -256,6 +354,23 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
           : "psu: back in CV";
       emit({ log: text, lvl: state.psu.mode === "CC" ? "warn" : "info", t: seconds() });
     }
+
+    const commandsLate = t - state.robot.lastDrive > DRIVE_WATCHDOG_MS;
+    const moving = Math.abs(state.robot.v) > 0.01 || Math.abs(state.robot.w) > 0.01;
+    if (commandsLate && moving && !state.robot.watchdogTripped && state.robot.driveOn) {
+      state.robot.watchdogTripped = true;
+      emit({
+        log: "watchdog: drive commands stopped, slowing to a halt",
+        lvl: "warn",
+        t: seconds(),
+      });
+    }
+    state.robot = stepRobot(
+      state.robot,
+      { v: state.setpoints.linear, w: state.setpoints.angular },
+      dt,
+      t,
+    );
 
     for (const sensor of sensors) {
       const sample: WireSample = {
@@ -306,6 +421,23 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
       return;
     }
 
+    if (
+      command.id === "drive" &&
+      command.cmd === "set" &&
+      toBoolean(command.v) &&
+      state.robot.estop
+    ) {
+      schedule(() => emit(ackFor(command, false, "e-stop engaged")), latency);
+      return;
+    }
+    // Drive velocities stream ten times a second: they apply on arrival, are acknowledged without a
+    // log line each, and a lost one is simply replaced by the next.
+    const streamed = command.id === "linear" || command.id === "angular";
+    if (streamed) {
+      state.robot.lastDrive = now();
+      state.robot.watchdogTripped = false;
+    }
+
     const info = actuators.find((a) => a.id === command.id);
     const target =
       info?.kind === "setpoint" ? clampTo(Number(command.v), info) : toBoolean(command.v);
@@ -313,8 +445,18 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
     actuator.pending = true;
 
     if (rand() < faultRate) {
-      emit({ log: `${command.id}: command ${command.n} dropped`, lvl: "warn", t: seconds() });
+      if (!streamed) {
+        emit({ log: `${command.id}: command ${command.n} dropped`, lvl: "warn", t: seconds() });
+      }
       actuator.pending = false;
+      return;
+    }
+
+    if (streamed && typeof target === "number" && command.id) {
+      state.setpoints[command.id] = target;
+      actuator.confirmed = target;
+      actuator.pending = false;
+      schedule(() => emit({ ...ackFor(command, true), v: target }), latency);
       return;
     }
 
@@ -323,6 +465,19 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
       actuator.pending = false;
       if (command.id === "pump") state.pumpOn = target === true;
       if (command.id === "psu-out") state.psuOn = target === true;
+      if (command.id === "drive") state.robot.driveOn = target === true;
+      if (command.id === "estop") {
+        state.robot.estop = target === true;
+        if (state.robot.estop) {
+          state.robot = { ...state.robot, driveOn: false, v: 0, w: 0 };
+          const drive = actuatorState.get("drive");
+          if (drive) drive.confirmed = false;
+          emit({ ch: "drive", v: false, t: seconds() });
+          emit({ log: "estop: engaged, drive disabled", lvl: "error", t: seconds() });
+        } else {
+          emit({ log: "estop: reset, drive stays off until enabled", lvl: "info", t: seconds() });
+        }
+      }
       if (typeof target === "number" && command.id) state.setpoints[command.id] = target;
       // The ack carries the value the device applied, which may be clamped.
       emit({ ...ackFor(command, true), v: target });

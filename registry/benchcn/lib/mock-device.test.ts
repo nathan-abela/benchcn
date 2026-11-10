@@ -1,6 +1,14 @@
 import { describe, expect, it } from "vitest";
 
-import { createMockDevice, createRandom, type MockDeviceOptions, psuOutput } from "./mock-device";
+import {
+  createMockDevice,
+  createRandom,
+  DRIVE_WATCHDOG_MS,
+  type MockDeviceOptions,
+  psuOutput,
+  type RobotState,
+  stepRobot,
+} from "./mock-device";
 import { isAck, isHello, isSample, setCommand, type WireMessage } from "./wire";
 
 function fakeClock(start = 1_700_000_000_000) {
@@ -365,5 +373,100 @@ describe("createMockDevice bench supply", () => {
 
     // #then
     expect(["CV", "CC"]).toContain(dev.readings()["psu-mode"].v);
+  });
+});
+
+const parked: RobotState = {
+  driveOn: true,
+  estop: false,
+  v: 0,
+  w: 0,
+  x: 0,
+  y: 0,
+  heading: 0,
+  lastDrive: 1000,
+  watchdogTripped: false,
+};
+
+describe("stepRobot", () => {
+  it("should ramp toward the commanded speed at a limited acceleration", () => {
+    // #when commanded 0.5 m/s for a tenth of a second
+    const next = stepRobot(parked, { v: 0.5, w: 0 }, 0.1, 1050);
+
+    // #then it has only reached 0.12 m/s and moved forward along +x
+    expect({ v: next.v.toFixed(2), moved: next.x > 0 }).toEqual({ v: "0.12", moved: true });
+  });
+
+  it("should slow to a halt once drive commands stop arriving", () => {
+    // #given a robot moving at 0.4 m/s
+    const moving = { ...parked, v: 0.4 };
+
+    // #when the last drive command is older than the watchdog allows
+    const next = stepRobot(moving, { v: 0.4, w: 0 }, 0.1, 1000 + DRIVE_WATCHDOG_MS + 1);
+
+    // #then it decelerates instead of holding speed
+    expect(next.v).toBeLessThan(0.4);
+  });
+
+  it("should stop dead when the e-stop is engaged", () => {
+    // #when
+    const next = stepRobot({ ...parked, v: 0.4, w: 1, estop: true }, { v: 0.4, w: 1 }, 0.1, 1050);
+
+    // #then
+    expect({ v: next.v, w: next.w }).toEqual({ v: 0, w: 0 });
+  });
+});
+
+describe("createMockDevice robot", () => {
+  it("should refuse to enable the drive while the e-stop is engaged", () => {
+    // #given
+    const { dev, clock, messages } = device({ faultRate: 0, ackLatency: [0, 0] });
+    dev.start();
+    dev.send(setCommand("estop", true));
+    clock.advance(10);
+
+    // #when
+    const enable = setCommand("drive", true);
+    dev.send(enable);
+    clock.advance(10);
+
+    // #then
+    expect(messages.filter(isAck).find((a) => a.ack === enable.n)).toMatchObject({
+      ok: false,
+      err: "e-stop engaged",
+    });
+  });
+
+  it("should drop the drive when the e-stop is engaged", () => {
+    // #given an enabled drive
+    const { dev, clock } = device({ faultRate: 0, ackLatency: [0, 0] });
+    dev.start();
+    dev.send(setCommand("drive", true));
+    clock.advance(10);
+
+    // #when
+    dev.send(setCommand("estop", true));
+    clock.advance(10);
+
+    // #then
+    expect(dev.actuator("drive")?.confirmed).toBe(false);
+  });
+
+  it("should move while drive commands keep arriving", () => {
+    // #given an enabled drive at 100 ms samples
+    const { dev, clock } = device({ faultRate: 0, ackLatency: [0, 0], sampleInterval: 100 });
+    dev.start();
+    dev.send(setCommand("drive", true));
+
+    // #when forward commands arrive every 100 ms for two seconds
+    for (let i = 0; i < 20; i += 1) {
+      dev.send(setCommand("linear", 0.3));
+      clock.advance(100);
+    }
+
+    // #then it reports speed near 0.3 m/s and has travelled
+    const speed = dev.readings().speed.v as number;
+    const y = dev.readings()["pose-y"].v as number;
+    expect({ speed: speed > 0.25, travelled: y > 0.3 }).toEqual({ speed: true, travelled: true });
   });
 });
