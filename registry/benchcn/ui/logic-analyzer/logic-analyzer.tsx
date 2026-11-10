@@ -17,18 +17,19 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { type CanvasFrame, useCanvas } from "@/registry/benchcn/hooks/use-canvas";
 import {
-  decodeI2c,
-  formatI2cFrame,
-  type I2cFrame,
-  summarizeI2c,
-} from "@/registry/benchcn/lib/decoders/i2c";
-import {
   channelToken,
   INSTRUMENT_FRAME,
   InstrumentLabel,
   resolveCssColor,
   useReducedMotion,
 } from "@/registry/benchcn/lib/instrument";
+import {
+  type DecodedTransaction,
+  decodeLanes,
+  type DecodeMark,
+  type DecodeTone,
+  type LogicDecode,
+} from "@/registry/benchcn/lib/logic-decode";
 import { formatSi } from "@/registry/benchcn/lib/units";
 
 export type LogicLane = {
@@ -41,22 +42,7 @@ export type LogicLane = {
   sampleRate: number;
 };
 
-export type LogicDecode = {
-  protocol: "i2c";
-  /** Lane ids. */
-  sda: string;
-  scl: string;
-};
-
 export type TimeWindow = { start: number; end: number };
-
-export type DecodedTransaction = {
-  /** Seconds. */
-  start: number;
-  end: number;
-  text: string;
-  frames: I2cFrame[];
-};
 
 export type LogicAnalyzerProps = ComponentProps<"div"> & {
   lanes: LogicLane[];
@@ -114,25 +100,6 @@ export function tweenWindow(from: TimeWindow, to: TimeWindow, t: number): TimeWi
   const span = fromSpan * ((to.end - to.start) / fromSpan) ** t;
   const centre = centreOf(from) + (centreOf(to) - centreOf(from)) * t;
   return { start: centre - span / 2, end: centre + span / 2 };
-}
-
-function groupTransactions(frames: I2cFrame[], sampleRate: number): DecodedTransaction[] {
-  const lines = summarizeI2c(frames).split("\n").filter(Boolean);
-  const groups: I2cFrame[][] = [];
-  for (const frame of frames) {
-    if (frame.kind === "start" || frame.kind === "repeated-start" || groups.length === 0) {
-      groups.push([]);
-    }
-    groups[groups.length - 1].push(frame);
-  }
-  return groups
-    .filter((group) => group.some((f) => f.kind === "address"))
-    .map((group, i) => ({
-      start: group[0].start / sampleRate,
-      end: group[group.length - 1].end / sampleRate,
-      text: lines[i] ?? "",
-      frames: group,
-    }));
 }
 
 function drawLane(
@@ -196,13 +163,7 @@ function drawLane(
   ctx.stroke();
 }
 
-type Palette = {
-  foreground: string;
-  muted: string;
-  success: string;
-  destructive: string;
-  address: string;
-};
+type Palette = { foreground: string; muted: string } & Record<DecodeTone, string>;
 
 function roundRect(
   ctx: CanvasRenderingContext2D,
@@ -228,7 +189,7 @@ function roundRect(
 
 function drawDecode(
   ctx: CanvasRenderingContext2D,
-  frames: I2cFrame[],
+  marks: DecodeMark[],
   sampleRate: number,
   window: TimeWindow,
   width: number,
@@ -242,24 +203,24 @@ function drawDecode(
   const y = top + DECODE_HEIGHT / 2;
   const h = 18;
 
-  for (const frame of frames) {
-    const x0 = toX(frame.start);
-    const x1 = toX(frame.end);
+  for (const mark of marks) {
+    const x0 = toX(mark.start);
+    const x1 = toX(mark.end);
     if (x1 < 0 || x0 > width) continue;
     const w = Math.max(2, x1 - x0);
+    const color = palette[mark.tone];
 
-    if (frame.kind === "start" || frame.kind === "repeated-start" || frame.kind === "stop") {
-      ctx.fillStyle = frame.kind === "stop" ? palette.destructive : palette.success;
+    if (mark.shape === "dot") {
+      ctx.fillStyle = color;
       ctx.beginPath();
       ctx.arc(x0 + w / 2, y, 5, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = "rgb(0 0 0 / 0.85)";
       ctx.font = `700 8px ${MONO}`;
-      ctx.fillText(formatI2cFrame(frame)[0], x0 + w / 2, y + 0.5);
+      ctx.fillText(mark.label, x0 + w / 2, y + 0.5);
       continue;
     }
 
-    const color = frame.kind === "address" ? palette.address : palette.muted;
     ctx.fillStyle = color;
     ctx.globalAlpha = 0.18;
     roundRect(ctx, x0 + 1, y - h / 2, w - 2, h, 4);
@@ -271,10 +232,10 @@ function drawDecode(
     ctx.stroke();
 
     ctx.font = `500 11px ${MONO}`;
-    const label = formatI2cFrame(frame) + (frame.ack === false ? " ✕" : "");
-    const textWidth = ctx.measureText(label).width;
+    const fits = (text: string) => w > ctx.measureText(text).width + 10;
     ctx.fillStyle = palette.foreground;
-    if (w > textWidth + 10) ctx.fillText(label, x0 + w / 2, y + 0.5);
+    if (fits(mark.label)) ctx.fillText(mark.label, x0 + w / 2, y + 0.5);
+    else if (mark.short && fits(mark.short)) ctx.fillText(mark.short, x0 + w / 2, y + 0.5);
     else if (w > 14) ctx.fillText("…", x0 + w / 2, y + 0.5);
   }
 }
@@ -350,17 +311,8 @@ export function LogicAnalyzer({
 }: LogicAnalyzerProps): ReactElement {
   const total = useMemo(() => duration(lanes), [lanes]);
   const decoded = useMemo(() => {
-    if (!decode) return null;
-    const sda = lanes.find((l) => l.id === decode.sda);
-    const scl = lanes.find((l) => l.id === decode.scl);
-    if (!sda || !scl) return null;
-    const frames = decodeI2c({ sda: sda.data, scl: scl.data, sampleRate: sda.sampleRate });
-    return {
-      frames,
-      sampleRate: sda.sampleRate,
-      transactions: groupTransactions(frames, sda.sampleRate),
-      laneIndex: lanes.indexOf(sda),
-    };
+    const result = decode ? decodeLanes(lanes, decode) : null;
+    return result && { ...result, laneIndex: lanes.findIndex((l) => l.id === result.lane) };
   }, [decode, lanes]);
 
   const initialWindow = useMemo<TimeWindow>(() => {
@@ -449,9 +401,11 @@ export function LogicAnalyzer({
       const palette: Palette = {
         foreground: "rgb(255 255 255 / 0.92)",
         muted: "rgb(255 255 255 / 0.55)",
-        success: resolveCssColor(styles, "var(--success)"),
-        destructive: resolveCssColor(styles, "var(--destructive)"),
+        start: resolveCssColor(styles, "var(--success)"),
+        stop: resolveCssColor(styles, "var(--destructive)"),
+        error: resolveCssColor(styles, "var(--destructive)"),
         address: resolveCssColor(styles, channelToken(1)),
+        data: "rgb(255 255 255 / 0.55)",
       };
       ctx.fillStyle = styles.getPropertyValue("--scope-screen").trim() || SCREEN_FALLBACK;
       ctx.fillRect(0, 0, width, height);
@@ -468,7 +422,7 @@ export function LogicAnalyzer({
           const color = resolveCssColor(styles, laneColor(lane, row.index));
           drawLane(ctx, lane, shown, width, row.top, row.height, color);
         } else if (decoded) {
-          drawDecode(ctx, decoded.frames, decoded.sampleRate, shown, width, row.top, palette);
+          drawDecode(ctx, decoded.marks, decoded.sampleRate, shown, width, row.top, palette);
         }
       }
 
@@ -550,7 +504,9 @@ export function LogicAnalyzer({
     redraw();
   };
 
-  const summary = decoded ? summarizeI2c(decoded.frames) : "";
+  const summary = decoded
+    ? decoded.transactions.map((t) => t.text.replaceAll(/\s+/g, " ")).join(". ")
+    : "";
 
   return (
     <div data-slot="logic-analyzer" className={cn(INSTRUMENT_FRAME, className)} {...props}>
@@ -629,7 +585,7 @@ export function LogicAnalyzer({
         </div>
       </div>
       <p className="sr-only">
-        Logic analyzer, {lanes.length} lanes. {summary.replaceAll("\n", ". ")}
+        Logic analyzer, {lanes.length} {lanes.length === 1 ? "lane" : "lanes"}. {summary}
       </p>
 
       {list && decoded ? (
@@ -667,4 +623,4 @@ export function LogicAnalyzer({
   );
 }
 
-export type { I2cFrame };
+export type { DecodedTransaction, LogicDecode };

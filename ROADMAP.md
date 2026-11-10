@@ -7,7 +7,7 @@ v1 is the starred list from the original brief. Everything else lives here so it
 ### Components
 
 - Displays: `oled-display` (128×64 SSD1306-style framebuffer), `led-matrix` (8×8, chained, scrolling text), `led-bar`.
-- Signals: SPI and UART decode overlays on the logic analyzer (the pure decoders ship in v1); a Modbus RTU decoder with a general frame list, reusing the analyzer's transaction view.
+- Signals: a Modbus RTU decoder with a general frame list, reusing the analyzer's transaction view.
 - Readouts: `battery-indicator`, `signal-strength`, `connection-status`.
 - Controls: `toggle-switch`, `rotary-encoder`, `pwm-slider`, `momentary-button`, `d-pad`.
 - Board and docs: `wiring-table`.
@@ -45,7 +45,6 @@ v1 is the starred list from the original brief. Everything else lives here so it
 
 ## Deferred while building v1
 
-- Logic analyzer overlays for SPI and UART (the decoders exist and are tested; only I2C is drawn).
 - WaveJSON node and edge annotations (arrows, timing constraints) in the timing diagram.
 - Character LCD 5x10 font mode and typing katakana or Greek through the A00 code map.
 - Keyboard editing of individual bits in the bitfield diagram (clicking works; pair with inputs for now).

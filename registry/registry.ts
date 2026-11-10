@@ -284,8 +284,11 @@ export const registry: RegistryItem[] = [
     type: "registry:ui",
     title: "Logic analyzer",
     description:
-      "Digital lanes with zoom, pan, a time ruler and in-place I2C decode: start, address, read/write, data bytes, ack and stop drawn over the SDA lane.",
-    files: [{ path: "registry/benchcn/ui/logic-analyzer/logic-analyzer.tsx", type: "registry:ui" }],
+      "Digital lanes with zoom, pan, a time ruler and in-place I2C, SPI and UART decode: addresses, bytes, acks and errors drawn over the data lane, with a clickable transaction list.",
+    files: [
+      { path: "registry/benchcn/ui/logic-analyzer/logic-analyzer.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/lib/logic-decode.ts", type: "registry:lib" },
+    ],
     registryDependencies: [
       "button",
       `${ns}/tokens`,
