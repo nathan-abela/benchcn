@@ -48,6 +48,6 @@ v1 is the starred list from the original brief. Everything else lives here so it
 - WaveJSON node and edge annotations (arrows, timing constraints) in the timing diagram.
 - Character LCD 5x10 font mode and typing katakana or Greek through the A00 code map.
 - Keyboard editing of individual bits in the bitfield diagram (clicking works; pair with inputs for now).
-- Oscilloscope cursors, X-Y mode and FFT.
+- Oscilloscope X-Y mode and FFT.
 - Pinout header: per-pin ALT0 to ALT5 tables for the Raspberry Pi, more boards (Pico 2, ESP32-S3, Nano).
 - Registry item for a standalone channel colour palette switcher.

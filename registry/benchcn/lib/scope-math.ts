@@ -196,3 +196,32 @@ function interpolate(values: ArrayLike<number>, i: number, level: number): numbe
   }
   return i;
 }
+
+export type CursorAxis = "time" | "voltage";
+
+export type CursorPair = [a: number, b: number];
+
+export type CursorReadout = { a: number; b: number; delta: number };
+
+/**
+ * Cursors live in divisions from the centre line, so they keep their place on screen when the
+ * scale changes. `origin` is where zero sits, also in divisions from the centre: the trigger
+ * point for time, the channel offset for voltage.
+ */
+export function readCursors(positions: CursorPair, perDivision: number, origin = 0): CursorReadout {
+  const a = (positions[0] - origin) * perDivision;
+  const b = (positions[1] - origin) * perDivision;
+  return { a, b, delta: b - a };
+}
+
+/** Moves one cursor, keeping it on a screen `divisions` wide or tall. */
+export function moveCursor(
+  positions: CursorPair,
+  index: 0 | 1,
+  position: number,
+  divisions: number,
+): CursorPair {
+  const next: CursorPair = [positions[0], positions[1]];
+  next[index] = Math.min(divisions / 2, Math.max(-divisions / 2, position));
+  return next;
+}

@@ -1,9 +1,11 @@
 // benchcn.dev · oscilloscope
 // A working oscilloscope: edge trigger with hysteresis, 1-2-5 timebase and volts per division,
-// phosphor persistence, and live measurements. Canvas 2D, drawn at device pixel ratio.
+// phosphor persistence, time and voltage cursors, and live measurements. Canvas 2D, drawn at
+// device pixel ratio.
 import {
   type ComponentProps,
   createContext,
+  type KeyboardEvent as ReactKeyboardEvent,
   type PointerEvent as ReactPointerEvent,
   type ReactElement,
   type ReactNode,
@@ -11,6 +13,7 @@ import {
   useCallback,
   useMemo,
   useRef,
+  useState,
   useSyncExternalStore,
 } from "react";
 
@@ -26,8 +29,13 @@ import {
 } from "@/registry/benchcn/lib/instrument";
 import {
   captureWindow,
+  type CursorAxis,
+  type CursorPair,
+  type CursorReadout,
   measure,
   type Measurements,
+  moveCursor,
+  readCursors,
   type TriggerEdge,
 } from "@/registry/benchcn/lib/scope-math";
 import { formatSi } from "@/registry/benchcn/lib/units";
@@ -74,6 +82,8 @@ export type ScopeRootProps = ComponentProps<"div"> & {
   persistence?: number;
   running?: boolean;
   divisions?: { x: number; y: number };
+  /** Shows a pair of cursors, A and B, to drag or step with the arrow keys. */
+  cursors?: CursorAxis | "off";
   onTriggerLevelChange?: (level: number) => void;
 };
 
@@ -92,6 +102,9 @@ type ScopeContextValue = {
   persistence: number;
   running: boolean;
   divisions: { x: number; y: number };
+  cursors: CursorAxis | "off";
+  cursorPositions: Record<CursorAxis, CursorPair>;
+  setCursor: (axis: CursorAxis, index: 0 | 1, position: number) => void;
   store: SnapshotStore;
   onTriggerLevelChange?: (level: number) => void;
 };
@@ -102,6 +115,9 @@ const EMPTY_SNAPSHOT: ScopeSnapshot = { triggered: false, measurements: {} };
 const PUBLISH_INTERVAL = 100;
 const DEFAULT_DIVISIONS = { x: 10, y: 8 };
 const SCREEN_FALLBACK = "oklch(0.17 0.004 80)";
+const DEFAULT_CURSORS: Record<CursorAxis, CursorPair> = { time: [-2, 2], voltage: [-1, 1] };
+const CURSOR_NAMES = ["A", "B"] as const;
+const CURSOR_STEP = 0.1;
 
 function useScope(): ScopeContextValue {
   const context = use(ScopeContext);
@@ -143,11 +159,26 @@ function Root({
   persistence = 0.5,
   running = true,
   divisions = DEFAULT_DIVISIONS,
+  cursors = "off",
   onTriggerLevelChange,
   className,
   ...props
 }: ScopeRootProps): ReactElement {
   const store = useMemo(() => createSnapshotStore(), []);
+  const [cursorPositions, setCursorPositions] = useState(DEFAULT_CURSORS);
+  const setCursor = useCallback(
+    (axis: CursorAxis, index: 0 | 1, position: number) =>
+      setCursorPositions((current) => ({
+        ...current,
+        [axis]: moveCursor(
+          current[axis],
+          index,
+          position,
+          axis === "time" ? divisions.x : divisions.y,
+        ),
+      })),
+    [divisions],
+  );
   const resolvedTrigger = useMemo<ResolvedTrigger>(
     () => ({
       source: trigger?.source ?? channels[0]?.id ?? "",
@@ -166,6 +197,9 @@ function Root({
       persistence,
       running,
       divisions,
+      cursors,
+      cursorPositions,
+      setCursor,
       store,
       onTriggerLevelChange,
     }),
@@ -176,6 +210,9 @@ function Root({
       persistence,
       running,
       divisions,
+      cursors,
+      cursorPositions,
+      setCursor,
       store,
       onTriggerLevelChange,
     ],
@@ -329,6 +366,103 @@ function drawMarker(
   ctx.restore();
 }
 
+type CursorScale = { readout: CursorReadout; unit: string };
+
+function useCursorScale(axis: CursorAxis): CursorScale {
+  const { channels, timebase, trigger, divisions, cursorPositions } = useScope();
+  if (axis === "time") {
+    const triggerPosition = (trigger.pretrigger - 0.5) * divisions.x;
+    return { readout: readCursors(cursorPositions.time, timebase, triggerPosition), unit: "s" };
+  }
+  const source = channels.find((c) => c.id === trigger.source) ?? channels[0];
+  return {
+    readout: readCursors(cursorPositions.voltage, source?.voltsPerDiv ?? 1, source?.offset ?? 0),
+    unit: source?.unit ?? "V",
+  };
+}
+
+function CursorLine({ axis, index }: { axis: CursorAxis; index: 0 | 1 }): ReactElement {
+  const { divisions, cursorPositions, setCursor } = useScope();
+  const { readout, unit } = useCursorScale(axis);
+  const horizontal = axis === "voltage";
+  const count = horizontal ? divisions.y : divisions.x;
+  const position = cursorPositions[axis][index];
+  const fraction = horizontal ? 0.5 - position / count : 0.5 + position / count;
+  const value = index === 0 ? readout.a : readout.b;
+
+  const onPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const screen = event.currentTarget.parentElement;
+    if (!screen || !event.currentTarget.hasPointerCapture(event.pointerId)) return;
+    const rect = screen.getBoundingClientRect();
+    const next = horizontal
+      ? 0.5 - (event.clientY - rect.top) / rect.height
+      : (event.clientX - rect.left) / rect.width - 0.5;
+    setCursor(axis, index, next * count);
+  };
+
+  const onKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
+    const step = event.shiftKey ? 1 : CURSOR_STEP;
+    const moves: Record<string, number> = {
+      ArrowRight: position + step,
+      ArrowUp: position + step,
+      ArrowLeft: position - step,
+      ArrowDown: position - step,
+      Home: -count / 2,
+      End: count / 2,
+    };
+    const next = moves[event.key];
+    if (next === undefined) return;
+    event.preventDefault();
+    setCursor(axis, index, next);
+  };
+
+  return (
+    <div
+      // A native range input cannot be a full-height line dragged across the screen on either axis.
+      // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role
+      role="slider"
+      tabIndex={0}
+      data-slot="scope-cursor"
+      aria-label={`Cursor ${CURSOR_NAMES[index]}, ${axis}`}
+      aria-orientation={horizontal ? "vertical" : "horizontal"}
+      aria-valuemin={-count / 2}
+      aria-valuemax={count / 2}
+      aria-valuenow={Number(position.toFixed(2))}
+      aria-valuetext={formatSi(value, unit)}
+      className={cn(
+        "group/cursor absolute z-10 flex touch-none outline-none select-none",
+        horizontal
+          ? "inset-x-0 h-6 -translate-y-1/2 cursor-ns-resize flex-col justify-center"
+          : "inset-y-0 w-6 -translate-x-1/2 cursor-ew-resize justify-center",
+      )}
+      style={horizontal ? { top: `${fraction * 100}%` } : { left: `${fraction * 100}%` }}
+      onPointerDown={(event) => {
+        event.stopPropagation();
+        event.currentTarget.setPointerCapture(event.pointerId);
+      }}
+      onPointerMove={onPointerMove}
+      onKeyDown={onKeyDown}
+    >
+      <span
+        aria-hidden
+        className={cn(
+          "border-dashed border-white/55 group-focus-visible/cursor:border-white",
+          horizontal ? "w-full border-t" : "h-full border-l",
+        )}
+      />
+      <span
+        aria-hidden
+        className={cn(
+          "absolute rounded-[3px] bg-white/85 px-1 font-mono text-[9px] leading-[14px] font-semibold text-black group-focus-visible/cursor:bg-white group-focus-visible/cursor:ring-2 group-focus-visible/cursor:ring-white/50",
+          horizontal ? "left-8" : "top-1.5",
+        )}
+      >
+        {CURSOR_NAMES[index]}
+      </span>
+    </div>
+  );
+}
+
 export type ScopeScreenProps = ComponentProps<"div"> & {
   graticule?: boolean;
 };
@@ -341,6 +475,7 @@ function Screen({ graticule = true, className, ...props }: ScopeScreenProps): Re
     persistence,
     running,
     divisions,
+    cursors,
     store,
     onTriggerLevelChange,
   } = useScope();
@@ -463,7 +598,7 @@ function Screen({ graticule = true, className, ...props }: ScopeScreenProps): Re
       data-slot="scope-screen"
       // `dark` because the screen is emissive in both themes: traces take the bright channel values.
       className={cn(
-        "dark relative aspect-[5/4] w-full overflow-hidden rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.04),inset_0_2px_12px_rgb(0_0_0/0.5)]",
+        "dark relative isolate aspect-[5/4] w-full overflow-hidden rounded-lg border border-black/40 bg-[var(--scope-screen,oklch(0.17_0.004_80))] shadow-[inset_0_0_0_1px_rgb(255_255_255/0.04),inset_0_2px_12px_rgb(0_0_0/0.5)]",
         // The tube: the screen darkens towards its edges, over the canvas and under the pointer.
         "after:pointer-events-none after:absolute after:inset-0 after:rounded-[inherit] after:bg-[radial-gradient(ellipse_at_center,transparent_55%,rgb(0_0_0/0.38)_100%)]",
         interactive && "cursor-ns-resize touch-none select-none",
@@ -500,6 +635,12 @@ function Screen({ graticule = true, className, ...props }: ScopeScreenProps): Re
       {...props}
     >
       <canvas ref={canvasRef} aria-hidden className="block h-full w-full" />
+      {cursors === "off" ? null : (
+        <>
+          <CursorLine axis={cursors} index={0} />
+          <CursorLine axis={cursors} index={1} />
+        </>
+      )}
       <p className="sr-only">{label}</p>
     </div>
   );
@@ -623,6 +764,36 @@ function Measurements({
   );
 }
 
+export type ScopeCursorsProps = ComponentProps<"div">;
+
+function CursorReadouts({
+  axis,
+  className,
+  ...props
+}: ScopeCursorsProps & { axis: CursorAxis }): ReactElement {
+  const { readout, unit } = useCursorScale(axis);
+  const delta = Math.abs(readout.delta);
+  return (
+    <div
+      data-slot="scope-cursors"
+      className={cn("grid grid-cols-3 gap-x-4 gap-y-3 sm:grid-cols-5", className)}
+      {...props}
+    >
+      <ReadoutCell label="A" value={formatSi(readout.a, unit)} />
+      <ReadoutCell label="B" value={formatSi(readout.b, unit)} />
+      <ReadoutCell label={axis === "time" ? "Δt" : "ΔV"} value={formatSi(delta, unit)} />
+      {axis === "time" ? (
+        <ReadoutCell label="1/Δt" value={delta > 0 ? formatSi(1 / delta, "Hz") : "--"} />
+      ) : null}
+    </div>
+  );
+}
+
+function Cursors(props: ScopeCursorsProps): ReactElement | null {
+  const { cursors } = useScope();
+  return cursors === "off" ? null : <CursorReadouts axis={cursors} {...props} />;
+}
+
 function Status({ className, ...props }: ComponentProps<"span">): ReactElement {
   const { running, store } = useScope();
   const snapshot = useSyncExternalStore(store.subscribe, store.get, () => EMPTY_SNAPSHOT);
@@ -645,7 +816,7 @@ function Status({ className, ...props }: ComponentProps<"span">): ReactElement {
   );
 }
 
-export const Scope = { Root, Screen, Readout, Measurements, Status };
+export const Scope = { Root, Screen, Readout, Measurements, Cursors, Status };
 
 export type OscilloscopeProps = ScopeRootProps & {
   title?: ReactNode;
@@ -668,6 +839,7 @@ export function Oscilloscope({
       <Screen />
       <Readout />
       {measurements ? <Measurements items={measurements} /> : null}
+      <Cursors />
       {children}
     </Root>
   );

@@ -1,6 +1,6 @@
 ---
 title: Oscilloscope
-description: Working oscilloscope for analog waveforms with edge trigger, timebase and volts per division, phosphor persistence, and live measurements.
+description: Working oscilloscope for analog waveforms with edge trigger, timebase and volts per division, phosphor persistence, cursors, and live measurements.
 ---
 
 <ComponentPreview name="oscilloscope" />
@@ -65,6 +65,7 @@ import { Scope } from "@/components/ui/oscilloscope";
   <Scope.Screen />
   <Scope.Readout />
   <Scope.Measurements items={["frequency", "peakToPeak"]} />
+  <Scope.Cursors />
 </Scope.Root>;
 ```
 
@@ -103,6 +104,14 @@ In `normal` mode the screen holds the last triggered capture instead of free run
 trigger={{ source: "ch1", level: 1.2, edge: "falling", mode: "normal" }}
 ```
 
+### Cursors
+
+`cursors="time"` or `cursors="voltage"` puts two lines, A and B, on the screen and their readouts under it: both positions, the difference, and for time cursors 1/Δt as a frequency. Time is read from the trigger point and voltage from the trigger source's zero, through that channel's scale and offset. The cursors stay where you put them on the screen when the timebase or volts per division change, as they do on a bench scope.
+
+```tsx
+<Oscilloscope channels={channels} timebase={0.0002} cursors="time" />
+```
+
 ### Stopped
 
 `running={false}` freezes both the drawing loop and the measurements.
@@ -115,9 +124,14 @@ The bezel, labels and readouts use shadcn tokens. The screen is always dark (`--
 
 The canvas is decorative. A visually hidden sentence next to it reads the current measurements for each channel, and the measurement cells are real text updated ten times a second.
 
-| Interaction        | Result                                                      |
-| ------------------ | ----------------------------------------------------------- |
-| Drag on the screen | Sets the trigger level when `onTriggerLevelChange` is given |
+| Interaction             | Result                                                      |
+| ----------------------- | ----------------------------------------------------------- |
+| Drag on the screen      | Sets the trigger level when `onTriggerLevelChange` is given |
+| Drag a cursor           | Moves it                                                    |
+| Arrow keys on a cursor  | Move it a tenth of a division; with Shift, a whole division |
+| Home or End on a cursor | Send it to the edge of the screen                           |
+
+Each cursor is a focusable slider that announces its reading, for example "Cursor A, time, 400 µs".
 
 Under `prefers-reduced-motion` persistence is disabled and the screen redraws four times a second.
 

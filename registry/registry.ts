@@ -270,7 +270,7 @@ export const registry: RegistryItem[] = [
     type: "registry:ui",
     title: "Oscilloscope",
     description:
-      "Working oscilloscope for analog waveforms: edge trigger with hysteresis, timebase and volts per division, phosphor persistence, and live frequency, period, Vpp, Vrms and mean measurements.",
+      "Working oscilloscope for analog waveforms: edge trigger with hysteresis, timebase and volts per division, phosphor persistence, time and voltage cursors, and live frequency, period, Vpp, Vrms and mean measurements.",
     files: [
       { path: "registry/benchcn/ui/oscilloscope/oscilloscope.tsx", type: "registry:ui" },
       { path: "registry/benchcn/lib/scope-math.ts", type: "registry:lib" },

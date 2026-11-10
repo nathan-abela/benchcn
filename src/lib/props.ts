@@ -502,6 +502,12 @@ export const props: Record<string, PropsDoc> = {
       description: "Graticule divisions.",
       default: "{ x: 10, y: 8 }",
     },
+    cursors: {
+      type: '"off" | "time" | "voltage"',
+      description:
+        "Shows cursors A and B with their readouts. Time reads from the trigger point, voltage from the trigger source's zero.",
+      default: '"off"',
+    },
     onTriggerLevelChange: {
       type: "(level: number) => void",
       description: "Makes the trigger level draggable on the screen.",

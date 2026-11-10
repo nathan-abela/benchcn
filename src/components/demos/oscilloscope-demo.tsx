@@ -3,11 +3,24 @@ import { type ReactElement, type ReactNode, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { createMockDevice } from "@/registry/benchcn/lib/mock-device";
 import { formatSi, stepValue } from "@/registry/benchcn/lib/units";
-import { Oscilloscope, type ScopeChannel } from "@/registry/benchcn/ui/oscilloscope/oscilloscope";
+import {
+  Oscilloscope,
+  type OscilloscopeProps,
+  type ScopeChannel,
+} from "@/registry/benchcn/ui/oscilloscope/oscilloscope";
 
 const BUFFER = 8192;
 const MIN_TIMEBASE = 0.00001;
 const MAX_TIMEBASE = 0.01;
+
+type Cursors = NonNullable<OscilloscopeProps["cursors"]>;
+
+const NEXT_CURSORS: Record<Cursors, Cursors> = { off: "time", time: "voltage", voltage: "off" };
+const CURSOR_LABELS: Record<Cursors, string> = {
+  off: "Cursors off",
+  time: "Time cursors",
+  voltage: "Voltage cursors",
+};
 
 export function OscilloscopeDemo(): ReactElement {
   const device = useMemo(() => createMockDevice({ seed: 7 }), []);
@@ -16,6 +29,7 @@ export function OscilloscopeDemo(): ReactElement {
   const [edge, setEdge] = useState<"rising" | "falling">("rising");
   const [running, setRunning] = useState(true);
   const [voltsPerDiv, setVoltsPerDiv] = useState(0.5);
+  const [cursors, setCursors] = useState<Cursors>("off");
 
   const channels = useMemo<ScopeChannel[]>(() => {
     const sampleRate = Math.min(2_000_000, Math.round(2000 / (timebase * 10)));
@@ -36,6 +50,7 @@ export function OscilloscopeDemo(): ReactElement {
       timebase={timebase}
       trigger={{ source: "ch1", level, edge }}
       running={running}
+      cursors={cursors}
       onTriggerLevelChange={setLevel}
     >
       <div className="flex flex-wrap items-center gap-x-5 gap-y-3 border-t pt-3">
@@ -84,6 +99,13 @@ export function OscilloscopeDemo(): ReactElement {
             {edge === "rising" ? "Rising" : "Falling"}
           </Button>
         </Knob>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setCursors((current) => NEXT_CURSORS[current])}
+        >
+          {CURSOR_LABELS[cursors]}
+        </Button>
         <Button
           variant={running ? "outline" : "default"}
           size="sm"

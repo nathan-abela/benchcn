@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { captureWindow, findLastTrigger, measure } from "./scope-math";
+import { captureWindow, findLastTrigger, measure, moveCursor, readCursors } from "./scope-math";
 
 const SAMPLE_RATE = 100_000;
 
@@ -166,5 +166,49 @@ describe("measure", () => {
   it("should return zeros for an empty range", () => {
     // #when / #then
     expect(measure([], SAMPLE_RATE).peakToPeak).toBe(0);
+  });
+});
+
+describe("readCursors", () => {
+  it("should read time cursors relative to the trigger point", () => {
+    // #given
+    const timebase = 0.001;
+    const triggerPosition = -2;
+
+    // #when
+    const readout = readCursors([-2, 3], timebase, triggerPosition);
+
+    // #then
+    expect(readout).toEqual({ a: 0, b: expect.closeTo(0.005, 9), delta: expect.closeTo(0.005, 9) });
+  });
+
+  it("should read voltage cursors through the channel scale and offset", () => {
+    // #given
+    const voltsPerDiv = 0.5;
+    const offset = -1;
+
+    // #when
+    const readout = readCursors([1, -1], voltsPerDiv, offset);
+
+    // #then
+    expect(readout).toEqual({ a: 1, b: 0, delta: -1 });
+  });
+});
+
+describe("moveCursor", () => {
+  it("should move one cursor and leave the other", () => {
+    // #when
+    const next = moveCursor([-2, 2], 1, 3.5, 10);
+
+    // #then
+    expect(next).toEqual([-2, 3.5]);
+  });
+
+  it("should stop at the edge of the screen", () => {
+    // #when
+    const next = moveCursor([-2, 2], 0, -9, 8);
+
+    // #then
+    expect(next).toEqual([-4, 2]);
   });
 });
