@@ -161,6 +161,17 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/emergency-stop"),
   },
   {
+    name: "joystick",
+    type: "registry:ui",
+    title: "Joystick",
+    description:
+      "Virtual joystick for robot teleoperation from a touch pad, WASD or arrow keys, or a gamepad's left stick: sends at a fixed rate while held and a single zero the moment input stops.",
+    files: [{ path: "registry/benchcn/ui/joystick/joystick.tsx", type: "registry:ui" }],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`],
+    categories: ["controls"],
+    docs: docsUrl("components/joystick"),
+  },
+  {
     name: "setpoint-input",
     type: "registry:ui",
     title: "Setpoint input",

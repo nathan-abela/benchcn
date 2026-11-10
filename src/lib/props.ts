@@ -243,6 +243,31 @@ export const props: Record<string, PropsDoc> = {
       default: "3000",
     },
   },
+  joystick: {
+    label: { type: "ReactNode", description: "", default: '"Drive"' },
+    onChange: {
+      type: "(vector: { x: number; y: number }) => void",
+      description:
+        "`x` turns (positive right) and `y` drives (positive forward), -1 to 1. Called `rate` times a second while held, then once with zero.",
+      required: true,
+    },
+    rate: { type: "number", description: "Sends per second while held.", default: "10" },
+    deadzone: {
+      type: "number",
+      description: "Fraction of a gamepad stick's travel ignored around the centre.",
+      default: "0.12",
+    },
+    gamepad: {
+      type: "boolean",
+      description: "Read the first gamepad's left stick.",
+      default: "true",
+    },
+    disabled: {
+      type: "boolean",
+      description: "Stops sending; going disabled mid-drive sends one zero.",
+      default: "false",
+    },
+  },
   "alarm-list": {
     alarms: {
       type: "AlarmRecord[]",

@@ -199,6 +199,28 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "joystick",
+      "type": "registry:ui",
+      "title": "Joystick",
+      "description": "Virtual joystick for robot teleoperation from a touch pad, WASD or arrow keys, or a gamepad's left stick: sends at a fixed rate while held and a single zero the moment input stops.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/joystick/joystick.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/joystick.tsx"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens",
+        "@benchcn/instrument"
+      ],
+      "categories": [
+        "controls"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/joystick"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "setpoint-input",
       "type": "registry:ui",
       "title": "Setpoint input",

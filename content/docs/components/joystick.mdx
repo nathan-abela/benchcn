@@ -1,0 +1,64 @@
+---
+title: Joystick
+description: Virtual joystick for teleoperating a robot from a touch pad, WASD or arrow keys, or a gamepad's left stick, sending at a fixed rate while held and a single zero the moment input stops.
+---
+
+<ComponentPreview name="joystick" />
+
+Drag the knob, or focus the joystick and use W A S D or the arrow keys. Plug in a gamepad and its left stick drives too. Let go and it sends one zero straight away.
+
+## Installation
+
+<InstallTabs item="joystick" />
+
+## Usage
+
+Velocities stream ten times a second, so send them with `send` rather than `command`: each one is replaced by the next, and tracking every acknowledgement would only show noise.
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { setCommand } from "@/lib/wire";
+import { Joystick } from "@/components/ui/joystick";
+
+export function Drive() {
+  const { send, actuators } = useMockDevice();
+  return (
+    <Joystick
+      disabled={actuators.drive?.confirmed !== true}
+      onChange={({ x, y }) => {
+        send(setCommand("linear", y * 0.5));
+        send(setCommand("angular", -x * 1.5));
+      }}
+    />
+  );
+}
+```
+
+## Stopping is the device's job too
+
+The joystick sends a zero when input stops, but a dropped connection sends nothing at all. The firmware should stop on its own when drive commands stop arriving for about half a second. The mock robot does, and logs it.
+
+## Props
+
+<PropsTable of="joystick" />
+
+## Input
+
+| Source   | How                                                 | Priority |
+| -------- | --------------------------------------------------- | -------- |
+| Pointer  | Drag the knob; releasing anywhere stops             | First    |
+| Keyboard | Focus the joystick, then W A S D or arrow keys      | Second   |
+| Gamepad  | Left stick of the first connected gamepad, deadzone | Third    |
+
+Diagonals are clamped to the unit circle, so driving and turning together is no faster than driving straight. Gamepad axes follow the W3C Standard Gamepad mapping.
+
+## Accessibility
+
+The joystick is a button labelled with its keys, so it can be reached with Tab. Forward, turn and the active input are written out as text under it. Leaving it with Tab stops the drive.
+
+## Ask your agent
+
+<AgentPrompt item="joystick">
+  Send joystick velocities with send, disable it until the device confirms the drive, and give the
+  firmware a watchdog that stops the motors when commands stop arriving.
+</AgentPrompt>
