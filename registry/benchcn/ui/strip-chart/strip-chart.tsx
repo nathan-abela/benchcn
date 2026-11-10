@@ -181,13 +181,13 @@ export function StripChart({
 
       ctx.font = `10px ${MONO}`;
       const laneTicks = lanes.map((lane) =>
-        lane.range ? ticks(lane.range, Math.max(2, Math.floor(lane.height / 36))) : [],
+        lane.range ? ticks(lane.range, Math.max(3, Math.floor(lane.height / 36))) : [],
       );
       const labels = lanes.map((lane, i) => {
         if (!lane.range) return [];
         const step = tickStep(
           lane.range.max - lane.range.min,
-          Math.max(2, Math.floor(lane.height / 36)),
+          Math.max(3, Math.floor(lane.height / 36)),
         );
         return laneTicks[i].map((v) => formatValue(v, step));
       });
