@@ -10,6 +10,7 @@ import emergencyStopSource from "./emergency-stop-demo.tsx?raw";
 import joystickSource from "./joystick-demo.tsx?raw";
 import logicAnalyzerSource from "./logic-analyzer-demo.tsx?raw";
 import meterReadoutSource from "./meter-readout-demo.tsx?raw";
+import odometryPlotSource from "./odometry-plot-demo.tsx?raw";
 import oscilloscopeSource from "./oscilloscope-demo.tsx?raw";
 import pinoutHeaderSource from "./pinout-header-demo.tsx?raw";
 import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
@@ -89,6 +90,13 @@ export const demos: Record<string, Demo> = {
     component: lazy(() => import("./joystick-demo").then((m) => ({ default: m.JoystickDemo }))),
     source: joystickSource,
     placeholder: { base: 331, sm: 347 },
+  },
+  "odometry-plot": {
+    component: lazy(() =>
+      import("./odometry-plot-demo").then((m) => ({ default: m.OdometryPlotDemo })),
+    ),
+    source: odometryPlotSource,
+    placeholder: { base: 379, sm: 549 },
   },
   "alarm-list": {
     component: lazy(() => import("./alarm-list-demo").then((m) => ({ default: m.AlarmListDemo }))),

@@ -1,0 +1,49 @@
+---
+title: Odometry plot
+description: A robot's driven path and heading on a square grid in real units, fitting the view to the path, with a hook that records the trail from any source.
+---
+
+<ComponentPreview name="odometry-plot" />
+
+The mock robot drives a slow arc. The plot grows to fit the path with a margin, the grid stays on round steps, and the arrow shows the current heading.
+
+## Installation
+
+<InstallTabs item="odometry-plot" />
+
+## Usage
+
+`usePoseTrail` reads `pose-x`, `pose-y` and `heading` from any source and adds a point each time the robot has moved more than a centimetre.
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { usePoseTrail } from "@/hooks/use-pose-trail";
+import { OdometryPlot } from "@/components/ui/odometry-plot";
+
+export function Path() {
+  const source = useMockDevice();
+  const { path, pose } = usePoseTrail(source);
+  return <OdometryPlot path={path} pose={pose} />;
+}
+```
+
+Pass `channels` to the hook if your firmware names them differently. Heading is in degrees, counterclockwise from +x.
+
+## Props
+
+<PropsTable of="odometry-plot" />
+
+## Theming
+
+The grid and labels use `--border` and `--muted-foreground`, the path `--channel-2` and the robot `--foreground`.
+
+## Accessibility
+
+The plot is decorative. The current x, y and heading are written as text underneath.
+
+## Ask your agent
+
+<AgentPrompt item="odometry-plot">
+  Record the path with usePoseTrail from the source's pose channels and pass path and pose to
+  OdometryPlot; do not keep pose history in component state yourself.
+</AgentPrompt>

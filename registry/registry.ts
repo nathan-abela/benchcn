@@ -172,6 +172,20 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/joystick"),
   },
   {
+    name: "odometry-plot",
+    type: "registry:ui",
+    title: "Odometry plot",
+    description:
+      "A robot's driven path and heading on a square grid in real units, fitting the view to the path, with a hook that records the trail from any source's pose channels.",
+    files: [
+      { path: "registry/benchcn/ui/odometry-plot/odometry-plot.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/hooks/use-pose-trail.ts", type: "registry:hook" },
+    ],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`, `${ns}/source-store`],
+    categories: ["readouts"],
+    docs: docsUrl("components/odometry-plot"),
+  },
+  {
     name: "setpoint-input",
     type: "registry:ui",
     title: "Setpoint input",

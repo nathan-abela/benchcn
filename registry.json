@@ -221,6 +221,33 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "odometry-plot",
+      "type": "registry:ui",
+      "title": "Odometry plot",
+      "description": "A robot's driven path and heading on a square grid in real units, fitting the view to the path, with a hook that records the trail from any source's pose channels.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/odometry-plot/odometry-plot.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/odometry-plot.tsx"
+        },
+        {
+          "path": "registry/benchcn/hooks/use-pose-trail.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens",
+        "@benchcn/instrument",
+        "@benchcn/source-store"
+      ],
+      "categories": [
+        "readouts"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/odometry-plot"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "setpoint-input",
       "type": "registry:ui",
       "title": "Setpoint input",

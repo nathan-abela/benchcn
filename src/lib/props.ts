@@ -268,6 +268,24 @@ export const props: Record<string, PropsDoc> = {
       default: "false",
     },
   },
+  "odometry-plot": {
+    path: {
+      type: "ArrayLike<{ x: number; y: number }>",
+      description: "Positions oldest first, in `unit`. `usePoseTrail` records them from a source.",
+      required: true,
+    },
+    pose: {
+      type: "{ x, y, heading } | null",
+      description: "Current position and heading in degrees, counterclockwise from +x.",
+    },
+    title: { type: "ReactNode", description: "", default: '"Odometry"' },
+    unit: { type: "string", description: "Unit of the coordinates.", default: '"m"' },
+    minSpan: {
+      type: "number",
+      description: "Smallest half-width of the view, so a robot standing still is not zoomed in.",
+      default: "1",
+    },
+  },
   "alarm-list": {
     alarms: {
       type: "AlarmRecord[]",

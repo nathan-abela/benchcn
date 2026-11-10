@@ -11,6 +11,7 @@ const COMPONENTS = [
   "range-bar",
   "meter-readout",
   "alarm-list",
+  "odometry-plot",
   "strip-chart",
   "status-led",
   "seven-segment",
