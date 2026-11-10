@@ -20,7 +20,7 @@ import { LedMatrix } from "@/components/ui/led-matrix";
 <LedMatrix text={`TEMP ${temp.toFixed(1)}°C`} cols={64} />
 ```
 
-Text that fits is centred. Text that does not fit enters from the right edge, leaves by the left and starts again.
+Text that fits is centred. Text that does not fit enters from the right edge, leaves by the left and starts again. New text of a live reading carries on from the same column, so a value can change mid-scroll.
 
 ### Bitmaps
 
@@ -59,7 +59,7 @@ setPixel(dot, 3, 3);
 
 ## Theming
 
-`color` takes the LED presets (`red`, `amber`, `green`, `blue`, `white`) or any CSS colour, and defaults to `--primary`. Unlit LEDs keep a trace of their colour, as they do on a real panel.
+`color` takes the LED presets (`red`, `amber`, `green`, `blue`, `white`) or any CSS colour, and defaults to `--primary`. The panel is dark in both themes, so theme colours take their dark-theme values. Unlit LEDs keep a trace of their colour, as they do on a real panel.
 
 ## Accessibility
 

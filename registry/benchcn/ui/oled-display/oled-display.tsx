@@ -134,7 +134,8 @@ export function OledDisplay({
       data-slot="oled-display"
       data-on={on}
       className={cn(
-        "inline-block max-w-full rounded-md bg-[oklch(0.17_0.008_260)] p-2 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(0_0_0/0.4)]",
+        // `dark` because the panel is dark in both themes: a theme colour must take its bright value.
+        "dark inline-block max-w-full rounded-md bg-[oklch(0.17_0.008_260)] p-2 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(0_0_0/0.4)]",
         className,
       )}
       style={style}

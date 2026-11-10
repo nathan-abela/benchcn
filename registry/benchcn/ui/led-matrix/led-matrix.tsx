@@ -40,13 +40,16 @@ export type LedMatrixProps = Omit<ComponentProps<"div">, "color"> & {
 const LED_RADIUS = 0.36;
 const LED_SIDE = 0.76;
 
-/** Counts scroll steps while `active`, and holds at zero otherwise. */
+/** Counts scroll steps while `active`, and starts again from zero each time it resumes. */
 function useScrollStep(active: boolean, speed: number): number {
   const [step, setStep] = useState(0);
   useEffect(() => {
     if (!active) return;
     const timer = window.setInterval(() => setStep((s) => s + 1), 1000 / Math.max(1, speed));
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearInterval(timer);
+      setStep(0);
+    };
   }, [active, speed]);
   return active ? step : 0;
 }
@@ -108,7 +111,8 @@ export function LedMatrix({
     <div
       data-slot="led-matrix"
       className={cn(
-        "inline-block max-w-full rounded-md bg-[oklch(0.16_0.005_260)] p-1.5 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(0_0_0/0.4)]",
+        // `dark` because the panel is dark in both themes: `--primary` must take its bright value.
+        "dark inline-block max-w-full rounded-md bg-[oklch(0.16_0.005_260)] p-1.5 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(0_0_0/0.4)]",
         className,
       )}
       style={{ "--led": ledColor(color), ...style } as CSSProperties}

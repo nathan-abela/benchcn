@@ -22,6 +22,10 @@ function reading(value: unknown): number | undefined {
   return typeof value === "number" ? value : undefined;
 }
 
+function spoken(value: number | undefined, digits: number): string {
+  return value === undefined ? "--" : value.toFixed(digits);
+}
+
 function drawSparkline(bitmap: Bitmap, values: number[], top: number, height: number): void {
   if (values.length < 2) return;
   const min = Math.min(...values);
@@ -33,13 +37,18 @@ function drawSparkline(bitmap: Bitmap, values: number[], top: number, height: nu
   }
 }
 
-function drawStation(time: string, temp?: number, humidity?: number, history?: number[]): Bitmap {
+export function drawStation(
+  time: string,
+  temp?: number,
+  humidity?: number,
+  history?: number[],
+): Bitmap {
   const bitmap = createBitmap(WIDTH, 64);
   drawText(bitmap, "benchcn", 1, 4);
   drawText(bitmap, time, WIDTH - 1 - textWidth(time), 4);
 
-  const reading = typeof temp === "number" ? temp.toFixed(1) : "--.-";
-  const next = drawText(bitmap, reading, 1, 20, { scale: 3 });
+  const digits = typeof temp === "number" ? temp.toFixed(1) : "--.-";
+  const next = drawText(bitmap, digits, 1, 20, { scale: 3 });
   drawText(bitmap, "°C", next, 20);
   const rh = `${typeof humidity === "number" ? humidity.toFixed(0) : "--"}% RH`;
   drawText(bitmap, rh, WIDTH - 1 - textWidth(rh), 36);
@@ -85,14 +94,14 @@ export function OledDisplayDemo(): ReactElement {
           color="yellow-blue"
           on={on}
           invert={invert}
-          label={`Temperature ${temp} degrees, humidity ${humidity} percent`}
+          label={`Temperature ${spoken(temp, 1)} degrees, humidity ${spoken(humidity, 0)} percent`}
         />
         <OledDisplay
           buffer={batteryRam}
           height={32}
           on={on}
           invert={invert}
-          label={`Battery ${battery} volts`}
+          label={`Battery ${spoken(battery, 2)} volts`}
         />
       </div>
       <div className="flex gap-2">

@@ -65,7 +65,8 @@ export function LedBar({
       data-slot="led-bar"
       data-orientation={orientation}
       className={cn(
-        "inline-flex max-w-full gap-[3px] rounded-md bg-[oklch(0.16_0.005_260)] p-1.5 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(0_0_0/0.4)]",
+        // `dark` because the panel is dark in both themes: `--primary` must take its bright value.
+        "dark inline-flex max-w-full gap-[3px] rounded-md bg-[oklch(0.16_0.005_260)] p-1.5 shadow-[inset_0_1px_0_rgb(255_255_255/0.08),0_1px_2px_rgb(0_0_0/0.4)]",
         vertical && "flex-col-reverse",
         className,
       )}
