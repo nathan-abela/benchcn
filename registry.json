@@ -663,19 +663,53 @@
           "path": "registry/benchcn/ui/character-lcd/character-lcd.tsx",
           "type": "registry:ui",
           "target": "components/ui/character-lcd.tsx"
-        },
-        {
-          "path": "registry/benchcn/lib/hd44780-rom.ts",
-          "type": "registry:lib"
         }
       ],
       "registryDependencies": [
-        "@benchcn/status-led"
+        "@benchcn/status-led",
+        "@benchcn/hd44780-rom"
       ],
       "categories": [
         "displays"
       ],
       "docs": "https://nathan-abela.github.io/benchcn/docs/components/character-lcd"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "hd44780-rom",
+      "type": "registry:lib",
+      "title": "HD44780 character ROM",
+      "description": "The HD44780U A00 character set as 5x8 bitmaps, shared by the character LCD and the bitmap text drawing.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/hd44780-rom.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/character-lcd"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "bitmap",
+      "type": "registry:lib",
+      "title": "Bitmap",
+      "description": "One-bit framebuffer with pixel, line, rectangle and 5x8 text drawing, plus conversion to and from SSD1306 display RAM.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/bitmap.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/hd44780-rom"
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/oled-display"
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",

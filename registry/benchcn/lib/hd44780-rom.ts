@@ -1,4 +1,4 @@
-// benchcn.dev · character-lcd
+// benchcn.dev · hd44780-rom
 // HD44780U ROM code A00 (Hitachi datasheet Table 4, https://www.sparkfun.com/datasheets/LCD/HD44780.pdf).
 // Bitmaps transcribed from jazz-soft/char-lcd (MIT), javascript/char-lcd.js at commit 70081b3
 // (2025-01-05), https://github.com/jazz-soft/char-lcd. The 5x10 glyphs in 0xE0-0xFF are cut to

@@ -409,13 +409,31 @@ export const registry: RegistryItem[] = [
     title: "Character LCD",
     description:
       "HD44780-style character LCD drawn pixel for pixel from the A00 character ROM, with module colour presets, backlight, cursor and custom glyphs.",
-    files: [
-      { path: "registry/benchcn/ui/character-lcd/character-lcd.tsx", type: "registry:ui" },
-      { path: "registry/benchcn/lib/hd44780-rom.ts", type: "registry:lib" },
-    ],
-    registryDependencies: [`${ns}/status-led`],
+    files: [{ path: "registry/benchcn/ui/character-lcd/character-lcd.tsx", type: "registry:ui" }],
+    registryDependencies: [`${ns}/status-led`, `${ns}/hd44780-rom`],
     categories: ["displays"],
     docs: docsUrl("components/character-lcd"),
+  },
+  {
+    name: "hd44780-rom",
+    type: "registry:lib",
+    title: "HD44780 character ROM",
+    description:
+      "The HD44780U A00 character set as 5x8 bitmaps, shared by the character LCD and the bitmap text drawing.",
+    files: [{ path: "registry/benchcn/lib/hd44780-rom.ts", type: "registry:lib" }],
+    categories: ["data"],
+    docs: docsUrl("components/character-lcd"),
+  },
+  {
+    name: "bitmap",
+    type: "registry:lib",
+    title: "Bitmap",
+    description:
+      "One-bit framebuffer with pixel, line, rectangle and 5x8 text drawing, plus conversion to and from SSD1306 display RAM.",
+    files: [{ path: "registry/benchcn/lib/bitmap.ts", type: "registry:lib" }],
+    registryDependencies: [`${ns}/hd44780-rom`],
+    categories: ["data"],
+    docs: docsUrl("components/oled-display"),
   },
   {
     name: "serial-console",
