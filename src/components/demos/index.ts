@@ -6,6 +6,7 @@ import actuatorControlSource from "./actuator-control-demo.tsx?raw";
 import alarmListSource from "./alarm-list-demo.tsx?raw";
 import bitfieldDiagramSource from "./bitfield-diagram-demo.tsx?raw";
 import characterLcdSource from "./character-lcd-demo.tsx?raw";
+import emergencyStopSource from "./emergency-stop-demo.tsx?raw";
 import logicAnalyzerSource from "./logic-analyzer-demo.tsx?raw";
 import meterReadoutSource from "./meter-readout-demo.tsx?raw";
 import oscilloscopeSource from "./oscilloscope-demo.tsx?raw";
@@ -75,6 +76,13 @@ export const demos: Record<string, Demo> = {
     ),
     source: sensorTileSource,
     placeholder: { base: 756, sm: 392, lg: 256 },
+  },
+  "emergency-stop": {
+    component: lazy(() =>
+      import("./emergency-stop-demo").then((m) => ({ default: m.EmergencyStopDemo })),
+    ),
+    source: emergencyStopSource,
+    placeholder: { base: 311, sm: 327 },
   },
   "alarm-list": {
     component: lazy(() => import("./alarm-list-demo").then((m) => ({ default: m.AlarmListDemo }))),

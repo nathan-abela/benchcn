@@ -1,0 +1,73 @@
+---
+title: Emergency stop
+description: Software stop that engages on the first touch, latches, reports Stopped only once the device acknowledges, and needs a second deliberate press to reset.
+---
+
+<ComponentPreview name="emergency-stop" />
+
+Press STOP and it engages at once, on the press itself, not on release. The status says Stopping until the device acknowledges, then Stopped. Reset arms on the first press and only goes out on the second, within three seconds. The mock device drops about one command in twenty-five, so now and then the stop times out and shows Not confirmed: press again and it goes through.
+
+## A software stop is not a safety function
+
+This component sends a command over a network or a USB cable. Either can fail, and a page can freeze. A machine that can hurt someone needs a hardwired emergency stop that cuts power without any software in the path. Use this one for convenience and for stopping things that are merely expensive to crash, and design the device so it stops on its own when commands stop arriving.
+
+The component follows the behaviour people expect from the physical button: it latches, and resetting it never restarts anything. Enabling the drive again is a separate action, and the device should refuse it while the stop is engaged.
+
+## Installation
+
+<InstallTabs item="emergency-stop" />
+
+## Usage
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { EmergencyStop } from "@/components/ui/emergency-stop";
+import { INITIAL_ACTUATOR_STATE } from "@/lib/actuator";
+
+export function Stop() {
+  const { actuators, command } = useMockDevice();
+  return (
+    <EmergencyStop
+      {...(actuators.estop ?? INITIAL_ACTUATOR_STATE)}
+      onCommand={(engaged) => command("estop", engaged)}
+    />
+  );
+}
+```
+
+The firmware declares `estop` as an actuator, acknowledges with the state it applied, and drops its drive the moment the stop engages.
+
+## Props
+
+<PropsTable of="emergency-stop" />
+
+## States
+
+| Status        | When                                             |
+| ------------- | ------------------------------------------------ |
+| Clear         | Confirmed not engaged                            |
+| Stopping      | Stop sent, waiting for the ack                   |
+| Stopped       | The device confirmed it is engaged               |
+| Resetting     | Reset sent, waiting for the ack                  |
+| Not confirmed | No ack before the timeout, or the device refused |
+| Unknown       | Nothing confirmed yet                            |
+
+Once the device confirms the stop, STOP stays down and pressing it again does nothing until reset, like the physical button. Until then it stays live: pressing again re-sends the stop, which is what you want when the first one was lost.
+
+## Theming
+
+The button is red on a yellow ring in every theme, like the physical part. The frame and readouts use shadcn tokens, and the status uses `--destructive` and `--warning`.
+
+## Accessibility
+
+STOP is a button with `aria-pressed` reflecting the latch and `aria-disabled` once the stop is confirmed; Space and Enter engage it on key down. The status is an assertive live region, so screen readers hear Stopped or Not confirmed at once. Reset is an ordinary button whose label changes to Confirm reset while armed.
+
+Under `prefers-reduced-motion` the status word does not pulse while a stop or reset is waiting for its ack.
+
+## Ask your agent
+
+<AgentPrompt item="emergency-stop">
+  Treat the emergency stop as a convenience, never the safety function. Engage it with command, make
+  the firmware drop its outputs and refuse to re-enable them while it is engaged, and never restart
+  anything on reset.
+</AgentPrompt>

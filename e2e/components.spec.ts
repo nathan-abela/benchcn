@@ -4,6 +4,7 @@ const COMPONENTS = [
   "oscilloscope",
   "logic-analyzer",
   "actuator-control",
+  "emergency-stop",
   "setpoint-input",
   "sensor-tile",
   "range-bar",

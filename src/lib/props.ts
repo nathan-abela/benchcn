@@ -209,6 +209,40 @@ export const props: Record<string, PropsDoc> = {
     },
     label: { type: "string", description: "Accessible description.", default: "the value" },
   },
+  "emergency-stop": {
+    label: { type: "ReactNode", description: "", default: '"Emergency stop"' },
+    description: { type: "ReactNode", description: "Secondary line, such as what it stops." },
+    commanded: {
+      type: "boolean | null",
+      description: "`true` once stop was pressed, `false` after a reset.",
+      required: true,
+    },
+    confirmed: {
+      type: "boolean | null",
+      description: "What the device acknowledged. `null` shows Unknown.",
+      required: true,
+    },
+    pending: {
+      type: "boolean",
+      description: "A stop or reset is waiting for its ack.",
+      default: "false",
+    },
+    error: {
+      type: "string | null",
+      description: '`"timeout"` or the device\'s error text; shows Not confirmed.',
+    },
+    latency: { type: "number | null", description: "Round trip of the last ack in milliseconds." },
+    onCommand: {
+      type: "(engaged: boolean) => void",
+      description: "`true` on press, `false` on a confirmed reset.",
+      required: true,
+    },
+    resetWindowMs: {
+      type: "number",
+      description: "How long Reset stays armed for its second press.",
+      default: "3000",
+    },
+  },
   "alarm-list": {
     alarms: {
       type: "AlarmRecord[]",

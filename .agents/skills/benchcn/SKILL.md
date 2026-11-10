@@ -34,6 +34,7 @@ Docs: https://nathan-abela.github.io/benchcn (every page also at `<url>.md`; ind
 | Digital lines, bus traffic                                       | `logic-analyzer`                                      | `lanes`, `decode={{ protocol: "i2c", sda: "sda", scl: "scl" }}`, `defaultWindow="first"`.                             |
 | Device logs and a command line                                   | `serial-console`                                      | `lines` mapped from `logs`, `onCommand` sends raw lines.                                                              |
 | Explain wiring in docs                                           | `pinout-header`, `bitfield-diagram`, `timing-diagram` | Data-driven from board files, register specs and WaveJSON-style signals.                                              |
+| Stop a robot or machine from the page                            | `emergency-stop`                                      | Spread `actuators.estop`, `onCommand={(on) => command("estop", on)}`. A software stop only; never the safety function. |
 | Whole dashboard in one go                                        | blocks `power-bench`, `plant-monitor`, `weather-station` | Start here, then edit. Each takes `source`, `channels` and `layout="kiosk"`.                                       |
 
 ## Pick a data source by the situation
@@ -61,6 +62,7 @@ The dashboard sends `{"cmd":"set","n":17,"id":"pump","v":true}` for an actuator 
 ## Domain rules the UI must respect
 
 - **Commanded is not confirmed.** Never render an actuator or setpoint as applied because the user pressed or typed it. Show pending until the matching `ack`. Set `actuatorTimeout` and `failSafe` on the source so a timeout shows the state the firmware falls back to.
+- **A software e-stop is not a safety function.** Reset must never restart the machine; enabling the drive again is a separate action.
 - **Setpoints are drafts until applied.** Out-of-range values never leave the page; use `confirm` for changes that matter.
 - **Alarms come from rules, not ad hoc state.** Give each rule a `deadband`, add a `staleAfter` rule for every channel an operator depends on, and never drop an alarm nobody acknowledged.
 - **Colour means abnormal.** Normal values stay neutral; warning and alarm colours appear only past a limit, and the state is always written as a word too.

@@ -150,6 +150,17 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/actuator-control"),
   },
   {
+    name: "emergency-stop",
+    type: "registry:ui",
+    title: "Emergency stop",
+    description:
+      "Software stop for robots and machines: engages on the first touch, latches, reports Stopped only once the device acknowledges, and needs a second deliberate press to reset. Not a substitute for a hardwired e-stop.",
+    files: [{ path: "registry/benchcn/ui/emergency-stop/emergency-stop.tsx", type: "registry:ui" }],
+    registryDependencies: ["button", `${ns}/tokens`, `${ns}/instrument`, `${ns}/actuator`],
+    categories: ["controls"],
+    docs: docsUrl("components/emergency-stop"),
+  },
+  {
     name: "setpoint-input",
     type: "registry:ui",
     title: "Setpoint input",
