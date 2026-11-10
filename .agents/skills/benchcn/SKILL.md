@@ -37,7 +37,7 @@ Docs: https://nathan-abela.github.io/benchcn (every page also at `<url>.md`; ind
 | Stop a robot or machine from the page                            | `emergency-stop`                                      | Spread `actuators.estop`, `onCommand={(on) => command("estop", on)}`. A software stop only; never the safety function. |
 | Drive a robot by touch, keys or gamepad (teleop)                 | `joystick`                                          | `onChange` gets `{ x, y }` at `rate` Hz and one zero on release; send velocities with `send`, not `command`.        |
 | Where a robot has been                                           | `odometry-plot`                                       | `path` and `pose` from `usePoseTrail(source)`.                                                                      |
-| Whole dashboard in one go                                        | blocks `power-bench`, `plant-monitor`, `weather-station` | Start here, then edit. Each takes `source`, `channels` and `layout="kiosk"`.                                       |
+| Whole dashboard in one go                                        | blocks `power-bench`, `robot`, `plant-monitor`, `weather-station` | Start here, then edit. Each takes `source`, `channels` and `layout="kiosk"`.                                       |
 
 ## Pick a data source by the situation
 

@@ -1,0 +1,54 @@
+---
+title: Robot
+description: A teleoperated robot with an e-stop that wins over everything, a drive that must be enabled on purpose, a joystick, odometry, battery, alarms and the log.
+---
+
+<ComponentPreview name="robot" />
+
+Hold Drive to enable it, then drag the joystick or use the keys: the robot moves and the odometry draws its path. Press STOP and the drive drops at once. Reset the stop and the drive stays off; try to enable it while stopped and the device refuses. Let go of the joystick mid-drive and the robot halts; cut the commands and its watchdog stops it too.
+
+## Installation
+
+<InstallTabs item="robot" />
+
+This installs the block and every component it uses.
+
+## Usage
+
+```tsx
+import { Robot } from "@/components/robot";
+
+<Robot />;
+```
+
+With hardware, pass any source handle and the robot's top speeds:
+
+```tsx
+import { useWebSocketSource } from "@/hooks/use-websocket-source";
+
+const source = useWebSocketSource("ws://rover.local/ws", { failSafe: { drive: false } });
+
+<Robot source={source} limits={{ linear: 0.8, angular: 2 }} />;
+```
+
+## Props
+
+| Prop       | Type                                                                   | Default      | Meaning                                           |
+| ---------- | ---------------------------------------------------------------------- | ------------ | ------------------------------------------------- |
+| `source`   | `SourceHandle`                                                         | its own mock | Readings, actuators, `command` and `send`         |
+| `title`    | `string`                                                               | `"Robot"`    |                                                   |
+| `layout`   | `"grid" \| "kiosk"`                                                    | `"grid"`     | Kiosk fills 800×480 with stop, joystick and drive |
+| `channels` | `Partial<{ estop, drive, linear, angular, speed, turnRate, battery }>` | defaults     | Channel ids on your device                        |
+| `limits`   | `{ linear?, angular? }`                                                | 0.5, 1.5     | Speeds at full stick, in m/s and rad/s            |
+
+## Firmware
+
+The device declares `estop` and `drive` as actuators and `linear` and `angular` as setpoints, publishes `speed`, `turn-rate`, `battery`, `pose-x`, `pose-y` and `heading`, refuses to enable the drive while the stop is engaged, and stops on its own when no velocity arrives for half a second. The joystick only streams while the device has confirmed the drive.
+
+## Ask your agent
+
+<AgentPrompt item="robot">
+  Start from Robot with the mock, then pass the real source and set limits to the robot's top
+  speeds. Keep the hardwired e-stop: this one is a convenience, and the firmware must refuse to
+  drive while it is engaged.
+</AgentPrompt>

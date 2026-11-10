@@ -16,7 +16,7 @@ v1 is the starred list from the original brief. Everything else lives here so it
 
 ### Robotics
 
-- `emergency-stop` (an `actuator-control` variant: latched, always visible, two-step reset), `gamepad-teleop` (on-screen pad plus the Gamepad API, stop on release), `camera-feed`, `odometry-plot`, `motor-panel`, a map.
+- `camera-feed`, `motor-panel`, a map.
 - Data sources: `rosbridge` (ROS 2 topics over WebSocket, spec: rosbridge v2 protocol) and FIRST NetworkTables NT4. Verify both against the official specs before building.
 
 ### Data sources
@@ -26,7 +26,6 @@ v1 is the starred list from the original brief. Everything else lives here so it
 
 ### Blocks
 
-- Robot telemetry: promote the Robot scenario already composed in `src/components/site/scenario-tabs.tsx`, with a kiosk route.
 - Smart-home relay panel: a bank of relays with commanded vs. confirmed state, plus room sensors.
 - 3D printer or CNC panel: temperatures, axis positions, job progress, pause and stop.
 - Test report: pass/fail phases and measurements with limits, in the shape of OpenHTF.

@@ -16,6 +16,7 @@ import pinoutHeaderSource from "./pinout-header-demo.tsx?raw";
 import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
 import powerBenchSource from "./power-bench-demo.tsx?raw";
 import rangeBarSource from "./range-bar-demo.tsx?raw";
+import robotSource from "./robot-demo.tsx?raw";
 import sensorTileSource from "./sensor-tile-demo.tsx?raw";
 import serialConsoleSource from "./serial-console-demo.tsx?raw";
 import setpointInputSource from "./setpoint-input-demo.tsx?raw";
@@ -97,6 +98,11 @@ export const demos: Record<string, Demo> = {
     ),
     source: odometryPlotSource,
     placeholder: { base: 379, sm: 549 },
+  },
+  robot: {
+    component: lazy(() => import("./robot-demo").then((m) => ({ default: m.RobotDemo }))),
+    source: robotSource,
+    placeholder: { base: 2053, sm: 2282, md: 1765, lg: 1909, xl: 1032 },
   },
   "alarm-list": {
     component: lazy(() => import("./alarm-list-demo").then((m) => ({ default: m.AlarmListDemo }))),

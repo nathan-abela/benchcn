@@ -1,4 +1,4 @@
 {
   "title": "Blocks",
-  "pages": ["index", "power-bench", "plant-monitor", "weather-station"]
+  "pages": ["index", "power-bench", "robot", "plant-monitor", "weather-station"]
 }

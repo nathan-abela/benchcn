@@ -124,7 +124,7 @@ function Home(): ReactElement {
 
         <Section
           id="components"
-          title="Sixteen instruments, three dashboards"
+          title="Nineteen instruments, four dashboards"
           lede="Each page has a live preview, the install command, the API and a prompt for your assistant."
         >
           <ComponentList />

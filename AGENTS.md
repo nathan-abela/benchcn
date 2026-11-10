@@ -33,9 +33,9 @@ registry/benchcn/
                           booleans and numeric setpoints), alarms.ts, strip-math.ts, ring-buffer.ts,
                           mock-device.ts, decoders/, units.ts
   hooks/                  use-mock-device, use-websocket-source, use-serial-source, use-ring-buffer,
-                          use-strip-series, use-alarms, use-canvas
+                          use-strip-series, use-alarms, use-pose-trail, use-canvas
   boards/                 Pinout data files, one per board, each with a `source` URL to the official doc
-  blocks/                 Full dashboards (power-bench, plant-monitor, weather-station), each with a kiosk layout
+  blocks/                 Full dashboards (power-bench, robot, plant-monitor, weather-station), each with a kiosk layout
 src/routes/               TanStack Start file routes: landing, docs/$, kiosk/$block, api/search, llms.txt, og, 404
 src/components/site/      Site chrome: nav, install tabs, copy-prompt button, scenario tabs
 src/components/demos/     One demo per component, shared by landing and docs

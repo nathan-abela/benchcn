@@ -17,16 +17,16 @@ Oscilloscope, logic analyzer with I²C decode, strip chart, meter, seven-segment
 
 **Docs:** https://nathan-abela.github.io/benchcn
 
-> Status: sixteen components, three dashboard blocks, the data-source hooks and the decoders are in. Launch prep is next. See [ROADMAP.md](ROADMAP.md).
+> Status: nineteen components, four dashboard blocks, the data-source hooks and the decoders are in. Launch prep is next. See [ROADMAP.md](ROADMAP.md).
 
 ## What is in it
 
 - **Signals:** oscilloscope, logic analyzer with I²C decode, strip chart with CSV export.
-- **Readouts:** sensor tile, range bar, meter readout, alarm list with acknowledgement and shelving.
-- **Controls:** actuator control and setpoint input, both tracking commanded vs. confirmed through the device's acknowledgements.
+- **Readouts:** sensor tile, range bar, meter readout, alarm list with acknowledgement and shelving, odometry plot.
+- **Controls:** actuator control and setpoint input, both tracking commanded vs. confirmed through the device's acknowledgements; an emergency stop with a two-step reset; a teleop pad for touch, keys or a gamepad.
 - **Displays:** status LED, seven-segment display, character LCD, serial console.
 - **Board and docs:** pinout header with four boards, bitfield diagram, timing diagram.
-- **Blocks:** power bench, plant monitor and weather station, each with an 800×480 kiosk layout.
+- **Blocks:** power bench, robot, plant monitor and weather station, each with an 800×480 kiosk layout.
 - **Data:** hooks for the mock device, WebSocket and Web Serial sources, a ring buffer, strip-chart series and alarm rules. Pure I²C, SPI and UART decoders with encoders and tests.
 
 ## Install
