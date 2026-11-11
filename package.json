@@ -10,7 +10,7 @@
   "sideEffects": false,
   "scripts": {
     "dev": "vite dev",
-    "build": "pnpm registry:build && vite build",
+    "build": "pnpm registry:build && vite build && node scripts/write-og-images.mts",
     "preview": "node scripts/serve-static.mts 4817",
     "registry:build": "node scripts/build-registry.mts",
     "themes:build": "node scripts/build-themes.mts",

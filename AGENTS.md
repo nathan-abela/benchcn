@@ -9,7 +9,7 @@ Out-of-scope work goes to [ROADMAP.md](ROADMAP.md), not into the codebase.
 | Command                                     | What it does                                                                                                            |
 | ------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `pnpm dev`                                  | Vite dev server on port 3000 (`/benchcn/` basepath)                                                                     |
-| `pnpm build`                                | `registry:build` then `vite build`; static output in `dist/client`                                                      |
+| `pnpm build`                                | `registry:build`, `vite build`, then OG images rewritten as binary, static output in `dist/client`                      |
 | `pnpm preview`                              | Serve `dist/client` the way GitHub Pages will (basepath, `404.html`)                                                    |
 | `pnpm registry:build`                       | `registry/registry.ts` to `registry.json` to `public/r/*.json`                                                          |
 | `pnpm themes:build`                         | Regenerate `src/styles/themes.css` from the shadcn zinc base colour                                                     |
@@ -41,7 +41,8 @@ src/components/site/      Site chrome: nav, install tabs, copy-prompt button, sc
 src/components/demos/     One demo per component, shared by landing and docs
 src/styles/               app.css (tokens, fonts), themes.css (generated)
 content/docs/             Fumadocs MDX. One page per component, hook and block.
-scripts/                  build-registry.mts, build-themes.mts, serve-static.mts, registry-test.mts (Node runs .mts directly)
+scripts/                  build-registry.mts, build-themes.mts, serve-static.mts, registry-test.mts,
+                          write-og-images.mts (Node runs .mts directly)
 e2e/                      Playwright
 .agents/skills/           Agent skills (agent-agnostic location). benchcn/ is the public skill users install;
                           add-component, write-docs-page and add-board-definition are for contributors;
