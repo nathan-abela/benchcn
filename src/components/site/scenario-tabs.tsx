@@ -115,7 +115,7 @@ export function ScenarioTabs(): ReactElement {
             {active === "signals" ? <SignalsBench /> : null}
             {active === "robot" ? <Robot key="robot" /> : null}
             {active === "datasheet" ? (
-              <div className="grid gap-4 lg:grid-cols-2">
+              <div className="grid gap-4 *:min-w-0 lg:grid-cols-2">
                 <div className="lg:col-span-2">
                   <PinoutHeaderDemo />
                 </div>

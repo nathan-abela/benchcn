@@ -69,17 +69,20 @@ export function BitfieldDiagram({
   return (
     <div
       data-slot="bitfield-diagram"
-      className={cn(INSTRUMENT_FRAME, "gap-3", className)}
+      className={cn(INSTRUMENT_FRAME, "@container gap-3", className)}
       {...props}
     >
-      <div className="flex items-baseline justify-between gap-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
         <InstrumentLabel>{title}</InstrumentLabel>
         <span className="font-mono text-xs tabular-nums">
           {name ? <span className="text-muted-foreground mr-2">{name}</span> : null}
           {value !== undefined ? (
             <>
               {formatHex(value, bits)}{" "}
-              <span className="text-muted-foreground">{formatBinary(value, bits)}</span>
+              {/* A wide register's binary is wider than a phone, the diagram shows each bit anyway. */}
+              <span className={cn("text-muted-foreground", bits > 16 && "hidden @md:inline")}>
+                {formatBinary(value, bits)}
+              </span>
             </>
           ) : null}
         </span>
@@ -201,52 +204,55 @@ export function BitfieldDiagram({
       </div>
 
       {legend ? (
-        <table className="w-full border-collapse font-mono text-xs">
-          <thead className="text-muted-foreground text-left text-xs">
-            <tr>
-              <th className="py-1 pr-3 font-medium">Bits</th>
-              <th className="py-1 pr-3 font-medium">Field</th>
-              <th className="py-1 pr-3 font-medium">Access</th>
-              {value !== undefined ? <th className="py-1 pr-3 font-medium">Value</th> : null}
-              <th className="py-1 font-medium">Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            {[...laid].reverse().map((field) => {
-              const v = value === undefined ? undefined : fieldValue(value, field);
-              return (
-                <tr key={field.lsb} className="border-t align-top">
-                  <td className="py-1.5 pr-3 whitespace-nowrap tabular-nums">
-                    {field.width === 1 ? field.lsb : `${field.msb}:${field.lsb}`}
-                  </td>
-                  <td className="py-1.5 pr-3">
-                    {field.reserved ? (
-                      <span className="text-muted-foreground">reserved</span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5">
-                        <span
-                          aria-hidden
-                          className="size-2 rounded-[2px]"
-                          style={{ background: colorOf(field) }}
-                        />
-                        {field.name}
-                      </span>
-                    )}
-                  </td>
-                  <td className="text-muted-foreground py-1.5 pr-3">{field.access}</td>
-                  {v !== undefined ? (
+        // Wide fields print long binary values, which would push the table past a phone screen.
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse font-mono text-xs">
+            <thead className="text-muted-foreground text-left text-xs">
+              <tr>
+                <th className="py-1 pr-3 font-medium">Bits</th>
+                <th className="py-1 pr-3 font-medium">Field</th>
+                <th className="py-1 pr-3 font-medium">Access</th>
+                {value !== undefined ? <th className="py-1 pr-3 font-medium">Value</th> : null}
+                <th className="py-1 font-medium">Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...laid].reverse().map((field) => {
+                const v = value === undefined ? undefined : fieldValue(value, field);
+                return (
+                  <tr key={field.lsb} className="border-t align-top">
                     <td className="py-1.5 pr-3 whitespace-nowrap tabular-nums">
-                      {field.reserved
-                        ? ""
-                        : `${formatBinary(v, field.width)}${field.values?.[v] ? ` ${field.values[v]}` : ""}`}
+                      {field.width === 1 ? field.lsb : `${field.msb}:${field.lsb}`}
                     </td>
-                  ) : null}
-                  <td className="text-muted-foreground py-1.5 font-sans">{field.description}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+                    <td className="py-1.5 pr-3">
+                      {field.reserved ? (
+                        <span className="text-muted-foreground">reserved</span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5">
+                          <span
+                            aria-hidden
+                            className="size-2 rounded-[2px]"
+                            style={{ background: colorOf(field) }}
+                          />
+                          {field.name}
+                        </span>
+                      )}
+                    </td>
+                    <td className="text-muted-foreground py-1.5 pr-3">{field.access}</td>
+                    {v !== undefined ? (
+                      <td className="py-1.5 pr-3 whitespace-nowrap tabular-nums">
+                        {field.reserved
+                          ? ""
+                          : `${formatBinary(v, field.width)}${field.values?.[v] ? ` ${field.values[v]}` : ""}`}
+                      </td>
+                    ) : null}
+                    <td className="text-muted-foreground py-1.5 font-sans">{field.description}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       ) : null}
       <p className="sr-only">
         {named.map((f) => `${f.name} bits ${f.msb} to ${f.lsb}`).join(", ")}
