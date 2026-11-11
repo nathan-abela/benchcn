@@ -1,23 +1,35 @@
-# benchcn
+<p align="center">
+  <img src="./.github/assets/og.png" alt="benchcn: Hardware UI for shadcn/ui, beside an oscilloscope screen showing a sine and a square wave" />
+</p>
 
-[![shadcn/ui](https://shieldcn.dev/badge/shadcn%2Fui-000000.svg?logo=shadcnui&logoColor=white&variant=branded&size=xs)](https://ui.shadcn.com#gh-light-mode-only)
-[![shadcn/ui](https://shieldcn.dev/badge/shadcn%2Fui-ffffff.svg?logo=shadcnui&logoColor=black&variant=branded&size=xs)](https://ui.shadcn.com#gh-dark-mode-only)
-[![CI](https://shieldcn.dev/github/ci/nathan-abela/benchcn.svg?size=xs&mode=light)](https://github.com/nathan-abela/benchcn/actions/workflows/ci.yml#gh-light-mode-only)
-[![CI](https://shieldcn.dev/github/ci/nathan-abela/benchcn.svg?size=xs&mode=dark)](https://github.com/nathan-abela/benchcn/actions/workflows/ci.yml#gh-dark-mode-only)
-[![License](https://shieldcn.dev/github/license/nathan-abela/benchcn.svg?size=xs&mode=light)](https://github.com/nathan-abela/benchcn/blob/main/LICENSE#gh-light-mode-only)
-[![License](https://shieldcn.dev/github/license/nathan-abela/benchcn.svg?size=xs&mode=dark)](https://github.com/nathan-abela/benchcn/blob/main/LICENSE#gh-dark-mode-only)
-[![Stars](https://shieldcn.dev/github/stars/nathan-abela/benchcn.svg?size=xs&mode=light)](https://github.com/nathan-abela/benchcn/stargazers#gh-light-mode-only)
-[![Stars](https://shieldcn.dev/github/stars/nathan-abela/benchcn.svg?size=xs&mode=dark)](https://github.com/nathan-abela/benchcn/stargazers#gh-dark-mode-only)
-[![Views](https://shieldcn.dev/views/repo/nathan-abela/benchcn.svg?size=xs&mode=light)](https://github.com/nathan-abela/benchcn#gh-light-mode-only)
-[![Views](https://shieldcn.dev/views/repo/nathan-abela/benchcn.svg?size=xs&mode=dark)](https://github.com/nathan-abela/benchcn#gh-dark-mode-only)
+<h1 align="center">benchcn</h1>
 
-Hardware and maker UI components for shadcn/ui. Instruments that work, not instruments that look like it.
+<p align="center">
+  Hardware and maker UI components for shadcn/ui.<br/>
+  Instruments that work, not instruments that look like it.
+</p>
+
+<p align="center">
+  <a href="https://ui.shadcn.com"><img src="https://shieldcn.dev/badge/shadcn%2Fui-000000.svg?logo=shadcnui&logoColor=white&variant=branded&size=xs#gh-light-mode-only" alt="shadcn/ui" /></a>
+  <a href="https://ui.shadcn.com"><img src="https://shieldcn.dev/badge/shadcn%2Fui-ffffff.svg?logo=shadcnui&logoColor=black&variant=branded&size=xs#gh-dark-mode-only" alt="shadcn/ui" /></a>
+  <a href="https://github.com/nathan-abela/benchcn/actions/workflows/ci.yml"><img src="https://shieldcn.dev/github/ci/nathan-abela/benchcn.svg?size=xs&mode=light#gh-light-mode-only" alt="CI" /></a>
+  <a href="https://github.com/nathan-abela/benchcn/actions/workflows/ci.yml"><img src="https://shieldcn.dev/github/ci/nathan-abela/benchcn.svg?size=xs&mode=dark#gh-dark-mode-only" alt="CI" /></a>
+  <a href="https://github.com/nathan-abela/benchcn/blob/main/LICENSE"><img src="https://shieldcn.dev/github/license/nathan-abela/benchcn.svg?size=xs&mode=light#gh-light-mode-only" alt="License" /></a>
+  <a href="https://github.com/nathan-abela/benchcn/blob/main/LICENSE"><img src="https://shieldcn.dev/github/license/nathan-abela/benchcn.svg?size=xs&mode=dark#gh-dark-mode-only" alt="License" /></a>
+  <a href="https://github.com/nathan-abela/benchcn/stargazers"><img src="https://shieldcn.dev/github/stars/nathan-abela/benchcn.svg?size=xs&mode=light#gh-light-mode-only" alt="Stars" /></a>
+  <a href="https://github.com/nathan-abela/benchcn/stargazers"><img src="https://shieldcn.dev/github/stars/nathan-abela/benchcn.svg?size=xs&mode=dark#gh-dark-mode-only" alt="Stars" /></a>
+  <a href="https://github.com/nathan-abela/benchcn"><img src="https://shieldcn.dev/views/repo/nathan-abela/benchcn.svg?size=xs&mode=light#gh-light-mode-only" alt="Views" /></a>
+  <a href="https://github.com/nathan-abela/benchcn"><img src="https://shieldcn.dev/views/repo/nathan-abela/benchcn.svg?size=xs&mode=dark#gh-dark-mode-only" alt="Views" /></a>
+</p>
+
+<p align="center">
+  <a href="https://nathan-abela.github.io/benchcn/docs">Docs</a> ·
+  <a href="https://nathan-abela.github.io/benchcn/docs/installation">Installation</a> ·
+  <a href="https://nathan-abela.github.io/benchcn/docs/components">Components</a> ·
+  <a href="https://nathan-abela.github.io/benchcn/docs/blocks">Blocks</a>
+</p>
 
 Oscilloscope, logic analyzer with I²C decode, strip chart, meter, seven-segment and character-LCD displays, GPIO pinout maps, register and timing diagrams, a serial console, an alarm list, and actuator and setpoint controls that know the difference between _commanded_ and _confirmed_. Every component is live against a mock device out of the box and connects to real hardware through small data-source hooks.
-
-**Docs:** https://nathan-abela.github.io/benchcn
-
-> Status: nineteen components, four dashboard blocks, the data-source hooks and the decoders are in. Launch prep is next. See [ROADMAP.md](ROADMAP.md).
 
 ## What is in it
 
