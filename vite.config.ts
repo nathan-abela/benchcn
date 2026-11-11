@@ -26,7 +26,7 @@ const markdownPages = slugs.map((s) => ({
 }));
 
 const ogPages = slugs.map((s) => ({
-  path: `/og/docs/${[...s, "image.webp"].join("/")}`,
+  path: `/og/docs/${[...s, "image.png"].join("/")}`,
   sitemap: { exclude: true },
 }));
 
@@ -44,6 +44,7 @@ export default defineConfig({
         { path: "/api/search", sitemap: { exclude: true } },
         { path: "/llms.txt", sitemap: { exclude: true } },
         { path: "/llms-full.txt", sitemap: { exclude: true } },
+        { path: "/og/image.png", sitemap: { exclude: true } },
         { path: "/kiosk/plant-monitor", sitemap: { exclude: true } },
         { path: "/kiosk/power-bench", sitemap: { exclude: true } },
         { path: "/kiosk/robot", sitemap: { exclude: true } },

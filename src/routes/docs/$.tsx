@@ -11,7 +11,7 @@ import { MenuIcon } from "@/components/site/icons";
 import { PageActions } from "@/components/site/page-actions";
 import { SiteNav } from "@/components/site/site-nav";
 import { baseOptions } from "@/lib/layout.shared";
-import { getPageImageUrl, getPageMarkdownUrl, gitConfig } from "@/lib/shared";
+import { getPageImageUrl, getPageMarkdownUrl, gitConfig, ogImageMeta } from "@/lib/shared";
 import { docs, source } from "@/lib/source";
 
 export const Route = createFileRoute("/docs/$")({
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/docs/$")({
     return data;
   },
   head: ({ loaderData }) => ({
-    meta: loaderData ? [{ property: "og:image", content: loaderData.imageUrl }] : [],
+    meta: loaderData ? ogImageMeta(loaderData.imageUrl, loaderData.title) : [],
   }),
 });
 
@@ -37,6 +37,7 @@ const serverLoader = createServerFn({
 
     return {
       path: page.path,
+      title: page.data.title,
       markdownUrl: getPageMarkdownUrl(page).url,
       imageUrl: getPageImageUrl(page).url,
       pageTree: await source.serializePageTree(source.getPageTree()),

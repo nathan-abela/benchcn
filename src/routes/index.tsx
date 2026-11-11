@@ -12,11 +12,20 @@ import { SiteFooter } from "@/components/site/site-footer";
 import { SiteNav } from "@/components/site/site-nav";
 import { track } from "@/lib/analytics";
 import { baseOptions } from "@/lib/layout.shared";
+import { landingImageUrl, ogImageMeta } from "@/lib/shared";
 
 import { siteConfig } from "../../config/site";
 
 export const Route = createFileRoute("/")({
   component: Home,
+  head: () => ({
+    meta: [
+      { property: "og:title", content: `${siteConfig.name} · ${siteConfig.tagline}` },
+      { property: "og:description", content: siteConfig.description },
+      { property: "og:url", content: `${siteConfig.url}/` },
+      ...ogImageMeta(landingImageUrl, "An oscilloscope screen showing a sine and a square wave"),
+    ],
+  }),
 });
 
 const SKILL = `npx skills add ${siteConfig.repo.owner}/${siteConfig.repo.name} -s benchcn`;
@@ -55,8 +64,8 @@ function Home(): ReactElement {
               Hardware UI for shadcn/ui
             </h1>
             <p className="max-w-[52ch] text-lg text-pretty [--rise-delay:60ms]">
-              Instruments, displays and controls built the shadcn way. Live against a mock device,
-              one line from your ESP32 or Pico.
+              Instruments, displays and controls that work with real hardware. Live against a mock
+              device, one line from your ESP32 or Pico.
             </p>
             <div className="flex flex-wrap items-center justify-center gap-3 [--rise-delay:120ms]">
               <Link

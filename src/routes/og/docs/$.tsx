@@ -1,9 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { generateOGImage } from "fumadocs-ui/og/takumi";
 
+import { DocsImage, ogImageResponse } from "@/lib/og";
 import { source } from "@/lib/source";
-
-import { siteConfig } from "../../../../config/site";
 
 export const Route = createFileRoute("/og/docs/$")({
   server: {
@@ -13,12 +11,9 @@ export const Route = createFileRoute("/og/docs/$")({
         const page = source.getPage(slugs);
         if (!page) return new Response(undefined, { status: 404 });
 
-        return generateOGImage({
-          title: page.data.title,
-          description: page.data.description,
-          site: siteConfig.name,
-          format: "webp",
-        });
+        return ogImageResponse(
+          <DocsImage title={page.data.title} description={page.data.description} />,
+        );
       },
     },
   },
