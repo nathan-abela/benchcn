@@ -23,7 +23,7 @@
     "e2e": "playwright test",
     "registry:test": "node scripts/registry-test.mts",
     "check": "pnpm lint && pnpm fmt:check && pnpm test && pnpm build && pnpm typecheck",
-    "clean": "rimraf .tanstack && rimraf dist && rimraf node_modules"
+    "clean": "rimraf .tanstack && rimraf .cache && rimraf dist && rimraf node_modules"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
