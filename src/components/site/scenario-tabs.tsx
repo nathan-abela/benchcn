@@ -20,11 +20,8 @@ const WeatherStation = lazy(() =>
     default: m.WeatherStation,
   })),
 );
-const OscilloscopeDemo = lazy(() =>
-  import("@/components/demos/oscilloscope-demo").then((m) => ({ default: m.OscilloscopeDemo })),
-);
-const LogicAnalyzerDemo = lazy(() =>
-  import("@/components/demos/logic-analyzer-demo").then((m) => ({ default: m.LogicAnalyzerDemo })),
+const SignalsBench = lazy(() =>
+  import("@/components/site/signals-bench").then((m) => ({ default: m.SignalsBench })),
 );
 const PinoutHeaderDemo = lazy(() =>
   import("@/components/demos/pinout-header-demo").then((m) => ({ default: m.PinoutHeaderDemo })),
@@ -50,7 +47,7 @@ const SCENARIOS = [
     label: "Weather station",
     blurb: "Climate tiles, dew point and pressure trend.",
   },
-  { id: "signals", label: "Signals", blurb: "Scope and logic analyzer on the same mock signals." },
+  { id: "signals", label: "Signals", blurb: "A triggered scope, a decoded bus and a slow trend." },
   {
     id: "robot",
     label: "Robot",
@@ -65,7 +62,7 @@ const PLACEHOLDERS: Record<ScenarioId, PlaceholderHeights> = {
   power: { base: 1802, sm: 1422, md: 1216, lg: 1178, xl: 1012 },
   plant: { base: 1103, sm: 831, lg: 566 },
   weather: { base: 880, sm: 916, md: 475 },
-  signals: { base: 1034, md: 1196, lg: 1086, xl: 1273 },
+  signals: { base: 1228, sm: 1354, md: 1391, lg: 673, xl: 735 },
   robot: { base: 2020, sm: 2321, md: 2027, lg: 2227, xl: 979 },
   datasheet: { base: 2057, lg: 1477, xl: 1461 },
 };
@@ -115,14 +112,7 @@ export function ScenarioTabs(): ReactElement {
             {active === "power" ? <PowerBench key="power" /> : null}
             {active === "plant" ? <PlantMonitor key="plant" /> : null}
             {active === "weather" ? <WeatherStation key="weather" /> : null}
-            {active === "signals" ? (
-              <div className="grid gap-4 lg:grid-cols-[3fr_2fr]">
-                <OscilloscopeDemo />
-                <div className="lg:col-span-2">
-                  <LogicAnalyzerDemo />
-                </div>
-              </div>
-            ) : null}
+            {active === "signals" ? <SignalsBench /> : null}
             {active === "robot" ? <Robot key="robot" /> : null}
             {active === "datasheet" ? (
               <div className="grid gap-4 lg:grid-cols-2">
