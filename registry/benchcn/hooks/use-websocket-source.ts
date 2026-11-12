@@ -30,20 +30,40 @@ export type StatusTransport = Transport & {
   getAttempts: () => number;
 };
 
-export function createWebSocketTransport(
+export type ReconnectingSocketHandlers = {
+  /** A connection opened. `socket` stays valid until `onClose`. */
+  onOpen?: (socket: WebSocket) => void;
+  onMessage: (data: string | ArrayBuffer) => void;
+  /** The connection closed, on purpose or not. */
+  onClose?: () => void;
+  /** Runs while the socket is still open when `start`'s cleanup closes it on purpose. */
+  onStop?: (socket: WebSocket) => void;
+};
+
+export type ReconnectingSocket = {
+  /** Opens the socket. Returns a function that closes it for good. */
+  start: () => () => void;
+  /** Sends on the open socket; returns `false` when there is none. */
+  send: (data: Parameters<WebSocket["send"]>[0]) => boolean;
+  /** Closes the current connection; with `reconnect` on, a new one follows after the backoff. */
+  drop: () => void;
+  getStatus: () => SourceStatus;
+  subscribeStatus: (listener: () => void) => () => void;
+  getAttempts: () => number;
+};
+
+/** The connection lifecycle every WebSocket source shares: status, backoff and reconnect. */
+export function createReconnectingSocket(
   url: string,
-  { protocols, reconnect = true, maxBackoff = 10_000 }: WebSocketTransportOptions = {},
-): StatusTransport {
-  const listeners = new Set<(message: WireMessage) => void>();
+  { protocols, reconnect = true, maxBackoff = 10_000 }: WebSocketTransportOptions,
+  handlers: ReconnectingSocketHandlers,
+): ReconnectingSocket {
   const statusListeners = new Set<() => void>();
   let socket: WebSocket | null = null;
   let status: SourceStatus = "idle";
   let attempts = 0;
   let timer: number | null = null;
   let stopped = true;
-  const parser = createLineParser((message) => {
-    for (const listener of listeners) listener(message);
-  });
 
   const setStatus = (next: SourceStatus) => {
     status = next;
@@ -54,26 +74,28 @@ export function createWebSocketTransport(
     if (stopped) return;
     attempts += 1;
     setStatus("connecting");
-    socket = new WebSocket(url, protocols);
-    socket.binaryType = "arraybuffer";
-    socket.onopen = () => {
+    const current = new WebSocket(url, protocols);
+    socket = current;
+    current.binaryType = "arraybuffer";
+    // Events from a socket that has since been replaced (a restart, a drop) are ignored.
+    current.onopen = () => {
+      if (socket !== current) return;
       attempts = 0;
       setStatus("open");
+      handlers.onOpen?.(current);
     };
-    socket.onmessage = (event: MessageEvent<string | ArrayBuffer>) => {
-      const data = event.data;
-      const text = typeof data === "string" ? data : new TextDecoder().decode(data);
-      parser.push(text.endsWith("\n") ? text : `${text}\n`);
+    current.onmessage = (event: MessageEvent<string | ArrayBuffer>) => {
+      if (socket === current) handlers.onMessage(event.data);
     };
-    socket.onerror = () => setStatus("error");
-    socket.onclose = () => {
+    current.onerror = () => {
+      if (socket === current) setStatus("error");
+    };
+    current.onclose = () => {
+      if (socket !== current) return;
       socket = null;
-      if (stopped) {
-        setStatus("closed");
-        return;
-      }
+      handlers.onClose?.();
       setStatus("closed");
-      if (reconnect) {
+      if (!stopped && reconnect) {
         const wait = Math.min(maxBackoff, 500 * 2 ** Math.min(attempts, 6));
         timer = window.setTimeout(open, wait);
       }
@@ -81,13 +103,6 @@ export function createWebSocketTransport(
   };
 
   return {
-    subscribe(listener) {
-      listeners.add(listener);
-      return () => listeners.delete(listener);
-    },
-    send(message) {
-      if (socket?.readyState === WebSocket.OPEN) socket.send(encodeMessage(message));
-    },
     start() {
       stopped = false;
       if (typeof WebSocket === "undefined") {
@@ -99,10 +114,23 @@ export function createWebSocketTransport(
         stopped = true;
         if (timer !== null) window.clearTimeout(timer);
         timer = null;
-        socket?.close();
+        const current = socket;
         socket = null;
-        parser.end();
+        if (current) {
+          if (current.readyState === WebSocket.OPEN) handlers.onStop?.(current);
+          current.close();
+          handlers.onClose?.();
+        }
+        setStatus("closed");
       };
+    },
+    send(data) {
+      if (socket?.readyState !== WebSocket.OPEN) return false;
+      socket.send(data);
+      return true;
+    },
+    drop() {
+      socket?.close();
     },
     getStatus: () => status,
     subscribeStatus(listener) {
@@ -110,6 +138,42 @@ export function createWebSocketTransport(
       return () => statusListeners.delete(listener);
     },
     getAttempts: () => attempts,
+  };
+}
+
+export function createWebSocketTransport(
+  url: string,
+  options: WebSocketTransportOptions = {},
+): StatusTransport {
+  const listeners = new Set<(message: WireMessage) => void>();
+  const parser = createLineParser((message) => {
+    for (const listener of listeners) listener(message);
+  });
+  const socket = createReconnectingSocket(url, options, {
+    onMessage(data) {
+      const text = typeof data === "string" ? data : new TextDecoder().decode(data);
+      parser.push(text.endsWith("\n") ? text : `${text}\n`);
+    },
+  });
+
+  return {
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+    send(message) {
+      socket.send(encodeMessage(message));
+    },
+    start() {
+      const stop = socket.start();
+      return () => {
+        stop();
+        parser.end();
+      };
+    },
+    getStatus: socket.getStatus,
+    subscribeStatus: socket.subscribeStatus,
+    getAttempts: socket.getAttempts,
   };
 }
 
@@ -152,7 +216,8 @@ export function useWebSocketSource(
   );
 }
 
-function idleTransport(): StatusTransport {
+/** A transport that never connects, for a source with no URL yet. */
+export function idleTransport(): StatusTransport {
   return {
     subscribe: () => () => {},
     send: () => {},
