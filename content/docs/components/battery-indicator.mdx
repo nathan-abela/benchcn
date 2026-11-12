@@ -1,0 +1,79 @@
+---
+title: Battery indicator
+description: Battery glyph and percentage from a pack voltage or a percent, grey until the charge runs low, with a charging bolt and a discharge curve option.
+---
+
+<ComponentPreview name="battery-indicator" />
+
+The large indicator reads the mock device's battery in volts, mapped from 3.0 V empty to 4.2 V full. The row below shows charging, normal, low, critical and no reading.
+
+## Installation
+
+<InstallTabs item="battery-indicator" />
+
+## Usage
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { BatteryIndicator } from "@/components/ui/battery-indicator";
+
+export function NodeBattery() {
+  const { readings } = useMockDevice();
+  const battery = readings.battery?.v;
+  return (
+    <BatteryIndicator
+      unit="V"
+      min={3.0}
+      max={4.2}
+      value={typeof battery === "number" ? battery : null}
+    />
+  );
+}
+```
+
+The glyph is sized in `em`, so it follows the text size: put it in a status bar as is, or pass `className="text-2xl"` for a tile.
+
+## Props
+
+<PropsTable of="battery-indicator" />
+
+## Examples
+
+### From a percentage
+
+A fuel gauge IC or a phone-style API already reports percent.
+
+```tsx
+<BatteryIndicator value={stateOfCharge} charging={usbPresent} />
+```
+
+### Discharge curve
+
+A cell's voltage is not linear in charge. Pass the curve from your cell's datasheet as `[volts, percent]` points and the indicator interpolates between them.
+
+```tsx
+<BatteryIndicator unit="V" value={volts} curve={datasheetCurve} />
+```
+
+### Glyph only
+
+```tsx
+<BatteryIndicator value={64} showValue={false} />
+```
+
+## Theming
+
+The outline and fill use `--muted-foreground` while the charge is normal. Low uses `--warning` and critical `--destructive`, the outline included, so an empty critical pack still reads red. The bolt is `--foreground` cut out with `--background`.
+
+## Accessibility
+
+A visually hidden native `meter` carries the percentage and a text such as "17 percent, 3.25 V, charging, low". The low and critical states are written as words next to the percentage, so colour is never the only signal.
+
+Under `prefers-reduced-motion` the fill jumps to a new level instead of sliding.
+
+## Ask your agent
+
+<AgentPrompt item="battery-indicator">
+  Feed BatteryIndicator the raw pack voltage with `unit="V"` and the empty and full volts, or a
+  `curve` from the cell's datasheet. Do not convert to percent in the page.
+</AgentPrompt>
