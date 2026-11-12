@@ -1,0 +1,136 @@
+---
+title: useRosbridgeSource
+description: ROS 2 topics over a rosbridge WebSocket, returning the same snapshot as the mock device.
+---
+
+For a ROS 2 robot running `rosbridge_server`. You map topics to channel ids; subscriptions become readings, and `command(id, value)` publishes. Built on the [rosbridge v2 protocol](https://github.com/RobotWebTools/rosbridge_suite/blob/ros2/ROSBRIDGE_PROTOCOL.md) (version 2.1.0).
+
+## Installation
+
+<InstallTabs item="use-rosbridge-source" />
+
+## Usage
+
+```tsx
+import { useRosbridgeSource } from "@/hooks/use-rosbridge-source";
+
+const { status, readings, actuators, command } = useRosbridgeSource("ws://robot.local:9090", {
+  throttleRate: 100,
+  channels: {
+    battery: {
+      topic: "/battery_state",
+      type: "sensor_msgs/msg/BatteryState",
+      field: "voltage",
+      unit: "V",
+    },
+    lamp: {
+      kind: "actuator",
+      topic: "/lamp/state",
+      type: "std_msgs/msg/Bool",
+      command: { topic: "/lamp/set", type: "std_msgs/msg/Bool" },
+    },
+  },
+});
+```
+
+The mapping is read once, on mount. Pass `null` as the URL to stay disconnected.
+
+## Commanded and confirmed
+
+rosbridge does not acknowledge a publish, so a command is confirmed only when the robot reports the commanded value back on the channel's `topic`. Without a `topic`, or with a report that does not match, it times out after `actuatorTimeout`. Give your node a state topic for anything an operator relies on.
+
+## A robot block on ROS 2
+
+The [robot block](/docs/blocks/robot) runs on any source with its channel ids. Two channels can share a command topic; each publish carries the whole message, so sending `angular` does not reset `linear` to zero.
+
+```tsx
+import { Robot } from "@/components/robot";
+import { useRosbridgeSource } from "@/hooks/use-rosbridge-source";
+import { quaternionToHeading, readField } from "@/lib/rosbridge";
+
+const odom = { topic: "/odom", type: "nav_msgs/msg/Odometry" };
+const bool = "std_msgs/msg/Bool";
+const twist = "geometry_msgs/msg/Twist";
+
+export function Teleop() {
+  const source = useRosbridgeSource("ws://robot.local:9090", {
+    throttleRate: 100,
+    failSafe: { drive: false },
+    channels: {
+      estop: {
+        kind: "actuator",
+        topic: "/estop/state",
+        type: bool,
+        command: { topic: "/estop/set", type: bool },
+      },
+      drive: {
+        kind: "actuator",
+        topic: "/drive/enabled",
+        type: bool,
+        command: { topic: "/drive/enable", type: bool },
+      },
+      linear: { kind: "setpoint", command: { topic: "/cmd_vel", type: twist, field: "linear.x" } },
+      angular: {
+        kind: "setpoint",
+        command: { topic: "/cmd_vel", type: twist, field: "angular.z" },
+      },
+      speed: { ...odom, field: "twist.twist.linear.x", unit: "m/s" },
+      "turn-rate": { ...odom, field: "twist.twist.angular.z", unit: "rad/s" },
+      "pose-x": { ...odom, field: "pose.pose.position.x", unit: "m" },
+      "pose-y": { ...odom, field: "pose.pose.position.y", unit: "m" },
+      heading: {
+        ...odom,
+        field: (msg) => quaternionToHeading(readField(msg, "pose.pose.orientation")),
+        unit: "°",
+      },
+      battery: {
+        topic: "/battery_state",
+        type: "sensor_msgs/msg/BatteryState",
+        field: "voltage",
+        unit: "V",
+      },
+    },
+  });
+  return <Robot source={source} limits={{ linear: 0.5, angular: 1.5 }} />;
+}
+```
+
+The `/estop` and `/drive` topics are your node's; ROS 2 has no standard for them. The block streams velocities with `send`, which publishes on `/cmd_vel` like `command` does but is not tracked. Your node still needs its own watchdog that stops the robot when `/cmd_vel` goes quiet. rosbridge publishers default to transient local durability, so a node that starts later receives the last command sent; make sure that is safe for your drive and e-stop topics.
+
+## Channel mapping
+
+| Field                         | Type                                                | Default    | Meaning                                                                              |
+| ----------------------------- | --------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------ |
+| `kind`                        | `"sensor" \| "digital" \| "actuator" \| "setpoint"` | `"sensor"` | Actuators and setpoints are tracked from the start                                   |
+| `topic`                       | `string`                                            |            | Topic the value is read from: a reading, or the state that confirms a command        |
+| `type`                        | `string`                                            | inferred   | Interface type of `topic`, such as `std_msgs/msg/Float64`                            |
+| `field`                       | `string \| (msg) => unknown`                        | `"data"`   | Dot path into the message, or a function of it                                       |
+| `command`                     | `{ topic, type, field? }`                           |            | Where `command(id, value)` publishes; `type` is required, `field` defaults to `data` |
+| `tolerance`                   | `number`                                            | `0`        | A reported number this close to the commanded one confirms it                        |
+| `unit`, `min`, `max`, `label` |                                                     |            | Passed to components through `readings` and `hello`                                  |
+
+Values that are not a number, boolean or string are skipped. Byte arrays arrive as base64 strings, as the protocol specifies.
+
+## Options
+
+| Option                                                                                                              | Type      | Default | Meaning                                                    |
+| ------------------------------------------------------------------------------------------------------------------- | --------- | ------- | ---------------------------------------------------------- |
+| `channels`                                                                                                          | `object`  |         | Channel id to mapping, required                            |
+| `throttleRate`                                                                                                      | `number`  | `0`     | Minimum milliseconds between messages per subscribed topic |
+| `reconnect`                                                                                                         | `boolean` | `true`  | Reconnect after a drop with exponential backoff            |
+| `maxBackoff`                                                                                                        | `number`  | `10000` | Longest wait between attempts in milliseconds              |
+| plus the store options of `useMockDevice` (`actuatorTimeout`, `failSafe`, `historyLength`, `logLimit`, `transform`) |
+
+## Returns
+
+The source snapshot (`readings`, `history`, `logs`, `actuators`, `setpoints`, `hello`, `received`), `status`, `command`, `send` and `store`, exactly as [useWebSocketSource](/docs/hooks/use-websocket-source).
+
+## On the wire
+
+On connect the hook sends a `subscribe` per read topic (with `throttle_rate` when set) and an `advertise` per command topic, and undoes both on close. After a drop it subscribes again, since rosbridge forgets both with the socket.
+
+Without React, `createRosbridgeTransport(url, channels)` returns the transport, and `createRosbridgeSession` in `@/lib/rosbridge` is the protocol logic with no socket at all.
+
+## Tested against
+
+The protocol logic is unit-tested against the message shapes in the spec. It has not yet been run against a live `rosbridge_server` or a real robot; please report what you find.

@@ -15,7 +15,7 @@ v1 is the starred list from the original brief. Everything else lives here so it
 ### Robotics
 
 - `camera-feed`, `motor-panel`, a map.
-- Data sources: `rosbridge` (ROS 2 topics over WebSocket, spec: rosbridge v2 protocol) and FIRST NetworkTables NT4. Verify both against the official specs before building.
+- Run `useRosbridgeSource` and `useNt4Source` against a live `rosbridge_server` and an NT4 server; both are unit-tested against the specs only.
 
 ### Data sources
 

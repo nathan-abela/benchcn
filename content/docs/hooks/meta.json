@@ -5,6 +5,8 @@
     "use-mock-device",
     "use-websocket-source",
     "use-serial-source",
+    "use-rosbridge-source",
+    "use-nt4-source",
     "use-ring-buffer",
     "decoders",
     "..."

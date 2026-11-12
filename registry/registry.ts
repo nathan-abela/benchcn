@@ -241,6 +241,81 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("hooks/use-serial-source"),
   },
   {
+    name: "topic-source",
+    type: "registry:lib",
+    title: "Topic source",
+    description:
+      "Shared by robot sources: maps topics to channels and confirms a command only when the robot reports it back on a state topic.",
+    files: [{ path: "registry/benchcn/lib/topic-source.ts", type: "registry:lib" }],
+    registryDependencies: [`${ns}/wire`],
+    categories: ["data"],
+    docs: docsUrl("hooks"),
+  },
+  {
+    name: "msgpack",
+    type: "registry:lib",
+    title: "MessagePack",
+    description:
+      "Decoder and writer for the MessagePack subset NetworkTables 4 uses: nil, booleans, integers to 64 bits, floats, strings, binary, arrays and maps.",
+    files: [{ path: "registry/benchcn/lib/msgpack.ts", type: "registry:lib" }],
+    categories: ["data"],
+    docs: docsUrl("hooks/use-nt4-source"),
+  },
+  {
+    name: "rosbridge",
+    type: "registry:lib",
+    title: "rosbridge protocol",
+    description:
+      "rosbridge v2 protocol session: subscribe, advertise and publish ops mapped onto benchcn channels, with field paths into ROS messages.",
+    files: [{ path: "registry/benchcn/lib/rosbridge.ts", type: "registry:lib" }],
+    registryDependencies: [`${ns}/topic-source`, `${ns}/wire`],
+    categories: ["data"],
+    docs: docsUrl("hooks/use-rosbridge-source"),
+  },
+  {
+    name: "nt4",
+    type: "registry:lib",
+    title: "NetworkTables 4 protocol",
+    description:
+      "NetworkTables 4.1 session: JSON announce, publish and subscribe, MessagePack values and time sync, mapped onto benchcn channels.",
+    files: [{ path: "registry/benchcn/lib/nt4.ts", type: "registry:lib" }],
+    registryDependencies: [`${ns}/msgpack`, `${ns}/topic-source`, `${ns}/wire`],
+    categories: ["data"],
+    docs: docsUrl("hooks/use-nt4-source"),
+  },
+  {
+    name: "use-rosbridge-source",
+    type: "registry:hook",
+    title: "useRosbridgeSource",
+    description:
+      "ROS 2 topics over a rosbridge WebSocket as a source: readings from subscriptions, commands as publishes, confirmed only by a state topic.",
+    files: [{ path: "registry/benchcn/hooks/use-rosbridge-source.ts", type: "registry:hook" }],
+    registryDependencies: [
+      `${ns}/rosbridge`,
+      `${ns}/source-store`,
+      `${ns}/topic-source`,
+      `${ns}/use-websocket-source`,
+    ],
+    categories: ["data"],
+    docs: docsUrl("hooks/use-rosbridge-source"),
+  },
+  {
+    name: "use-nt4-source",
+    type: "registry:hook",
+    title: "useNt4Source",
+    description:
+      "FIRST NetworkTables 4 as a source: readings from subscribed topics, commands as published values, confirmed only by a state topic.",
+    files: [{ path: "registry/benchcn/hooks/use-nt4-source.ts", type: "registry:hook" }],
+    registryDependencies: [
+      `${ns}/nt4`,
+      `${ns}/source-store`,
+      `${ns}/topic-source`,
+      `${ns}/use-websocket-source`,
+    ],
+    categories: ["data"],
+    docs: docsUrl("hooks/use-nt4-source"),
+  },
+  {
     name: "use-ring-buffer",
     type: "registry:hook",
     title: "useRingBuffer",

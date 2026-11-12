@@ -10,9 +10,36 @@ benchcn components take data in and render UI out. A small data layer provides t
 | `createMockDevice()` | Developing, demos, docs, tests                            | Deterministic. Sensors, waveforms, a relay with ack latency, occasional faults. |
 | `useWebSocketSource` | The device, or a bridge next to it, can serve a WebSocket | Works with ESP32, Pico W, Raspberry Pi. Reconnects with backoff.                |
 | `useSerialSource`    | A board is plugged into this computer over USB            | Web Serial, Chromium-only, requires a user gesture to open the port.            |
+| `useRosbridgeSource` | A ROS 2 robot runs `rosbridge_server`                     | You map topics to channels. Commands confirm only from a state topic.           |
+| `useNt4Source`       | An FRC robot or other NetworkTables 4 server              | You map topics to channels. Commands confirm only from a state topic.           |
 | `useMqttSource`      | You already run a broker (Home Assistant, Mosquitto)      | MQTT over WebSocket. Planned.                                                   |
 
 All of them deliver [wire protocol](/docs/wire-protocol) messages, so a dashboard switches from mock to real data by changing one line.
+
+## Robots that speak their own protocol
+
+ROS 2 and NetworkTables have topics, not benchcn channels, so their sources take a mapping: which topic, and which field or array element, feeds each channel id, and which topic a command publishes to. Neither protocol acknowledges a publish, so a command is confirmed only when the robot reports the value back on a state topic you name.
+
+```tsx
+const source = useRosbridgeSource("ws://robot.local:9090", {
+  channels: {
+    battery: {
+      topic: "/battery_state",
+      type: "sensor_msgs/msg/BatteryState",
+      field: "voltage",
+      unit: "V",
+    },
+    lamp: {
+      kind: "actuator",
+      topic: "/lamp/state",
+      type: "std_msgs/msg/Bool",
+      command: { topic: "/lamp/set", type: "std_msgs/msg/Bool" },
+    },
+  },
+});
+```
+
+See [useRosbridgeSource](/docs/hooks/use-rosbridge-source) and [useNt4Source](/docs/hooks/use-nt4-source) for a full robot block on each.
 
 ## Converting units
 

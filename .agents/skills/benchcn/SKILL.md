@@ -47,7 +47,11 @@ Docs: https://nathan-abela.github.io/benchcn (every page also at `<url>.md`; ind
 - **No hardware yet, demo, tests:** `useMockDevice()`. Deterministic, with sensors, a pump relay, a heater setpoint, a bench supply that switches between CV and CC, ack latency and dropped commands.
 - **Device on the network (ESP32, Pico W, Raspberry Pi):** `useWebSocketSource("ws://<host>/ws")`. The firmware serves a WebSocket and prints wire-protocol lines.
 - **Board plugged into this computer over USB:** `useSerialSource({ baudRate: 115200 })`. Web Serial works in Chromium and Firefox desktop, not Safari or iOS, and must be opened from a click handler. Prefer WebSocket when the device has a network.
+- **ROS 2 robot running `rosbridge_server`:** `useRosbridgeSource("ws://<host>:9090", { channels })`. Map each channel id to `{ topic, type, field }` (field is a dot path, default `"data"`); commanded channels add `kind` and `command: { topic, type, field }`.
+- **FRC robot or other NetworkTables 4 server:** `useNt4Source(nt4Url("<host>"), { channels })`. Map each channel id to `{ topic, index }` (`index` picks an array element); commanded channels add `kind` and `command: { topic, type: "boolean" | "double" | "int" | "float" }`.
 - **Existing MQTT broker:** not built yet; bridge MQTT to WebSocket.
+
+For both robot sources, a command is confirmed only when the robot reports the value back on the channel's `topic`. Always map a state topic for e-stops, drives and anything an operator relies on; without one every command ends in `timeout`, on purpose.
 
 Every source returns the same handle: `readings`, `history`, `logs`, `actuators`, `setpoints`, `hello`, `received`, `command(id, value)`, `send`, `store`. Components never connect by themselves. Create one source at the top of the page and pass it down. For waveforms from a real device, feed `useRingBuffer(source.store, "ch1")` to the scope.
 

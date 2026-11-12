@@ -355,6 +355,132 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "topic-source",
+      "type": "registry:lib",
+      "title": "Topic source",
+      "description": "Shared by robot sources: maps topics to channels and confirms a command only when the robot reports it back on a state topic.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/topic-source.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/wire"
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "msgpack",
+      "type": "registry:lib",
+      "title": "MessagePack",
+      "description": "Decoder and writer for the MessagePack subset NetworkTables 4 uses: nil, booleans, integers to 64 bits, floats, strings, binary, arrays and maps.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/msgpack.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks/use-nt4-source"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "rosbridge",
+      "type": "registry:lib",
+      "title": "rosbridge protocol",
+      "description": "rosbridge v2 protocol session: subscribe, advertise and publish ops mapped onto benchcn channels, with field paths into ROS messages.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/rosbridge.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/topic-source",
+        "@benchcn/wire"
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks/use-rosbridge-source"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "nt4",
+      "type": "registry:lib",
+      "title": "NetworkTables 4 protocol",
+      "description": "NetworkTables 4.1 session: JSON announce, publish and subscribe, MessagePack values and time sync, mapped onto benchcn channels.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/nt4.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/msgpack",
+        "@benchcn/topic-source",
+        "@benchcn/wire"
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks/use-nt4-source"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "use-rosbridge-source",
+      "type": "registry:hook",
+      "title": "useRosbridgeSource",
+      "description": "ROS 2 topics over a rosbridge WebSocket as a source: readings from subscriptions, commands as publishes, confirmed only by a state topic.",
+      "files": [
+        {
+          "path": "registry/benchcn/hooks/use-rosbridge-source.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/rosbridge",
+        "@benchcn/source-store",
+        "@benchcn/topic-source",
+        "@benchcn/use-websocket-source"
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks/use-rosbridge-source"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "use-nt4-source",
+      "type": "registry:hook",
+      "title": "useNt4Source",
+      "description": "FIRST NetworkTables 4 as a source: readings from subscribed topics, commands as published values, confirmed only by a state topic.",
+      "files": [
+        {
+          "path": "registry/benchcn/hooks/use-nt4-source.ts",
+          "type": "registry:hook"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/nt4",
+        "@benchcn/source-store",
+        "@benchcn/topic-source",
+        "@benchcn/use-websocket-source"
+      ],
+      "categories": [
+        "data"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/hooks/use-nt4-source"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "use-ring-buffer",
       "type": "registry:hook",
       "title": "useRingBuffer",

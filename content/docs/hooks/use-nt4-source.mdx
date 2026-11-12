@@ -1,0 +1,113 @@
+---
+title: useNt4Source
+description: FIRST NetworkTables 4 topics as a source, returning the same snapshot as the mock device.
+---
+
+For an FRC robot, or any NetworkTables 4 server. You map topics to channel ids; subscribed topics become readings, and `command(id, value)` publishes a value. Built on the [NetworkTables 4.1 spec](https://github.com/wpilibsuite/allwpilib/blob/main/ntcore/doc/networktables4.adoc), falling back to 4.0.
+
+## Installation
+
+<InstallTabs item="use-nt4-source" />
+
+## Usage
+
+```tsx
+import { useNt4Source } from "@/hooks/use-nt4-source";
+import { nt4Url } from "@/lib/nt4";
+
+const { status, readings, setpoints, command } = useNt4Source(nt4Url("10.12.34.2", "pit-dash"), {
+  channels: {
+    battery: { topic: "/robot/battery", unit: "V" },
+    shooter: {
+      kind: "setpoint",
+      unit: "rpm",
+      topic: "/robot/shooter/rpm",
+      command: { topic: "/dashboard/shooter/rpm", type: "double" },
+      tolerance: 50,
+    },
+  },
+});
+```
+
+`nt4Url(host, name)` builds `ws://<host>:5810/nt/<name>`; the server shows `name` in its client list. The mapping is read once, on mount. Pass `null` as the URL to stay disconnected.
+
+## Commanded and confirmed
+
+NetworkTables does not acknowledge a value, so a command is confirmed only when the robot reports it back on the channel's `topic`, within `tolerance` for numbers. Otherwise it times out after `actuatorTimeout`. Publish the value your robot code actually applied, not the one it was asked for.
+
+## A robot block over NetworkTables
+
+The topics are whatever your robot code publishes. Array topics map one element per channel with `index`.
+
+```tsx
+import { Robot } from "@/components/robot";
+import { useNt4Source } from "@/hooks/use-nt4-source";
+import { nt4Url } from "@/lib/nt4";
+
+export function PitDashboard() {
+  const source = useNt4Source(nt4Url("10.12.34.2", "pit-dash"), {
+    periodic: 0.05,
+    failSafe: { drive: false },
+    channels: {
+      estop: {
+        kind: "actuator",
+        topic: "/robot/estop",
+        command: { topic: "/dashboard/estop", type: "boolean" },
+      },
+      drive: {
+        kind: "actuator",
+        topic: "/robot/drive/enabled",
+        command: { topic: "/dashboard/drive", type: "boolean" },
+      },
+      linear: { kind: "setpoint", command: { topic: "/dashboard/linear", type: "double" } },
+      angular: { kind: "setpoint", command: { topic: "/dashboard/angular", type: "double" } },
+      speed: { topic: "/robot/speed", unit: "m/s" },
+      "turn-rate": { topic: "/robot/turn-rate", unit: "rad/s" },
+      "pose-x": { topic: "/robot/pose", index: 0, unit: "m" },
+      "pose-y": { topic: "/robot/pose", index: 1, unit: "m" },
+      heading: { topic: "/robot/pose", index: 2, unit: "°" },
+      battery: { topic: "/robot/battery", unit: "V" },
+    },
+  });
+  return <Robot source={source} />;
+}
+```
+
+On an FRC robot the Driver Station enables and disables the robot; a dashboard drive switch is something your robot code chooses to honour. It also needs its own timeout on the velocity topics, because a dropped link sends nothing.
+
+## Channel mapping
+
+| Field                         | Type                                                | Default    | Meaning                                                                                         |
+| ----------------------------- | --------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------------- |
+| `kind`                        | `"sensor" \| "digital" \| "actuator" \| "setpoint"` | `"sensor"` | Actuators and setpoints are tracked from the start                                              |
+| `topic`                       | `string`                                            |            | Topic the value is read from: a reading, or the state that confirms a command                   |
+| `index`                       | `number`                                            |            | Element to read from an array topic (`double[]`, `boolean[]` and so on)                         |
+| `command`                     | `{ topic, type }`                                   |            | Where `command(id, value)` publishes; `type` is `boolean`, `double`, `int`, `float` or `string` |
+| `tolerance`                   | `number`                                            | `0`        | A reported number this close to the commanded one confirms it                                   |
+| `unit`, `min`, `max`, `label` |                                                     |            | Passed to components through `readings` and `hello`                                             |
+
+If the topic already exists with another type, the server's type wins. A value that does not fit it, such as `1.5` on an `int` topic, is not sent and shows up as a warning in `logs`.
+
+## Options
+
+| Option                                                                                                              | Type      | Default | Meaning                                         |
+| ------------------------------------------------------------------------------------------------------------------- | --------- | ------- | ----------------------------------------------- |
+| `channels`                                                                                                          | `object`  |         | Channel id to mapping, required                 |
+| `periodic`                                                                                                          | `number`  | `0.1`   | Seconds between value sweeps the server sends   |
+| `reconnect`                                                                                                         | `boolean` | `true`  | Reconnect after a drop with exponential backoff |
+| `maxBackoff`                                                                                                        | `number`  | `10000` | Longest wait between attempts in milliseconds   |
+| plus the store options of `useMockDevice` (`actuatorTimeout`, `failSafe`, `historyLength`, `logLimit`, `transform`) |
+
+## Returns
+
+The source snapshot (`readings`, `history`, `logs`, `actuators`, `setpoints`, `hello`, `received`), `status`, `command`, `send` and `store`, exactly as [useWebSocketSource](/docs/hooks/use-websocket-source).
+
+## On the wire
+
+The hook offers the `v4.1.networktables.first.wpi.edu` and `networktables.first.wpi.edu` subprotocols. It syncs its clock with the server before it publishes or subscribes, as the spec asks; commands sent before then are dropped with a warning in `logs`. Browsers cannot send WebSocket pings, so it uses the spec's fallback: a time request every second, and a reconnect after three seconds without a reply. MessagePack is read by a small built-in decoder (`@/lib/msgpack`), not a dependency.
+
+Without React, `createNt4Transport(url, channels)` returns the transport, and `createNt4Session` in `@/lib/nt4` is the protocol logic with no socket at all.
+
+## Tested against
+
+The protocol logic is unit-tested, including the spec's own 17-byte value example. It has not yet been run against a live NetworkTables server or a real robot; please report what you find.
