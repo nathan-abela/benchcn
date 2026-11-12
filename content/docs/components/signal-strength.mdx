@@ -1,0 +1,68 @@
+---
+title: Signal strength
+description: Signal bars from an RSSI in dBm or a 0 to 100 quality, with bar thresholds you can set and Android's Wi-Fi levels as the default.
+---
+
+<ComponentPreview name="signal-strength" />
+
+Drag the slider to move the RSSI. The row below shows a quality percentage, three custom bars and no reading.
+
+## Installation
+
+<InstallTabs item="signal-strength" />
+
+## Usage
+
+```tsx
+import { SignalStrength } from "@/components/ui/signal-strength";
+
+<SignalStrength value={rssi} />
+<SignalStrength unit="%" value={linkQuality} />
+```
+
+An ESP32 reports RSSI from `WiFi.RSSI()`; send it as a sample on its own channel and pass `readings.rssi?.v`.
+
+## Default thresholds
+
+With `unit="dBm"` the bars follow Android's Wi-Fi levels: at or below -100 dBm shows none, at or above -55 dBm shows all, and the bars split the range between evenly. For four bars that is -88.75, -77.5, -66.25 and -55 dBm. The numbers come from `WifiManager.calculateSignalLevel` in the Android 10 source.
+
+With `unit="%"` the defaults are plain even steps (20, 40, 60 and 80 for four bars), not taken from any standard.
+
+These are Wi-Fi numbers. For cellular, LoRa or anything else, pass `thresholds` from your radio's documentation.
+
+## Props
+
+<PropsTable of="signal-strength" />
+
+## Examples
+
+### Custom bars
+
+One threshold per bar, lowest first. The number of thresholds sets the number of bars.
+
+```tsx
+<SignalStrength value={rssi} thresholds={[-95, -85, -75]} />
+```
+
+### Bars only
+
+```tsx
+<SignalStrength value={rssi} showValue={false} />
+```
+
+## Theming
+
+Lit bars use `--foreground` and unlit bars the same colour at 15 % opacity. A weak signal is not a fault, so the bars never change colour.
+
+## Accessibility
+
+A visually hidden native `meter` carries the bar count and a text such as "2 of 4 bars, -67 dBm". The reading is also shown as text unless `showValue` is off.
+
+Under `prefers-reduced-motion` bars switch without fading.
+
+## Ask your agent
+
+<AgentPrompt item="signal-strength">
+  Pass the raw RSSI in dBm. Keep the default thresholds for Wi-Fi; for any other radio, set
+  `thresholds` from its documentation instead of guessing.
+</AgentPrompt>
