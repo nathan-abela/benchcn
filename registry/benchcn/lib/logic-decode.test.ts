@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { encodeI2c } from "./decoders/i2c";
+import { encodeModbus } from "./decoders/modbus";
 import { encodeSpi } from "./decoders/spi";
 import { encodeUart } from "./decoders/uart";
 import { decodeLanes, type LogicSamples } from "./logic-decode";
@@ -142,6 +143,59 @@ describe("decodeLanes", () => {
 
     // #then
     expect(decoded?.marks.map((mark) => mark.tone)).toEqual(["error"]);
+  });
+
+  it("should list one Modbus frame per row with address, function, values and CRC", () => {
+    // #given
+    const trace = encodeModbus(
+      [
+        { address: 1, pdu: [0x03, 0x00, 0x6b, 0x00, 0x03] },
+        { address: 1, pdu: [0x03, 0x06, 0x02, 0x2b, 0x00, 0x00, 0x00, 0x64], crc: 0 },
+      ],
+      { sampleRate: SAMPLE_RATE, baudRate: 19_200 },
+    );
+
+    // #when
+    const decoded = decodeLanes([lane("rx", trace.data)], {
+      protocol: "modbus",
+      rx: "rx",
+      baudRate: 19_200,
+    });
+
+    // #then
+    expect(decoded?.transactions.map(({ columns, error }) => ({ columns, error }))).toEqual([
+      {
+        columns: ["addr 1", "request", "Read holding registers", "start 107, count 3", "CRC ok"],
+        error: false,
+      },
+      {
+        columns: ["addr 1", "response", "Read holding registers", "107: 555 0 100", "CRC bad"],
+        error: true,
+      },
+    ]);
+  });
+
+  it("should mark the Modbus address, function, data and CRC over the serial line", () => {
+    // #given
+    const trace = encodeModbus([{ address: 1, pdu: [0x83, 0x02] }], {
+      sampleRate: SAMPLE_RATE,
+      baudRate: 19_200,
+    });
+
+    // #when
+    const decoded = decodeLanes([lane("rx", trace.data)], {
+      protocol: "modbus",
+      rx: "rx",
+      baudRate: 19_200,
+    });
+
+    // #then
+    expect(decoded?.marks.map((mark) => [mark.tone, mark.label])).toEqual([
+      ["address", "0x01"],
+      ["error", "Exception Read holding registers"],
+      ["data", "0x02"],
+      ["data", "CRC ok"],
+    ]);
   });
 
   it("should return null when a named lane is missing", () => {

@@ -66,6 +66,8 @@ const WHEEL_STEP = 1.25;
 const TWEEN_MS = 200;
 const SCREEN_FALLBACK = "oklch(0.17 0.004 80)";
 const MONO = "ui-monospace, SFMono-Regular, Menlo, monospace";
+/** Rows of a column list share the list's tracks, so columns line up across rows. */
+const gridRow = "col-span-full grid grid-cols-subgrid";
 
 function laneColor(lane: LogicLane, index: number): string {
   return lane.color ?? channelToken(index + 1);
@@ -504,6 +506,8 @@ export function LogicAnalyzer({
     redraw();
   };
 
+  const columnCount =
+    decoded?.transactions.reduce((most, t) => Math.max(most, t.columns?.length ?? 0), 0) ?? 0;
   const summary = decoded
     ? decoded.transactions.map((t) => t.text.replaceAll(/\s+/g, " ")).join(". ")
     : "";
@@ -589,16 +593,32 @@ export function LogicAnalyzer({
       </p>
 
       {list && decoded ? (
-        <ol className="flex flex-col gap-0.5 font-mono text-xs">
+        <ol
+          className={cn(
+            "font-mono text-xs",
+            columnCount > 0
+              ? "grid [scrollbar-width:thin] gap-x-2.5 gap-y-0.5 overflow-x-auto"
+              : "flex flex-col gap-0.5",
+          )}
+          style={
+            columnCount > 0
+              ? {
+                  gridTemplateColumns: `repeat(${columnCount}, max-content) minmax(max-content, 1fr)`,
+                }
+              : undefined
+          }
+        >
           {decoded.transactions.map((transaction) => {
             const inView = transaction.end >= window.start && transaction.start <= window.end;
             return (
-              <li key={transaction.start}>
+              <li key={transaction.start} className={cn(columnCount > 0 && gridRow)}>
                 <button
                   type="button"
                   data-in-view={inView}
                   className={cn(
-                    "hover:bg-accent flex w-full items-center gap-3 rounded-md px-2 py-1 text-left tabular-nums transition-colors duration-150",
+                    "hover:bg-accent w-full items-center rounded-md px-2 py-1 text-left tabular-nums transition-colors duration-150",
+                    columnCount > 0 ? gridRow : "flex gap-3",
+                    transaction.error && "text-destructive",
                     !inView && "text-muted-foreground/60",
                   )}
                   onClick={() =>
@@ -608,10 +628,23 @@ export function LogicAnalyzer({
                     })
                   }
                 >
-                  <span className={cn("w-16 shrink-0", inView && "text-muted-foreground")}>
+                  <span
+                    className={cn(
+                      columnCount > 0 ? "whitespace-nowrap" : "w-16 shrink-0",
+                      inView && !transaction.error && "text-muted-foreground",
+                    )}
+                  >
                     {formatSi(transaction.start, "s")}
                   </span>
-                  <span className="truncate">{transaction.text}</span>
+                  {columnCount > 0 ? (
+                    Array.from({ length: columnCount }, (_, index) => (
+                      <span key={index} className="whitespace-nowrap">
+                        {transaction.columns?.[index] ?? ""}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="truncate">{transaction.text}</span>
+                  )}
                 </button>
               </li>
             );

@@ -2,6 +2,7 @@ import { type ReactElement, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { encodeI2c, type I2cTransaction } from "@/registry/benchcn/lib/decoders/i2c";
+import { encodeModbus, type ModbusMessage } from "@/registry/benchcn/lib/decoders/modbus";
 import { encodeSpi, type SpiTransaction } from "@/registry/benchcn/lib/decoders/spi";
 import { encodeUart } from "@/registry/benchcn/lib/decoders/uart";
 import { createRandom } from "@/registry/benchcn/lib/mock-device";
@@ -81,6 +82,65 @@ const UART_LINES: ((rand: Random) => string)[] = [
   () => "wifi up\n",
 ];
 
+const MODBUS_BAUD_RATE = 19_200;
+
+function word(value: number): number[] {
+  return [(value >> 8) & 0xff, value & 0xff];
+}
+
+type ModbusExchange = [request: ModbusMessage, response: ModbusMessage];
+
+// A climate sensor at address 1 holds temperature and humidity in tenths, a setpoint at 16 and
+// nothing at 100. A relay board at address 2 has eight coils.
+const MODBUS_EXCHANGES: ((rand: Random) => ModbusExchange)[] = [
+  (rand) => [
+    { address: 1, pdu: [0x03, ...word(0), ...word(2)] },
+    {
+      address: 1,
+      pdu: [0x03, 4, ...word(between(rand, 205, 265)), ...word(between(rand, 380, 620))],
+    },
+  ],
+  (rand) => {
+    const pdu = [0x06, ...word(16), ...word(between(rand, 180, 240))];
+    return [
+      { address: 1, pdu },
+      { address: 1, pdu },
+    ];
+  },
+  (rand) => [
+    { address: 2, pdu: [0x01, ...word(0), ...word(8)] },
+    { address: 2, pdu: [0x01, 1, between(rand, 0, 255)] },
+  ],
+  (rand) => {
+    const pdu = [0x05, ...word(between(rand, 0, 7)), ...(rand() < 0.5 ? [0xff, 0x00] : [0, 0])];
+    return [
+      { address: 2, pdu },
+      { address: 2, pdu },
+    ];
+  },
+  (rand) => [
+    {
+      address: 1,
+      pdu: [0x10, ...word(16), ...word(2), 4, ...word(between(rand, 180, 240)), ...word(5)],
+    },
+    { address: 1, pdu: [0x10, ...word(16), ...word(2)] },
+  ],
+  () => [
+    { address: 1, pdu: [0x03, ...word(100), ...word(1)] },
+    { address: 1, pdu: [0x83, 0x02] },
+  ],
+];
+
+function modbusTraffic(rand: Random): ModbusMessage[] {
+  return pick(rand, MODBUS_EXCHANGES, 3, 5).flatMap((exchange) => {
+    const [request, response] = exchange(rand);
+    return [
+      { ...request, idle: 0.004 + rand() * 0.006 },
+      { ...response, idle: 0.002 + rand() * 0.003 },
+    ];
+  });
+}
+
 function capture(protocol: Protocol, seed: number): Capture {
   const rand = createRandom(seed);
   const gapSeconds = 0.0001 + rand() * 0.0004;
@@ -128,6 +188,16 @@ function capture(protocol: Protocol, seed: number): Capture {
         decode: { protocol, rx: "rx", baudRate: BAUD_RATE },
       };
     }
+    case "modbus": {
+      const trace = encodeModbus(modbusTraffic(rand), {
+        sampleRate: SAMPLE_RATE,
+        baudRate: MODBUS_BAUD_RATE,
+      });
+      return {
+        lanes: [lane("rx", trace.data)],
+        decode: { protocol, rx: "rx", baudRate: MODBUS_BAUD_RATE },
+      };
+    }
   }
 }
 
@@ -135,6 +205,7 @@ const PROTOCOLS: { id: Protocol; label: string }[] = [
   { id: "i2c", label: "I2C" },
   { id: "spi", label: "SPI" },
   { id: "uart", label: "UART" },
+  { id: "modbus", label: "Modbus" },
 ];
 
 export function LogicAnalyzerDemo(): ReactElement {
@@ -144,7 +215,7 @@ export function LogicAnalyzerDemo(): ReactElement {
 
   return (
     <LogicAnalyzer lanes={lanes} decode={decode} defaultWindow="first">
-      <div className="flex items-center justify-between gap-3 border-t pt-3">
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 border-t pt-3">
         <div className="flex items-center gap-1">
           {PROTOCOLS.map(({ id, label }) => (
             <Button
@@ -158,7 +229,12 @@ export function LogicAnalyzerDemo(): ReactElement {
             </Button>
           ))}
         </div>
-        <Button variant="outline" size="sm" onClick={() => setSeed((s) => s + 1)}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="ml-auto"
+          onClick={() => setSeed((s) => s + 1)}
+        >
           Capture
         </Button>
       </div>

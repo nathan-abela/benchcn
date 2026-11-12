@@ -8,6 +8,14 @@ import {
   summarizeI2c,
 } from "@/registry/benchcn/lib/decoders/i2c";
 import {
+  decodeModbus,
+  describeModbusFrame,
+  type ModbusFrame,
+  type ModbusOptions,
+  modbusFunctionName,
+  modbusUartOptions,
+} from "@/registry/benchcn/lib/decoders/modbus";
+import {
   decodeSpi,
   formatSpiFrame,
   type SpiDecodeOptions,
@@ -44,7 +52,10 @@ export type SpiDecode = SpiDecodeOptions & {
 /** `rx` is the lane id of the serial line, whichever direction it carries. */
 export type UartDecode = UartOptions & { protocol: "uart"; rx: string };
 
-export type LogicDecode = I2cDecode | SpiDecode | UartDecode;
+/** Modbus RTU over the serial line `rx`. 8 data bits, even parity unless you say otherwise. */
+export type ModbusDecode = ModbusOptions & { protocol: "modbus"; rx: string };
+
+export type LogicDecode = I2cDecode | SpiDecode | UartDecode | ModbusDecode;
 
 export type DecodeTone = "start" | "stop" | "address" | "data" | "error";
 
@@ -64,6 +75,9 @@ export type DecodedTransaction = {
   start: number;
   end: number;
   text: string;
+  /** Shown as aligned columns in the list instead of `text`, for protocols with framed fields. */
+  columns?: string[];
+  error?: boolean;
 };
 
 export type DecodedLanes = {
@@ -157,6 +171,64 @@ function splitUartLines(frames: UartFrame[]): UartFrame[][] {
   );
 }
 
+function hexLabel(value: number): string {
+  return `0x${value.toString(16).toUpperCase().padStart(2, "0")}`;
+}
+
+/** Address, function code, one box per data byte, and the two CRC bytes as one box. */
+function modbusMarks(frame: ModbusFrame): DecodeMark[] {
+  const { chars, functionCode, crc } = frame;
+  const framed = functionCode !== undefined && crc !== undefined;
+  const marks = chars.slice(0, framed ? -2 : undefined).map((char, index): DecodeMark => {
+    const { start, end } = char;
+    if (char.value === undefined || char.kind === "error") {
+      return { start, end, shape: "box", tone: "error", label: formatUartFrame(char) };
+    }
+    const label = hexLabel(char.value);
+    if (framed && index === 0) return { start, end, shape: "box", tone: "address", label };
+    if (framed && index === 1) {
+      const exception = char.value >= 0x80;
+      return {
+        start,
+        end,
+        shape: "box",
+        tone: exception ? "error" : "address",
+        label: `${exception ? "Exception " : ""}${modbusFunctionName(char.value)}`,
+        short: label,
+      };
+    }
+    return { start, end, shape: "box", tone: "data", label, short: label.slice(2) };
+  });
+
+  if (framed) {
+    const ok = !frame.errors.includes("crc");
+    marks.push({
+      start: chars[chars.length - 2].start,
+      end: chars[chars.length - 1].end,
+      shape: "box",
+      tone: ok ? "data" : "error",
+      label: ok ? "CRC ok" : "CRC bad",
+      short: ok ? "ok" : "✕",
+    });
+  }
+  for (const gap of frame.gaps) {
+    marks.push({ ...gap, shape: "box", tone: "error", label: "gap", short: "" });
+  }
+  return marks;
+}
+
+function modbusTransaction(frame: ModbusFrame, sampleRate: number): DecodedTransaction {
+  const text = describeModbusFrame(frame);
+  const columns = [text.address, text.role, text.function, text.detail, text.status];
+  return {
+    start: frame.start / sampleRate,
+    end: frame.end / sampleRate,
+    text: columns.join("  "),
+    columns,
+    error: frame.errors.length > 0,
+  };
+}
+
 /** Runs the decoder named by `decode` over the lanes it points at. `null` when a lane is missing. */
 export function decodeLanes(lanes: LogicSamples[], decode: LogicDecode): DecodedLanes | null {
   const find = (id: string | undefined): LogicSamples | undefined =>
@@ -213,6 +285,19 @@ export function decodeLanes(lanes: LogicSamples[], decode: LogicDecode): Decoded
         sampleRate,
         marks: frames.map(uartMark),
         transactions: toTransactions(splitUartLines(frames), summarizeUartLine, sampleRate),
+      };
+    }
+    case "modbus": {
+      const rx = find(decode.rx);
+      if (!rx) return null;
+      const { sampleRate } = rx;
+      const chars = decodeUart({ data: rx.data, sampleRate }, modbusUartOptions(decode));
+      const frames = decodeModbus(chars, { ...decode, sampleRate });
+      return {
+        lane: rx.id,
+        sampleRate,
+        marks: frames.flatMap(modbusMarks),
+        transactions: frames.map((frame) => modbusTransaction(frame, sampleRate)),
       };
     }
   }

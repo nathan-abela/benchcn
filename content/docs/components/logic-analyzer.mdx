@@ -1,6 +1,6 @@
 ---
 title: Logic analyzer
-description: Digital lanes with zoom, pan, a time ruler and in-place I²C, SPI and UART decode drawn over the data lane.
+description: Digital lanes with zoom, pan, a time ruler and in-place I²C, SPI, UART and Modbus RTU decode drawn over the data lane.
 ---
 
 <ComponentPreview name="logic-analyzer" />
@@ -51,9 +51,14 @@ decode={{ protocol: "spi", sclk: "sclk", mosi: "mosi", miso: "miso", cs: "cs", m
 
 // Drawn above the serial line. 8N1 unless you say otherwise.
 decode={{ protocol: "uart", rx: "rx", baudRate: 115_200 }}
+
+// Modbus RTU on the same serial line. 8E1 unless you set `parity`; no parity means two stop bits.
+decode={{ protocol: "modbus", rx: "rx", baudRate: 19_200 }}
 ```
 
-The list groups frames the way each bus does: one row per I²C start, per SPI chip select, and per line of UART text (a line feed or an idle gap ends the row).
+The list groups frames the way each bus does: one row per I²C start, per SPI chip select, per line of UART text (a line feed or an idle gap ends the row), and per Modbus frame.
+
+Modbus frames end after 3.5 characters of silence, a gap over 1.5 characters inside one is flagged, and every CRC is checked. Function codes 01 to 06, 15 and 16 are parsed; others show their bytes in hex.
 
 ## Props
 
@@ -100,10 +105,14 @@ Leave `decode` out for plain digital capture, for example a PWM line next to its
 | SPI      | Word                  | Bubble with MOSI in hex, then MISO when it is not zero         |
 | UART     | Byte                  | Bubble with the character, or the byte in hex if not printable |
 | UART     | Framing, parity error | Red bubble naming the error                                    |
+| Modbus   | Address, function     | Bubbles in the address colour; an exception is red             |
+| Modbus   | Data                  | Bubble with the byte in hex                                    |
+| Modbus   | CRC                   | One bubble over both bytes, red when it does not match         |
+| Modbus   | Gap over 1.5 chars    | Red bubble over the silence                                    |
 
 ## Theming
 
-Lanes use `--channel-1` to `--channel-4` from `@benchcn/tokens` (then `--chart-n`, then `color`). Start and stop markers use `--success` and `--destructive`, and UART errors use `--destructive`. The screen is always dark.
+Lanes use `--channel-1` to `--channel-4` from `@benchcn/tokens` (then `--chart-n`, then `color`). Start and stop markers use `--success` and `--destructive`, and UART and Modbus errors use `--destructive`, in the lanes and in the list. The screen is always dark.
 
 ## Accessibility
 
@@ -113,5 +122,5 @@ The lanes are drawn on a canvas and marked decorative. The decoded transactions 
 
 <AgentPrompt item="logic-analyzer">
   Capture every line at least ten times faster than the bus clock or baud rate. Feed the arrays to
-  LogicAnalyzer with decode set to i2c, spi or uart and the lane ids.
+  LogicAnalyzer with decode set to i2c, spi, uart or modbus and the lane ids.
 </AgentPrompt>

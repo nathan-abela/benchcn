@@ -1,6 +1,6 @@
 ---
 title: Decoders
-description: Pure I2C, SPI and UART decoders with matching encoders, for the logic analyzer, for tests and for logs.
+description: Pure I2C, SPI, UART and Modbus RTU decoders with matching encoders, for the logic analyzer, for tests and for logs.
 ---
 
 Each decoder takes arrays of logic levels and a sample rate and returns frames with sample positions. Each has an encoder that produces the same kind of trace from a description, which is how the analyzer demo and the round-trip tests work.
@@ -56,6 +56,35 @@ summarizeUart(frames); // hi
 
 5 to 8 data bits, even, odd or no parity, one or two stop bits. Framing and parity errors come back as `error` frames and decoding resynchronises on the next idle line.
 
+## Modbus RTU
+
+Modbus decodes the UART frames, so it works on any byte stream with sample positions.
+
+```ts
+import { decodeUart } from "@/lib/decoders/uart";
+import {
+  decodeModbus,
+  encodeModbus,
+  modbusUartOptions,
+  summarizeModbus,
+} from "@/lib/decoders/modbus";
+
+const options = { baudRate: 19_200 };
+const trace = encodeModbus(
+  [
+    { address: 1, pdu: [0x03, 0x00, 0x6b, 0x00, 0x03] },
+    { address: 1, pdu: [0x03, 0x06, 0x02, 0x2b, 0x00, 0x00, 0x00, 0x64] },
+  ],
+  { ...options, sampleRate: 1_000_000 },
+);
+const chars = decodeUart(trace, modbusUartOptions(options));
+summarizeModbus(decodeModbus(chars, { ...options, sampleRate: 1_000_000 }));
+// addr 1  request  Read holding registers  start 107, count 3  CRC ok
+// addr 1  response  Read holding registers  107: 555 0 100  CRC ok
+```
+
+Each frame carries its `address`, `functionCode`, `role` (request or response), a parsed `pdu`, the `crc` and any `errors`.
+
 ## In the logic analyzer
 
-Only I2C is drawn as an overlay in v1. SPI and UART overlays are on the [roadmap](https://github.com/nathan-abela/benchcn/blob/main/ROADMAP.md); the decoders are complete and tested today.
+Every decoder here draws in the [logic analyzer](/docs/components/logic-analyzer) through its `decode` prop.

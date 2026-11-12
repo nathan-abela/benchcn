@@ -617,7 +617,7 @@ export const props: Record<string, PropsDoc> = {
     decode: {
       type: "LogicDecode",
       description:
-        '`{ protocol: "i2c", sda, scl }`, `{ protocol: "spi", sclk, mosi, miso?, cs?, mode?, bitOrder?, csActiveLow?, wordSize? }` or `{ protocol: "uart", rx, baudRate, dataBits?, parity?, stopBits?, idleHigh? }`. Lanes are named by id; frames are drawn above SDA, MOSI or the serial line.',
+        '`{ protocol: "i2c", sda, scl }`, `{ protocol: "spi", sclk, mosi, miso?, cs?, mode?, bitOrder?, csActiveLow?, wordSize? }` or `{ protocol: "uart", rx, baudRate, dataBits?, parity?, stopBits?, idleHigh? }` or `{ protocol: "modbus", rx, baudRate, parity?, stopBits?, idleHigh? }`. Lanes are named by id; frames are drawn above SDA, MOSI or the serial line.',
     },
     window: {
       type: "{ start: number; end: number }",

@@ -256,11 +256,12 @@ export const registry: RegistryItem[] = [
     type: "registry:lib",
     title: "Protocol decoders",
     description:
-      "Pure I2C, SPI and UART decoders with matching encoders: logic levels in, frames out, and back again for tests and demos.",
+      "Pure I2C, SPI, UART and Modbus RTU decoders with matching encoders: logic levels in, frames out, and back again for tests and demos.",
     files: [
       { path: "registry/benchcn/lib/decoders/i2c.ts", type: "registry:lib" },
       { path: "registry/benchcn/lib/decoders/spi.ts", type: "registry:lib" },
       { path: "registry/benchcn/lib/decoders/uart.ts", type: "registry:lib" },
+      { path: "registry/benchcn/lib/decoders/modbus.ts", type: "registry:lib" },
     ],
     categories: ["data"],
     docs: docsUrl("hooks/decoders"),
@@ -284,7 +285,7 @@ export const registry: RegistryItem[] = [
     type: "registry:ui",
     title: "Logic analyzer",
     description:
-      "Digital lanes with zoom, pan, a time ruler and in-place I2C, SPI and UART decode: addresses, bytes, acks and errors drawn over the data lane, with a clickable transaction list.",
+      "Digital lanes with zoom, pan, a time ruler and in-place I2C, SPI, UART and Modbus RTU decode: addresses, bytes, acks, CRCs and errors drawn over the data lane, with a clickable transaction list.",
     files: [
       { path: "registry/benchcn/ui/logic-analyzer/logic-analyzer.tsx", type: "registry:ui" },
       { path: "registry/benchcn/lib/logic-decode.ts", type: "registry:lib" },
