@@ -4,8 +4,10 @@ import type { PlaceholderHeights } from "@/components/site/placeholder";
 
 import actuatorControlSource from "./actuator-control-demo.tsx?raw";
 import alarmListSource from "./alarm-list-demo.tsx?raw";
+import batteryIndicatorSource from "./battery-indicator-demo.tsx?raw";
 import bitfieldDiagramSource from "./bitfield-diagram-demo.tsx?raw";
 import characterLcdSource from "./character-lcd-demo.tsx?raw";
+import connectionStatusSource from "./connection-status-demo.tsx?raw";
 import emergencyStopSource from "./emergency-stop-demo.tsx?raw";
 import joystickSource from "./joystick-demo.tsx?raw";
 import ledBarSource from "./led-bar-demo.tsx?raw";
@@ -24,6 +26,7 @@ import sensorTileSource from "./sensor-tile-demo.tsx?raw";
 import serialConsoleSource from "./serial-console-demo.tsx?raw";
 import setpointInputSource from "./setpoint-input-demo.tsx?raw";
 import sevenSegmentSource from "./seven-segment-demo.tsx?raw";
+import signalStrengthSource from "./signal-strength-demo.tsx?raw";
 import statusLedSource from "./status-led-demo.tsx?raw";
 import stripChartSource from "./strip-chart-demo.tsx?raw";
 import timingDiagramSource from "./timing-diagram-demo.tsx?raw";
@@ -123,6 +126,27 @@ export const demos: Record<string, Demo> = {
     component: lazy(() => import("./range-bar-demo").then((m) => ({ default: m.RangeBarDemo }))),
     source: rangeBarSource,
     placeholder: { base: 462, sm: 234 },
+  },
+  "battery-indicator": {
+    component: lazy(() =>
+      import("./battery-indicator-demo").then((m) => ({ default: m.BatteryIndicatorDemo })),
+    ),
+    source: batteryIndicatorSource,
+    placeholder: { base: 108, sm: 76 },
+  },
+  "signal-strength": {
+    component: lazy(() =>
+      import("./signal-strength-demo").then((m) => ({ default: m.SignalStrengthDemo })),
+    ),
+    source: signalStrengthSource,
+    placeholder: { base: 104 },
+  },
+  "connection-status": {
+    component: lazy(() =>
+      import("./connection-status-demo").then((m) => ({ default: m.ConnectionStatusDemo })),
+    ),
+    source: connectionStatusSource,
+    placeholder: { base: 188 },
   },
   "strip-chart": {
     component: lazy(() =>

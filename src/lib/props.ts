@@ -448,6 +448,77 @@ export const props: Record<string, PropsDoc> = {
       default: '"horizontal"',
     },
   },
+  "battery-indicator": {
+    value: {
+      type: "number | null",
+      description: 'A percentage, or volts with `unit="V"`. `null` shows `--`.',
+      required: true,
+    },
+    unit: { type: '"%" | "V"', description: "", default: '"%"' },
+    min: { type: "number", description: "Empty, in the unit of `value`.", default: "0" },
+    max: { type: "number", description: "Full, in the unit of `value`.", default: "100" },
+    curve: {
+      type: "[volts, percent][]",
+      description: "Discharge curve for volts, interpolated between points. Replaces `min`/`max`.",
+    },
+    thresholds: {
+      type: "{ low?, critical? }",
+      description: "Percent at or below which the charge is low or critical.",
+      default: "{ low: 20, critical: 10 }",
+    },
+    charging: { type: "boolean", description: "Draws a bolt over the glyph.", default: "false" },
+    label: { type: "string", description: "Accessible name.", default: '"Battery"' },
+    showValue: {
+      type: "boolean",
+      description: "Show the percentage, volts and state next to the glyph.",
+      default: "true",
+    },
+  },
+  "signal-strength": {
+    value: {
+      type: "number | null",
+      description: "RSSI in dBm, or quality in percent. `null` shows `--`.",
+      required: true,
+    },
+    unit: { type: '"dBm" | "%"', description: "", default: '"dBm"' },
+    bars: { type: "number", description: "", default: "4" },
+    thresholds: {
+      type: "number[]",
+      description: "The reading each bar needs, lowest first. Sets the number of bars.",
+      default: "by unit",
+    },
+    label: { type: "string", description: "Accessible name.", default: '"Signal strength"' },
+    showValue: {
+      type: "boolean",
+      description: "Show the reading next to the bars.",
+      default: "true",
+    },
+  },
+  "connection-status": {
+    source: {
+      type: "{ status?, received }",
+      description: "Any source handle. Without `status` it reads open once a message arrives.",
+    },
+    status: {
+      type: '"idle" | "connecting" | "open" | "closed" | "error" | "unsupported"',
+      description: "Overrides the source's status.",
+      default: '"idle"',
+    },
+    attempts: {
+      type: "number",
+      description: "Overrides the attempts counted from status changes.",
+    },
+    lastMessageAt: {
+      type: "number | null",
+      description: "Epoch milliseconds. Overrides the time tracked from `source.received`.",
+    },
+    staleAfter: {
+      type: "number",
+      description: "Milliseconds an open link may stay quiet before it reads Stale.",
+      default: "5000",
+    },
+    label: { type: "ReactNode", description: "Shown before the state; also the accessible name." },
+  },
   "setpoint-input": {
     label: { type: "ReactNode", description: "", required: true },
     description: {

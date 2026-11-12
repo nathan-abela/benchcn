@@ -433,6 +433,54 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/range-bar"),
   },
   {
+    name: "battery-indicator",
+    type: "registry:ui",
+    title: "Battery indicator",
+    description:
+      "Battery glyph and percentage from a pack voltage or a percent, with a discharge curve option, low and critical limits, a charging bolt and grey until the charge runs low.",
+    files: [
+      {
+        path: "registry/benchcn/ui/battery-indicator/battery-indicator.tsx",
+        type: "registry:ui",
+      },
+      { path: "registry/benchcn/lib/battery.ts", type: "registry:lib" },
+    ],
+    registryDependencies: [`${ns}/tokens`],
+    categories: ["readouts"],
+    docs: docsUrl("components/battery-indicator"),
+  },
+  {
+    name: "signal-strength",
+    type: "registry:ui",
+    title: "Signal strength",
+    description:
+      "Signal bars from an RSSI in dBm or a 0 to 100 quality, with configurable bar thresholds that default to Android's Wi-Fi levels.",
+    files: [
+      { path: "registry/benchcn/ui/signal-strength/signal-strength.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/lib/signal-bars.ts", type: "registry:lib" },
+    ],
+    registryDependencies: [`${ns}/tokens`],
+    categories: ["readouts"],
+    docs: docsUrl("components/signal-strength"),
+  },
+  {
+    name: "connection-status",
+    type: "registry:ui",
+    title: "Connection status",
+    description:
+      "A data source's link state in one line: connected, connecting with the attempt count, disconnected or error, and stale when an open link stops sending.",
+    files: [
+      {
+        path: "registry/benchcn/ui/connection-status/connection-status.tsx",
+        type: "registry:ui",
+      },
+      { path: "registry/benchcn/lib/connection.ts", type: "registry:lib" },
+    ],
+    registryDependencies: [`${ns}/tokens`],
+    categories: ["readouts"],
+    docs: docsUrl("components/connection-status"),
+  },
+  {
     name: "meter-readout",
     type: "registry:ui",
     title: "Meter readout",

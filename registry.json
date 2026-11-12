@@ -695,6 +695,81 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "battery-indicator",
+      "type": "registry:ui",
+      "title": "Battery indicator",
+      "description": "Battery glyph and percentage from a pack voltage or a percent, with a discharge curve option, low and critical limits, a charging bolt and grey until the charge runs low.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/battery-indicator/battery-indicator.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/battery-indicator.tsx"
+        },
+        {
+          "path": "registry/benchcn/lib/battery.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens"
+      ],
+      "categories": [
+        "readouts"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/battery-indicator"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "signal-strength",
+      "type": "registry:ui",
+      "title": "Signal strength",
+      "description": "Signal bars from an RSSI in dBm or a 0 to 100 quality, with configurable bar thresholds that default to Android's Wi-Fi levels.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/signal-strength/signal-strength.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/signal-strength.tsx"
+        },
+        {
+          "path": "registry/benchcn/lib/signal-bars.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens"
+      ],
+      "categories": [
+        "readouts"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/signal-strength"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "connection-status",
+      "type": "registry:ui",
+      "title": "Connection status",
+      "description": "A data source's link state in one line: connected, connecting with the attempt count, disconnected or error, and stale when an open link stops sending.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/connection-status/connection-status.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/connection-status.tsx"
+        },
+        {
+          "path": "registry/benchcn/lib/connection.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens"
+      ],
+      "categories": [
+        "readouts"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/connection-status"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "meter-readout",
       "type": "registry:ui",
       "title": "Meter readout",

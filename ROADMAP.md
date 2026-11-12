@@ -6,7 +6,6 @@ v1 is the starred list from the original brief. Everything else lives here so it
 
 ### Components
 
-- Readouts: `battery-indicator`, `signal-strength`, `connection-status`.
 - Controls: `toggle-switch`, `rotary-encoder`, `pwm-slider`, `momentary-button`, `d-pad`.
 - Board and docs: `wiring-table`.
 - Comms: `hex-dump`.

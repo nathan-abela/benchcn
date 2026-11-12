@@ -1,0 +1,73 @@
+---
+title: Connection status
+description: A data source's link state in one line, with the reconnect attempt count, the age of the last message, and a stale state when an open link goes quiet.
+---
+
+<ComponentPreview name="connection-status" />
+
+Pause messages and the mock device stops sending: after three seconds the open link reads Stale and the age counts up. Drop link plays what a reconnecting WebSocket reports: disconnected, two failed attempts, then connected again.
+
+## Installation
+
+<InstallTabs item="connection-status" />
+
+## Usage
+
+```tsx
+import { useWebSocketSource } from "@/hooks/use-websocket-source";
+import { ConnectionStatus } from "@/components/ui/connection-status";
+
+export function Header() {
+  const source = useWebSocketSource("ws://192.168.1.40/ws");
+  return <ConnectionStatus label="Bench" source={source} />;
+}
+```
+
+`source` takes any source handle: `useWebSocketSource`, `useSerialSource`, `useRosbridgeSource`, `useNt4Source` or `useMockDevice`. The mock has no status of its own, so it reads Connecting until its first message and Connected after.
+
+## Why stale
+
+A socket can stay open long after the device behind it has hung, and a serial port stays open while the firmware sits in a loop. The component stamps the time each message arrives, from `received`, and reads Stale once an open link has been quiet for `staleAfter`. Set it a little above your slowest channel's sample interval.
+
+## Props
+
+<PropsTable of="connection-status" />
+
+## States
+
+| State        | When                                       | Dot             |
+| ------------ | ------------------------------------------ | --------------- |
+| Connected    | Open and sending                           | Solid           |
+| Stale        | Open, nothing for `staleAfter`             | `--warning`     |
+| Connecting   | Opening; from the second try, the attempt  | Ring, pulsing   |
+| Disconnected | Closed, on purpose or between retries      | Ring            |
+| Error        | The transport reported an error            | `--destructive` |
+| Idle         | Not started, for example no URL yet        | Ring            |
+| Unsupported  | No WebSocket or Web Serial in this browser | Ring            |
+
+## Examples
+
+### Plain props
+
+Without a source, pass what you have.
+
+```tsx
+<ConnectionStatus label="Broker" status={status} attempts={retries} lastMessageAt={lastSeen} />
+```
+
+## Theming
+
+Connected uses `--foreground`; the dot only takes a colour for Stale and Error, so a healthy panel stays neutral.
+
+## Accessibility
+
+The state word sits in an `output` element, a polite live region, with the label in front, so screen readers announce "Bench: Stale" when it changes. The age and attempt count are outside that region, so they do not interrupt every second.
+
+Under `prefers-reduced-motion` the connecting ring does not pulse.
+
+## Ask your agent
+
+<AgentPrompt item="connection-status">
+  Put one ConnectionStatus in the page header bound to the same source the dashboard reads from, and
+  set `staleAfter` just above the slowest channel's sample interval.
+</AgentPrompt>
