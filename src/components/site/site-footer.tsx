@@ -1,13 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import type { ReactElement } from "react";
 
+import { CATEGORY_LABEL, CATEGORY_ORDER } from "@/components/site/component-grid";
 import { Wordmark } from "@/components/site/logo";
 import { StatusLed } from "@/registry/benchcn/ui/status-led/status-led";
 import { registry } from "@/registry/registry";
 
 import { siteConfig } from "../../../config/site";
 
-type FooterLink = { label: string; docs?: string; href?: string };
+type FooterLink = { label: string; docs?: string; hash?: string; href?: string };
 
 const DOCS: FooterLink[] = [
   { label: "Introduction", docs: "" },
@@ -23,15 +24,22 @@ const RESOURCES: FooterLink[] = [
   { label: "llms-full.txt", href: `${siteConfig.basepath}/llms-full.txt` },
 ];
 
-function linksFor(type: "registry:ui" | "registry:block"): FooterLink[] {
-  return registry
-    .filter((item) => item.type === type)
-    .map((item) => ({
-      label: item.title,
-      docs: (item.docs ?? "").replace(`${siteConfig.url}/docs/`, ""),
-    }))
-    .sort((a, b) => a.label.localeCompare(b.label));
-}
+// The catalog grows with every component, so the footer links to its sections, not to each page.
+const COMPONENTS: FooterLink[] = [
+  { label: "All components", docs: "components" },
+  ...CATEGORY_ORDER.filter((category) => category !== "blocks").map((category) => {
+    const label = CATEGORY_LABEL[category];
+    return { label, docs: "components", hash: label.toLowerCase().replaceAll(" ", "-") };
+  }),
+];
+
+const BLOCKS: FooterLink[] = registry
+  .filter((item) => item.type === "registry:block")
+  .map((item) => ({
+    label: item.title,
+    docs: (item.docs ?? "").replace(`${siteConfig.url}/docs/`, ""),
+  }))
+  .sort((a, b) => a.label.localeCompare(b.label));
 
 const LINK_CLASS = "text-muted-foreground hover:text-foreground text-sm transition-colors";
 
@@ -43,7 +51,12 @@ function Column({ title, links }: { title: string; links: FooterLink[] }): React
         {links.map((link) => (
           <li key={link.label}>
             {link.docs !== undefined ? (
-              <Link to="/docs/$" params={{ _splat: link.docs }} className={LINK_CLASS}>
+              <Link
+                to="/docs/$"
+                params={{ _splat: link.docs }}
+                hash={link.hash}
+                className={LINK_CLASS}
+              >
                 {link.label}
               </Link>
             ) : (
@@ -69,8 +82,8 @@ export function SiteFooter(): ReactElement {
           </p>
         </div>
         <Column title="Docs" links={DOCS} />
-        <Column title="Components" links={linksFor("registry:ui")} />
-        <Column title="Blocks" links={linksFor("registry:block")} />
+        <Column title="Components" links={COMPONENTS} />
+        <Column title="Blocks" links={BLOCKS} />
         <Column title="Resources" links={RESOURCES} />
       </div>
       <div className="border-t">

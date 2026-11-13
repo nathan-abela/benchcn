@@ -524,7 +524,7 @@ export const registry: RegistryItem[] = [
       `${ns}/use-canvas`,
       `${ns}/source-store`,
     ],
-    categories: ["readouts"],
+    categories: ["signals"],
     docs: docsUrl("components/strip-chart"),
   },
   {

@@ -5,7 +5,7 @@ import { registry } from "@/registry/registry";
 
 import { siteConfig } from "../../../config/site";
 
-const CATEGORY_LABEL: Record<string, string> = {
+export const CATEGORY_LABEL: Record<string, string> = {
   signals: "Signals",
   readouts: "Readouts",
   displays: "Displays",
@@ -15,7 +15,16 @@ const CATEGORY_LABEL: Record<string, string> = {
   blocks: "Blocks",
 };
 
-const ORDER = ["signals", "controls", "readouts", "displays", "comms", "board", "blocks"];
+/** Also the order of the docs sidebar and the catalog page. */
+export const CATEGORY_ORDER = [
+  "signals",
+  "controls",
+  "readouts",
+  "displays",
+  "comms",
+  "board",
+  "blocks",
+];
 
 /** Every installable component and block as one banded list, grouped by category. */
 export function ComponentList(): ReactElement {
@@ -23,8 +32,8 @@ export function ComponentList(): ReactElement {
     .filter((item) => item.type === "registry:ui" || item.type === "registry:block")
     .sort(
       (a, b) =>
-        ORDER.indexOf(a.categories?.[0] ?? "") - ORDER.indexOf(b.categories?.[0] ?? "") ||
-        a.title.localeCompare(b.title),
+        CATEGORY_ORDER.indexOf(a.categories?.[0] ?? "") -
+          CATEGORY_ORDER.indexOf(b.categories?.[0] ?? "") || a.title.localeCompare(b.title),
     );
 
   return (

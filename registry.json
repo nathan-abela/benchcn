@@ -853,7 +853,7 @@
         "@benchcn/source-store"
       ],
       "categories": [
-        "readouts"
+        "signals"
       ],
       "docs": "https://nathan-abela.github.io/benchcn/docs/components/strip-chart"
     },
