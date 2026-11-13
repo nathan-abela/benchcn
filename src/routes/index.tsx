@@ -13,6 +13,7 @@ import { SiteNav } from "@/components/site/site-nav";
 import { track } from "@/lib/analytics";
 import { baseOptions } from "@/lib/layout.shared";
 import { landingImageUrl, ogImageMeta } from "@/lib/shared";
+import { registry } from "@/registry/registry";
 
 import { siteConfig } from "../../config/site";
 
@@ -29,6 +30,10 @@ export const Route = createFileRoute("/")({
 });
 
 const SKILL = `npx skills add ${siteConfig.repo.owner}/${siteConfig.repo.name} -s benchcn`;
+
+// Counted from the registry, so the heading stays right as components are added.
+const countOf = (type: "registry:ui" | "registry:block"): number =>
+  registry.filter((item) => item.type === type).length;
 
 function Section({
   id,
@@ -133,7 +138,7 @@ function Home(): ReactElement {
 
         <Section
           id="components"
-          title="Nineteen instruments, four dashboards"
+          title={`${countOf("registry:ui")} components, ${countOf("registry:block")} dashboards`}
           lede="Each page has a live preview, the install command, the API and a prompt for your assistant."
         >
           <ComponentList />
