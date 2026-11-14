@@ -5,7 +5,7 @@ description: Hold-to-run button for a jog, horn or pump prime. It sends on at pr
 
 <ComponentPreview name="momentary-button" />
 
-Hold the button and the horn sounds; let go and it stops. Off is sent on release, and also when the pointer is cancelled, focus leaves, the window loses focus or the tab is hidden, so the page never leaves it on by itself. If the device still reports on after the release, the status turns red and says Still on.
+Hold the button and the conveyor runs; let go and it stops. Off is sent on release, and also when the pointer is cancelled, focus leaves, the window loses focus or the tab is hidden, so the page never leaves it on by itself. If the device still reports on after the release, the status turns red and says Still on.
 
 ## Installation
 
@@ -19,14 +19,14 @@ Spread the tracked actuator in and send both edges through `command`. Use [Actua
 import { useMockDevice } from "@/hooks/use-mock-device";
 import { MomentaryButton } from "@/components/ui/momentary-button";
 
-export function Horn() {
+export function Conveyor() {
   const { actuators, command } = useMockDevice();
   return (
     <MomentaryButton
-      label="Horn"
-      action="Hold to sound"
-      {...actuators.horn}
-      onCommand={(on) => command("horn", on)}
+      label="Conveyor"
+      action="Hold to jog"
+      {...actuators.conveyor}
+      onCommand={(on) => command("conveyor", on)}
     />
   );
 }

@@ -220,7 +220,7 @@ const actuators: WireChannelInfo[] = [
   { id: "estop", kind: "actuator", label: "Emergency stop" },
   { id: "linear", kind: "setpoint", u: "m/s", min: -0.5, max: 0.5, label: "Linear velocity" },
   { id: "angular", kind: "setpoint", u: "rad/s", min: -1.5, max: 1.5, label: "Angular velocity" },
-  { id: "horn", kind: "actuator", label: "Horn" },
+  { id: "conveyor", kind: "actuator", label: "Conveyor" },
   { id: "dimmer", kind: "setpoint", u: "%", min: 0, max: 100, label: "LED brightness" },
   { id: "jog-x", kind: "setpoint", u: "mm", min: -50, max: 50, label: "Stage X" },
   { id: "jog-y", kind: "setpoint", u: "mm", min: -50, max: 50, label: "Stage Y" },
