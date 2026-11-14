@@ -355,6 +355,56 @@ export const props: Record<string, PropsDoc> = {
       default: "false",
     },
   },
+  "rotary-encoder": {
+    label: { type: "ReactNode", description: "", required: true },
+    description: { type: "ReactNode", description: "Secondary line, such as the current step." },
+    unit: { type: "string", description: "Shown under the value and in the readouts." },
+    min: { type: "number", description: "Lowest value the knob will send.", required: true },
+    max: { type: "number", description: "Highest value the knob will send.", required: true },
+    step: {
+      type: "number",
+      description: "One detent. Shift or Page Up/Down move ten.",
+      default: "1",
+    },
+    precision: { type: "number", description: "Decimal places.", default: "from `step`" },
+    wrap: {
+      type: "boolean",
+      description: "Past `max` comes back round to `min`, and the other way.",
+      default: "false",
+    },
+    commanded: {
+      type: "number | null",
+      description: "What the user last asked for.",
+      required: true,
+    },
+    confirmed: {
+      type: "number | null",
+      description: "What the device last acknowledged. Drawn as a mark on the ring.",
+      required: true,
+    },
+    pending: { type: "boolean", description: "Waiting for an acknowledgement.", default: "false" },
+    error: { type: "string | null", description: '`"timeout"` or the device\'s error text.' },
+    latency: { type: "number | null", description: "Round trip of the last ack in milliseconds." },
+    onCommand: {
+      type: "(next: number) => void",
+      description: "Called once per gesture, after the knob has been still for `settleMs`.",
+      required: true,
+    },
+    onPress: {
+      type: "() => void",
+      description: "The push button: a click without turning, Enter or Space.",
+    },
+    pressLabel: {
+      type: "string",
+      description: "What a press does. Shown under the knob and read to screen readers.",
+    },
+    settleMs: {
+      type: "number",
+      description: "Quiet time before the value is sent. 0 sends every detent.",
+      default: "300",
+    },
+    disabled: { type: "boolean", description: "", default: "false" },
+  },
   "odometry-plot": {
     path: {
       type: "ArrayLike<{ x: number; y: number }>",

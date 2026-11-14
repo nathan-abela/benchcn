@@ -9,6 +9,7 @@
     "---Controls---",
     "actuator-control",
     "setpoint-input",
+    "rotary-encoder",
     "emergency-stop",
     "joystick",
     "---Readouts---",

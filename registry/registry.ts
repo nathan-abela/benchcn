@@ -793,4 +793,41 @@ export const registry: RegistryItem[] = [
     categories: ["controls"],
     docs: docsUrl("components/actuator-control"),
   },
+  {
+    name: "stepper",
+    type: "registry:lib",
+    title: "Step maths",
+    description:
+      "Step maths for stepped controls: snapping to a grid anchored at min, clamping or wrapping at the ends, and turning pointer travel into whole detents without drift.",
+    files: [{ path: "registry/benchcn/lib/stepper.ts", type: "registry:lib" }],
+    categories: ["data"],
+    docs: docsUrl("components/rotary-encoder"),
+  },
+  {
+    name: "pacing",
+    type: "registry:lib",
+    title: "Control pacing",
+    description:
+      "Timing for controls that send while held: a rate limit that ends on the newest value, a settle that waits for input to stop, and a held-key auto-repeat.",
+    files: [{ path: "registry/benchcn/lib/pacing.ts", type: "registry:lib" }],
+    categories: ["data"],
+    docs: docsUrl("components/pwm-slider"),
+  },
+  {
+    name: "rotary-encoder",
+    type: "registry:ui",
+    title: "Rotary encoder",
+    description:
+      "Detented knob for a numeric setpoint, turned by drag, wheel or arrow keys, with step, min, max, optional wrap and a push-button action. Sends one command when turning stops and shows commanded versus confirmed.",
+    files: [{ path: "registry/benchcn/ui/rotary-encoder/rotary-encoder.tsx", type: "registry:ui" }],
+    registryDependencies: [
+      `${ns}/tokens`,
+      `${ns}/instrument`,
+      `${ns}/actuator`,
+      `${ns}/stepper`,
+      `${ns}/pacing`,
+    ],
+    categories: ["controls"],
+    docs: docsUrl("components/rotary-encoder"),
+  },
 ];

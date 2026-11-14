@@ -22,6 +22,7 @@ import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
 import powerBenchSource from "./power-bench-demo.tsx?raw";
 import rangeBarSource from "./range-bar-demo.tsx?raw";
 import robotSource from "./robot-demo.tsx?raw";
+import rotaryEncoderSource from "./rotary-encoder-demo.tsx?raw";
 import sensorTileSource from "./sensor-tile-demo.tsx?raw";
 import serialConsoleSource from "./serial-console-demo.tsx?raw";
 import setpointInputSource from "./setpoint-input-demo.tsx?raw";
@@ -97,6 +98,13 @@ export const demos: Record<string, Demo> = {
     component: lazy(() => import("./joystick-demo").then((m) => ({ default: m.JoystickDemo }))),
     source: joystickSource,
     placeholder: { base: 331, sm: 347 },
+  },
+  "rotary-encoder": {
+    component: lazy(() =>
+      import("./rotary-encoder-demo").then((m) => ({ default: m.RotaryEncoderDemo })),
+    ),
+    source: rotaryEncoderSource,
+    placeholder: { base: 382, sm: 326 },
   },
   "odometry-plot": {
     component: lazy(() =>

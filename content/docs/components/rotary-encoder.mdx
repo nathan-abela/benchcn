@@ -1,0 +1,93 @@
+---
+title: Rotary encoder
+description: Detented knob for a numeric setpoint, turned by drag, wheel or arrow keys, with a push-button action. It sends one command when turning stops and shows commanded versus confirmed.
+---
+
+<ComponentPreview name="rotary-encoder" />
+
+Drag the knob up or right to turn it, or focus it and use the wheel or arrow keys. Each detent is one step, and the value goes out once the knob has been still for 300 ms. Press the knob to cycle the step between 0.01, 0.1 and 1 V, like the encoder on a bench supply. The ring shows what you asked for; the dot on it is what the supply confirmed.
+
+## Installation
+
+<InstallTabs item="rotary-encoder" />
+
+## Usage
+
+The knob keeps a local value while it turns and calls `onCommand` once per gesture. Numbers sent through `command` are tracked as setpoints, so spread the tracked state straight in.
+
+```tsx
+import { useState } from "react";
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { RotaryEncoder } from "@/components/ui/rotary-encoder";
+
+export function SupplyVoltage() {
+  const { setpoints, command } = useMockDevice();
+  const [step, setStep] = useState(0.1);
+  return (
+    <RotaryEncoder
+      label="Supply voltage"
+      unit="V"
+      min={0}
+      max={30}
+      step={step}
+      precision={2}
+      {...setpoints["psu-v"]}
+      onCommand={(next) => command("psu-v", next)}
+      onPress={() => setStep(step === 1 ? 0.01 : step * 10)}
+      pressLabel="Change step"
+    />
+  );
+}
+```
+
+## Props
+
+<PropsTable of="rotary-encoder" />
+
+## States
+
+| Status    | When                                                      |
+| --------- | --------------------------------------------------------- |
+| Unknown   | `confirmed` is `null`                                     |
+| Not sent  | The knob moved and has not settled yet                    |
+| Waiting   | `pending`                                                 |
+| Confirmed | Commanded and confirmed agree within half a step          |
+| Mismatch  | The device applied something else, for example it clamped |
+| Error     | `error` is set, including `"timeout"`                     |
+
+## Examples
+
+### Channel selector
+
+`wrap` turns a bounded range into a loop, so one more step past 16 lands on 1.
+
+```tsx
+<RotaryEncoder label="Channel" min={1} max={16} wrap settleMs={0} {...channel} />
+```
+
+`settleMs={0}` sends every detent, for outputs that should follow the hand.
+
+## Keyboard and pointer
+
+| Input                     | Result                              |
+| ------------------------- | ----------------------------------- |
+| Drag up or right          | One step per 12 px                  |
+| Wheel, while focused      | One step per notch                  |
+| Arrow keys                | One step                            |
+| Shift + Arrow, Page Up/Dn | Ten steps                           |
+| Home / End                | `min` / `max`                       |
+| Click, Enter or Space     | `onPress`                           |
+| Escape                    | Drop a value that has not been sent |
+
+The wheel only turns a focused knob, so scrolling the page past it never changes a setpoint. Leaving the knob sends a value that is still settling.
+
+## Accessibility
+
+The knob is a `slider` with its range, value and unit exposed, labelled by `label` and described by the range and `pressLabel`. The status is a polite live region. Under `prefers-reduced-motion` the knob turns and presses without easing and the waiting dot does not pulse.
+
+## Ask your agent
+
+<AgentPrompt item="rotary-encoder">
+  Send encoder values through command so they are tracked as setpoints, spread the tracked state
+  into the knob, and use onPress for the push button rather than a separate control.
+</AgentPrompt>

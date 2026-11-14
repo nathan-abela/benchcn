@@ -7,6 +7,7 @@ const COMPONENTS = [
   "emergency-stop",
   "joystick",
   "setpoint-input",
+  "rotary-encoder",
   "sensor-tile",
   "range-bar",
   "battery-indicator",
