@@ -1,9 +1,8 @@
 // benchcn.dev · mock-device
-// A simulated bench: slow sensors, a relay, a heater, a bench supply and a small robot, all with
-// acknowledgement latency,
-// waveform channels and
-// log lines, all speaking the wire protocol. Deterministic for a given seed, so demos and tests
-// behave the same every run.
+// A simulated bench: slow sensors, a relay, a heater, a bench supply, a dimmable LED, a jog stage
+// and a small robot, all with acknowledgement latency, waveform channels and log lines, all
+// speaking the wire protocol. Deterministic for a given seed, so demos and tests behave the same
+// every run.
 import {
   type WireAck,
   type WireChannelInfo,
@@ -217,6 +216,10 @@ const actuators: WireChannelInfo[] = [
   { id: "estop", kind: "actuator", label: "Emergency stop" },
   { id: "linear", kind: "setpoint", u: "m/s", min: -0.5, max: 0.5, label: "Linear velocity" },
   { id: "angular", kind: "setpoint", u: "rad/s", min: -1.5, max: 1.5, label: "Angular velocity" },
+  { id: "horn", kind: "actuator", label: "Horn" },
+  { id: "dimmer", kind: "setpoint", u: "%", min: 0, max: 100, label: "LED brightness" },
+  { id: "jog-x", kind: "setpoint", u: "mm", min: -50, max: 50, label: "Stage X" },
+  { id: "jog-y", kind: "setpoint", u: "mm", min: -50, max: 50, label: "Stage Y" },
 ];
 
 const SETPOINT_START: Record<string, number> = {
@@ -225,7 +228,13 @@ const SETPOINT_START: Record<string, number> = {
   "psu-i": 1,
   linear: 0,
   angular: 0,
+  dimmer: 40,
+  "jog-x": 0,
+  "jog-y": 0,
 };
+
+/** Setpoints that stream while the user drags: applied on arrival and acknowledged quietly. */
+const STREAMED = new Set(["linear", "angular", "dimmer"]);
 const HEATER_START = SETPOINT_START.heater;
 /** Seconds for the chamber to close about two thirds of the gap to the setpoint. */
 const HEATER_LAG = 8;
@@ -430,10 +439,10 @@ export function createMockDevice(options: MockDeviceOptions = {}): MockDevice {
       schedule(() => emit(ackFor(command, false, "e-stop engaged")), latency);
       return;
     }
-    // Drive velocities stream ten times a second: they apply on arrival, are acknowledged without a
-    // log line each, and a lost one is simply replaced by the next.
-    const streamed = command.id === "linear" || command.id === "angular";
-    if (streamed) {
+    // Drive velocities and the dimmer stream many times a second: they apply on arrival, are
+    // acknowledged without a log line each, and a lost one is simply replaced by the next.
+    const streamed = command.id !== undefined && STREAMED.has(command.id);
+    if (command.id === "linear" || command.id === "angular") {
       state.robot.lastDrive = now();
       state.robot.watchdogTripped = false;
     }
