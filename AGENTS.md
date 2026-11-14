@@ -2,8 +2,6 @@
 
 benchcn is a shadcn/ui registry of hardware and maker UI components: oscilloscope, logic analyzer, seven-segment and character-LCD displays, GPIO pinout maps, register and timing diagrams, a serial console, and actuator controls that understand commanded vs. confirmed state. Every component is live against a mock device and connects to real hardware through small data-source hooks. Positioning: **instruments that work, not instruments that look like it.**
 
-Out-of-scope work goes to [ROADMAP.md](ROADMAP.md), not into the codebase.
-
 ## Commands
 
 | Command                                     | What it does                                                                                                            |
