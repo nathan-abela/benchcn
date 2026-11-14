@@ -29,17 +29,18 @@
   <a href="https://nathan-abela.github.io/benchcn/docs/blocks">Blocks</a>
 </p>
 
-Oscilloscope, logic analyzer with I²C decode, strip chart, meter, seven-segment and character-LCD displays, GPIO pinout maps, register and timing diagrams, a serial console, an alarm list, and actuator and setpoint controls that know the difference between _commanded_ and _confirmed_. Every component is live against a mock device out of the box and connects to real hardware through small data-source hooks.
+Oscilloscope, logic analyzer, strip chart, meter, seven-segment, LCD and OLED displays, GPIO pinout maps and wiring tables, register and timing diagrams, a serial console, an alarm list, and controls that know the difference between _commanded_ and _confirmed_. Every component is live against a mock device out of the box and connects to real hardware through small data-source hooks.
 
 ## What is in it
 
-- **Signals:** oscilloscope, logic analyzer with I²C decode, strip chart with CSV export.
-- **Readouts:** sensor tile, range bar, meter readout, alarm list with acknowledgement and shelving, odometry plot.
-- **Controls:** actuator control and setpoint input, both tracking commanded vs. confirmed through the device's acknowledgements; an emergency stop with a two-step reset; a teleop pad for touch, keys or a gamepad.
-- **Displays:** status LED, seven-segment display, character LCD, serial console.
-- **Board and docs:** pinout header with four boards, bitfield diagram, timing diagram.
+- **Readouts:** sensor tile, range bar, meter readout with hold and min/max/avg, battery indicator, signal strength, connection status, alarm list with acknowledgement and shelving, odometry plot.
+- **Controls:** actuator control, setpoint input, rotary encoder, PWM slider, momentary button and d-pad, all tracking commanded vs. confirmed through the device's acknowledgements; an emergency stop with a two-step reset; a joystick for touch, keys or a gamepad.
+- **Displays:** status LED, seven-segment display, character LCD, OLED display, LED matrix, LED bar.
+- **Signals:** oscilloscope with cursors, logic analyzer with I²C, SPI, UART and Modbus RTU decode, strip chart with CSV export.
+- **Comms:** serial console.
+- **Board and docs:** pinout header with four boards, wiring table, bitfield diagram, timing diagram.
 - **Blocks:** power bench, robot, plant monitor and weather station, each with an 800×480 kiosk layout.
-- **Data:** hooks for the mock device, WebSocket and Web Serial sources, a ring buffer, strip-chart series and alarm rules. Pure I²C, SPI and UART decoders with encoders and tests.
+- **Data:** sources for the mock device, WebSocket, Web Serial, ROS 2 through rosbridge and FRC NetworkTables 4, plus a ring buffer, strip-chart series and alarm rules. Pure I²C, SPI, UART and Modbus RTU decoders with encoders and tests.
 
 ## Install
 
@@ -88,7 +89,8 @@ npx skills add nathan-abela/benchcn -s benchcn
 ```bash
 pnpm install
 pnpm dev        # http://localhost:3000/benchcn/
-pnpm check      # lint, format, tests, build, typecheck
+pnpm check      # lint, format, typecheck, tests
+pnpm build      # registry, then the static site in dist/client
 pnpm e2e        # Playwright smoke test against the static build
 ```
 
