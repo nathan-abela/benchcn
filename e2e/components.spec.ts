@@ -8,6 +8,7 @@ const COMPONENTS = [
   "joystick",
   "setpoint-input",
   "rotary-encoder",
+  "pwm-slider",
   "sensor-tile",
   "range-bar",
   "battery-indicator",

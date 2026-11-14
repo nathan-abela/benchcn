@@ -830,4 +830,22 @@ export const registry: RegistryItem[] = [
     categories: ["controls"],
     docs: docsUrl("components/rotary-encoder"),
   },
+  {
+    name: "pwm-slider",
+    type: "registry:ui",
+    title: "PWM slider",
+    description:
+      "Continuous slider for LED dimming, servo angle or motor duty: streams values at a limited rate while dragging and commits the release value as a tracked setpoint, with commanded versus confirmed.",
+    files: [{ path: "registry/benchcn/ui/pwm-slider/pwm-slider.tsx", type: "registry:ui" }],
+    registryDependencies: [
+      "slider",
+      `${ns}/tokens`,
+      `${ns}/instrument`,
+      `${ns}/actuator`,
+      `${ns}/stepper`,
+      `${ns}/pacing`,
+    ],
+    categories: ["controls"],
+    docs: docsUrl("components/pwm-slider"),
+  },
 ];

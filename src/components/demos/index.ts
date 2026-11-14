@@ -20,6 +20,7 @@ import oscilloscopeSource from "./oscilloscope-demo.tsx?raw";
 import pinoutHeaderSource from "./pinout-header-demo.tsx?raw";
 import plantMonitorSource from "./plant-monitor-demo.tsx?raw";
 import powerBenchSource from "./power-bench-demo.tsx?raw";
+import pwmSliderSource from "./pwm-slider-demo.tsx?raw";
 import rangeBarSource from "./range-bar-demo.tsx?raw";
 import robotSource from "./robot-demo.tsx?raw";
 import rotaryEncoderSource from "./rotary-encoder-demo.tsx?raw";
@@ -105,6 +106,11 @@ export const demos: Record<string, Demo> = {
     ),
     source: rotaryEncoderSource,
     placeholder: { base: 382, sm: 326 },
+  },
+  "pwm-slider": {
+    component: lazy(() => import("./pwm-slider-demo").then((m) => ({ default: m.PwmSliderDemo }))),
+    source: pwmSliderSource,
+    placeholder: { base: 279, sm: 223 },
   },
   "odometry-plot": {
     component: lazy(() =>

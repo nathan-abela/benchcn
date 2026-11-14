@@ -10,6 +10,7 @@
     "actuator-control",
     "setpoint-input",
     "rotary-encoder",
+    "pwm-slider",
     "emergency-stop",
     "joystick",
     "---Readouts---",

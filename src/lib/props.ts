@@ -405,6 +405,43 @@ export const props: Record<string, PropsDoc> = {
     },
     disabled: { type: "boolean", description: "", default: "false" },
   },
+  "pwm-slider": {
+    label: { type: "ReactNode", description: "", required: true },
+    description: { type: "ReactNode", description: "Pin, frequency. One line." },
+    unit: {
+      type: "string",
+      description: "Duty in percent by default; set `min`, `max` and a unit for angles or speeds.",
+      default: '"%"',
+    },
+    min: { type: "number", description: "", default: "0" },
+    max: { type: "number", description: "", default: "100" },
+    step: { type: "number", description: "", default: "1" },
+    precision: { type: "number", description: "Decimal places.", default: "from `step`" },
+    commanded: {
+      type: "number | null",
+      description: "The last committed value.",
+      required: true,
+    },
+    confirmed: {
+      type: "number | null",
+      description: "What the device last acknowledged. Drawn as a mark on the track.",
+      required: true,
+    },
+    pending: { type: "boolean", description: "Waiting for an acknowledgement.", default: "false" },
+    error: { type: "string | null", description: '`"timeout"` or the device\'s error text.' },
+    latency: { type: "number | null", description: "Round trip of the last ack in milliseconds." },
+    onChange: {
+      type: "(value: number) => void",
+      description: "Called at most `rate` times a second while dragging. Send with `send`.",
+    },
+    onCommand: {
+      type: "(value: number) => void",
+      description: "Called once with the value a drag or key press ends on. Send with `command`.",
+      required: true,
+    },
+    rate: { type: "number", description: "Streamed values per second.", default: "20" },
+    disabled: { type: "boolean", description: "", default: "false" },
+  },
   "odometry-plot": {
     path: {
       type: "ArrayLike<{ x: number; y: number }>",

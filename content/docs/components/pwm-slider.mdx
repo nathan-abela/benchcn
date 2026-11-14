@@ -1,0 +1,82 @@
+---
+title: PWM slider
+description: Continuous slider for LED dimming, servo angle or motor duty. It streams values at a limited rate while dragging and commits the release value as a tracked setpoint.
+---
+
+<ComponentPreview name="pwm-slider" />
+
+Drag the thumb and the LED follows twenty times a second. Let go and the final duty is sent once more as a tracked command, so it only turns green when the device acknowledges it. The mark on the track is the confirmed duty; it hides under the thumb when they agree.
+
+## Installation
+
+<InstallTabs item="pwm-slider" />
+
+## Usage
+
+Stream with `send` and commit with `command`. The streamed values are replaced by the next one, so tracking each acknowledgement would only show noise; the release value is the one worth confirming.
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { setCommand } from "@/lib/wire";
+import { PwmSlider } from "@/components/ui/pwm-slider";
+
+export function Dimmer() {
+  const { setpoints, command, send } = useMockDevice();
+  return (
+    <PwmSlider
+      label="LED brightness"
+      {...setpoints.dimmer}
+      onChange={(duty) => send(setCommand("dimmer", duty))}
+      onCommand={(duty) => command("dimmer", duty)}
+    />
+  );
+}
+```
+
+Leave out `onChange` and the slider only sends on release, for outputs that should not move until the user lets go.
+
+## Props
+
+<PropsTable of="pwm-slider" />
+
+## States
+
+| Status    | When                                             |
+| --------- | ------------------------------------------------ |
+| Unknown   | `confirmed` is `null`                            |
+| Streaming | The thumb is being dragged                       |
+| Waiting   | `pending`                                        |
+| Confirmed | Commanded and confirmed agree within half a step |
+| Mismatch  | The device applied something else                |
+| Error     | `error` is set, including `"timeout"`            |
+
+## Examples
+
+### Servo angle
+
+Any unit works: set `min`, `max` and `unit`, and convert to a pulse width on the device.
+
+```tsx
+<PwmSlider label="Pan servo" unit="°" min={0} max={180} rate={10} {...servo} />
+```
+
+## Keyboard
+
+| Key                 | Result                      |
+| ------------------- | --------------------------- |
+| Arrow keys          | One step, committed at once |
+| Page Up / Page Down | Move by 10                  |
+| Home / End          | `min` / `max`               |
+
+Key presses commit straight away and never stream, so each one is one tracked command.
+
+## Accessibility
+
+The thumb is the Base UI slider's range input, labelled by `label` and its unit, with the value exposed. The status is a polite live region. The slider has no motion of its own; the waiting dot does not pulse under `prefers-reduced-motion`.
+
+## Ask your agent
+
+<AgentPrompt item="pwm-slider">
+  Stream PWM values with send through onChange and commit the release value with command, so only
+  the final duty is tracked and confirmed.
+</AgentPrompt>

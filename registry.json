@@ -1322,6 +1322,32 @@
         "controls"
       ],
       "docs": "https://nathan-abela.github.io/benchcn/docs/components/rotary-encoder"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "pwm-slider",
+      "type": "registry:ui",
+      "title": "PWM slider",
+      "description": "Continuous slider for LED dimming, servo angle or motor duty: streams values at a limited rate while dragging and commits the release value as a tracked setpoint, with commanded versus confirmed.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/pwm-slider/pwm-slider.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/pwm-slider.tsx"
+        }
+      ],
+      "registryDependencies": [
+        "slider",
+        "@benchcn/tokens",
+        "@benchcn/instrument",
+        "@benchcn/actuator",
+        "@benchcn/stepper",
+        "@benchcn/pacing"
+      ],
+      "categories": [
+        "controls"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/pwm-slider"
     }
   ]
 }
