@@ -38,7 +38,7 @@ import { PinoutHeader } from "@/components/ui/pinout-header";
 | ESP32-DevKitC V4           | `esp32DevkitcV4`   | [ESP32-DevKitC V4 user guide](https://docs.espressif.com/projects/esp-dev-kits/en/latest/esp32/esp32-devkitc/user_guide.html) |
 | Arduino UNO R3             | `arduinoUnoR3`     | [UNO R3 full pinout, A000066](https://docs.arduino.cc/resources/pinouts/A000066-full-pinout.pdf)                              |
 
-Every pin was typed from the document linked in its data file, with the retrieval date. Nothing comes from pinout.xyz, Fritzing or Wokwi. To add a board, follow the `add-board-definition` skill in the repository.
+Every pin was typed from the document linked in its data file, with the retrieval date. Nothing comes from pinout.xyz, Fritzing or Wokwi. To add a board, follow the `add-board-definition` skill in the repository. The same assignments also drive the [wiring table](/docs/components/wiring-table).
 
 ## Props
 
@@ -51,6 +51,7 @@ Every pin was typed from the document linked in its data file, with the retrieva
 | pin      | Two parts claim the same physical pin                                       |
 | bus      | One bus role (for example I2C0 SDA) is routed to two different pins         |
 | reserved | A wire with `use` set lands on a power, ground, reserved or unconnected pin |
+| voltage  | A wire's `voltage` is above the board's `logicLevel`                        |
 
 The checker is a plain function, `findConflicts(board, assignments)`, so a docs page or an agent can run it without rendering.
 

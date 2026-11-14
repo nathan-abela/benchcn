@@ -98,7 +98,7 @@ export const props: Record<string, PropsDoc> = {
     headers: { type: "string[]", description: "Header ids to draw.", default: "all" },
     assignments: {
       type: "Assignment[]",
-      description: "`{ pin, header?, part, signal?, use? }` for each wire.",
+      description: "`{ pin, header?, part, signal?, use?, voltage?, wire?, note? }` for each wire.",
       default: "[]",
     },
     colorBy: {
@@ -113,6 +113,24 @@ export const props: Record<string, PropsDoc> = {
     },
     title: { type: "ReactNode", description: "Label above the board name.", default: "the vendor" },
     onPinClick: { type: "(pin, header) => void", description: "Makes pins buttons." },
+  },
+  "wiring-table": {
+    board: {
+      type: "BoardDefinition",
+      description: "A board export from `@/lib/boards`.",
+      required: true,
+    },
+    assignments: {
+      type: "Assignment[]",
+      description: "The same wires as `pinout-header`; `wire` and `note` fill their columns.",
+      default: "[]",
+    },
+    title: { type: "ReactNode", description: "Label above the board name.", default: '"Wiring"' },
+    exportName: {
+      type: "string",
+      description: "CSV file name, without the extension.",
+      default: '"<board id>-wiring"',
+    },
   },
   "character-lcd": {
     lines: {

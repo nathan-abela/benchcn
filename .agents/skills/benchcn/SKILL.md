@@ -44,6 +44,7 @@ Docs: https://nathan-abela.github.io/benchcn (every page also at `<url>.md`; ind
 | Digital lines, bus traffic                                       | `logic-analyzer`                                      | `lanes`, `decode={{ protocol: "i2c", sda: "sda", scl: "scl" }}` (or `"spi"`, `"uart"`, `"modbus"`), `defaultWindow="first"`.      |
 | Device logs and a command line                                   | `serial-console`                                      | `lines` mapped from `logs`, `onCommand` sends raw lines.                                                              |
 | Explain wiring in docs                                           | `pinout-header`, `bitfield-diagram`, `timing-diagram` | Data-driven from board files, register specs and WaveJSON-style signals.                                              |
+| Wiring list for build notes                                      | `wiring-table`                                        | Same `board` and `assignments` as `pinout-header`; add `wire` and `note`. Copies Markdown, downloads CSV.          |
 | Stop a robot or machine from the page                            | `emergency-stop`                                      | Spread `actuators.estop`, `onCommand={(on) => command("estop", on)}`. A software stop only; never the safety function. |
 | Drive a robot by touch, keys or gamepad (teleop)                 | `joystick`                                          | `onChange` gets `{ x, y }` at `rate` Hz and one zero on release; send velocities with `send`, not `command`.        |
 | Where a robot has been                                           | `odometry-plot`                                       | `path` and `pose` from `usePoseTrail(source)`.                                                                      |
@@ -84,7 +85,7 @@ The dashboard sends `{"cmd":"set","n":17,"id":"pump","v":true}` for an actuator 
 - **Alarms come from rules, not ad hoc state.** Give each rule a `deadband`, add a `staleAfter` rule for every channel an operator depends on, and never drop an alarm nobody acknowledged.
 - **Colour means abnormal.** Normal values stay neutral; warning and alarm colours appear only past a limit, and the state is always written as a word too.
 - **Units travel with values.** Pass `u` through; do not hard-code units in labels. Thresholds are in the same unit as the value. Convert units on the source with `transform`, not per component.
-- **Pin conflicts.** A physical pin carries one function. `pinout-header` flags conflicts when two parts claim the same pin or a bus role is duplicated.
+- **Pin conflicts.** A physical pin carries one function. `pinout-header` and `wiring-table` flag conflicts when two parts claim the same pin, a bus role is duplicated, or a part with `voltage` set drives a pin above the board logic level.
 - **Time.** Send `t` from the device; tiles use it for staleness. Strip charts stamp samples on arrival on purpose, so a device with a wrong or missing clock still scrolls in step with the page.
 - **Offline first.** No CDN scripts or web fonts at runtime; dashboards often run on a Raspberry Pi with no internet.
 - **Touch and kiosk.** Prefer targets of at least 44 px and the `kiosk` layout for 800x480 screens.

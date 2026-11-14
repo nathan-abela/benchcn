@@ -1,0 +1,76 @@
+---
+title: Wiring table
+description: Board wiring as a table, one row per wire from the same assignments as the pinout header, with conflicts on the affected rows and Markdown or CSV for build notes.
+---
+
+<ComponentPreview name="wiring-table" />
+
+Add the wiring mistake: on the Raspberry Pi a 5 V buzzer lands on the relay's pin, on the Pico a second sensor puts I2C0 SDA on a second pin.
+
+## Installation
+
+<InstallTabs item="wiring-table" />
+
+## Usage
+
+Pass the board and assignments you give `PinoutHeader`. One wiring definition draws the header and writes the table.
+
+```tsx
+import { raspberryPi40Pin } from "@/lib/boards";
+import type { Assignment } from "@/lib/pinout";
+import { PinoutHeader } from "@/components/ui/pinout-header";
+import { WiringTable } from "@/components/ui/wiring-table";
+
+const wiring: Assignment[] = [
+  { pin: 1, part: "BME280", signal: "VIN", wire: "red" },
+  { pin: 3, part: "BME280", signal: "SDA", use: "i2c", wire: "blue" },
+  { pin: 5, part: "BME280", signal: "SCL", use: "i2c", wire: "yellow" },
+  { pin: 9, part: "BME280", signal: "GND", wire: "black" },
+  { pin: 11, part: "Relay", signal: "IN", use: "gpio", note: "Active low" },
+];
+
+<PinoutHeader board={raspberryPi40Pin} assignments={wiring} />
+<WiringTable board={raspberryPi40Pin} assignments={wiring} />
+```
+
+`signal` is the part's pin. `wire` is a colour as you would say it; a CSS colour name also draws a swatch. Set `voltage` on a signal wire to check the part against the board's logic level.
+
+## Props
+
+<PropsTable of="wiring-table" />
+
+## Rows and columns
+
+Rows are grouped by part, in the order parts first appear, then by pin. A build goes one part at a time, and the pinout header already shows the wiring in pin order. The function column names the bus role a wire relies on, such as `I2C1 SDA`, taken from the board file. The header column appears when wires span headers, and the wire and note columns appear when any row uses them.
+
+## Conflicts
+
+Conflicts come from `findConflicts`, the same check the pinout header runs, and show in the note of every row they involve: both parts on a shared pin, both pins of a duplicated bus role.
+
+| Kind     | Meaning                                                                     |
+| -------- | --------------------------------------------------------------------------- |
+| pin      | Two parts claim the same physical pin                                       |
+| bus      | One bus role is routed to two different pins                                |
+| reserved | A wire with `use` set lands on a power, ground, reserved or unconnected pin |
+| voltage  | A wire's `voltage` is above the board's `logicLevel`                        |
+
+## Export
+
+Copy Markdown puts a GFM table on the clipboard with `--` in empty cells. Download CSV saves the same columns with empty cells left empty. Both are plain functions for scripts and agents:
+
+```ts
+import { wiringRows, wiringToCsv, wiringToMarkdown } from "@/lib/wiring";
+
+const markdown = wiringToMarkdown(wiringRows(raspberryPi40Pin, wiring));
+```
+
+## Accessibility
+
+A real table with a caption and column headers; each part is a row group header. The table scrolls inside its card on narrow screens. Conflicts are sentences in the note cell, not colour alone, and copying is announced.
+
+## Ask your agent
+
+<AgentPrompt item="wiring-table">
+  Keep the wiring in one `Assignment[]`, pass it to both the pinout header and the wiring table, and
+  give every wire a `wire` colour so the build notes match the bench.
+</AgentPrompt>

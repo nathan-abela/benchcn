@@ -648,18 +648,46 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/pinout-header"),
   },
   {
+    name: "pinout",
+    type: "registry:lib",
+    title: "Pinout logic",
+    description:
+      "Wiring assignments for a board, the physical arrangement of its header pins, and conflict detection: two parts on one pin, a bus role on two pins, a signal on a power pin, a part above the board logic level.",
+    files: [{ path: "registry/benchcn/lib/pinout.ts", type: "registry:lib" }],
+    registryDependencies: [`${ns}/boards`],
+    categories: ["board"],
+    docs: docsUrl("components/pinout-header"),
+  },
+  {
     name: "pinout-header",
     type: "registry:ui",
     title: "Pinout header",
     description:
       "Board pinout diagram from typed data with an official source, with your wiring drawn on top and pin, bus-role and reserved-pin conflicts called out.",
-    files: [
-      { path: "registry/benchcn/ui/pinout-header/pinout-header.tsx", type: "registry:ui" },
-      { path: "registry/benchcn/lib/pinout.ts", type: "registry:lib" },
-    ],
-    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`, `${ns}/boards`],
+    files: [{ path: "registry/benchcn/ui/pinout-header/pinout-header.tsx", type: "registry:ui" }],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`, `${ns}/boards`, `${ns}/pinout`],
     categories: ["board"],
     docs: docsUrl("components/pinout-header"),
+  },
+  {
+    name: "wiring-table",
+    type: "registry:ui",
+    title: "Wiring table",
+    description:
+      "Board wiring as a table, one row per wire from the same assignments as the pinout header, with conflicts on the affected rows, Markdown copy and CSV download.",
+    files: [
+      { path: "registry/benchcn/ui/wiring-table/wiring-table.tsx", type: "registry:ui" },
+      { path: "registry/benchcn/lib/wiring.ts", type: "registry:lib" },
+    ],
+    registryDependencies: [
+      "button",
+      `${ns}/tokens`,
+      `${ns}/instrument`,
+      `${ns}/boards`,
+      `${ns}/pinout`,
+    ],
+    categories: ["board"],
+    docs: docsUrl("components/wiring-table"),
   },
   {
     name: "bitfield-diagram",

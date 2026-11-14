@@ -30,6 +30,7 @@ const COMPONENTS = [
   "pinout-header",
   "bitfield-diagram",
   "timing-diagram",
+  "wiring-table",
 ];
 
 test.describe("component pages", () => {

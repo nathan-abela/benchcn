@@ -37,6 +37,7 @@
     "bitfield-diagram",
     "pinout-header",
     "timing-diagram",
+    "wiring-table",
     "..."
   ]
 }

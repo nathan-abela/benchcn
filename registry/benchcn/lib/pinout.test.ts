@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { raspberryPi40Pin, raspberryPiPico } from "@/registry/benchcn/boards";
+import { arduinoUnoR3, raspberryPi40Pin, raspberryPiPico } from "@/registry/benchcn/boards";
 
 import { arrangeHeader, findConflicts } from "./pinout";
 
@@ -103,6 +103,26 @@ describe("findConflicts", () => {
 
     // #then
     expect(conflicts.map((c) => c.kind)).toEqual(["reserved"]);
+  });
+
+  it("should flag a 5 V signal on a 3.3 V logic board", () => {
+    // #when
+    const conflicts = findConflicts(raspberryPi40Pin, [
+      { pin: 11, part: "Buzzer", use: "gpio", voltage: 5 },
+    ]);
+
+    // #then
+    expect(conflicts.map((c) => [c.kind, c.pins])).toEqual([["voltage", [11]]]);
+  });
+
+  it("should accept a 5 V signal on a 5 V logic board", () => {
+    // #when
+    const conflicts = findConflicts(arduinoUnoR3, [
+      { pin: 1, header: "digital-low", part: "Buzzer", use: "gpio", voltage: 5 },
+    ]);
+
+    // #then
+    expect(conflicts).toEqual([]);
   });
 
   it("should ignore assignments to pins that do not exist", () => {

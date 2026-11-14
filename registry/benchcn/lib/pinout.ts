@@ -1,4 +1,4 @@
-// benchcn.dev · pinout-header
+// benchcn.dev · pinout
 // Physical arrangement of header pins and wiring conflict detection, kept apart from rendering so
 // both can be tested and reused in docs tooling.
 import type {
@@ -16,17 +16,22 @@ export type Assignment = {
   header?: string;
   /** Who claims the pin, for example "BME280". */
   part: string;
-  /** What the wire carries, for example "SDA". */
+  /** The part's pin the wire lands on, for example "SDA" or "VIN". */
   signal?: string;
   /**
    * Which function the wire relies on. Needed for bus-role conflicts, and marks the wire as a
    * signal so landing on a power or ground pin is reported. Leave it out for power wires.
    */
   use?: BusKind | "gpio";
+  /** Logic level the part drives on a signal wire, in volts; checked against the board. */
+  voltage?: number;
+  /** Wire colour as you would say it, for example "red"; any CSS colour name draws a swatch. */
+  wire?: string;
+  note?: string;
 };
 
 export type Conflict = {
-  kind: "pin" | "bus" | "reserved";
+  kind: "pin" | "bus" | "reserved" | "voltage";
   header: string;
   pins: number[];
   parts: string[];
@@ -93,6 +98,16 @@ export function findConflicts(board: BoardDefinition, assignments: Assignment[])
         pins: [pin.number],
         parts: [assignment.part],
         message: `${assignment.part} uses pin ${pin.number} (${pin.name}), which is ${describeKind(pin)}.`,
+      });
+    }
+
+    if (assignment.use && pin.kind === "gpio" && (assignment.voltage ?? 0) > board.logicLevel) {
+      conflicts.push({
+        kind: "voltage",
+        header: headerId,
+        pins: [pin.number],
+        parts: [assignment.part],
+        message: `${assignment.part} drives pin ${pin.number} (${pin.name}) at ${assignment.voltage} V, above the board's ${board.logicLevel} V logic.`,
       });
     }
 

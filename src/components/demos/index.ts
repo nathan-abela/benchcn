@@ -35,6 +35,7 @@ import statusLedSource from "./status-led-demo.tsx?raw";
 import stripChartSource from "./strip-chart-demo.tsx?raw";
 import timingDiagramSource from "./timing-diagram-demo.tsx?raw";
 import weatherStationSource from "./weather-station-demo.tsx?raw";
+import wiringTableSource from "./wiring-table-demo.tsx?raw";
 
 export type Demo = {
   component: ComponentType;
@@ -213,6 +214,13 @@ export const demos: Record<string, Demo> = {
     ),
     source: pinoutHeaderSource,
     placeholder: { base: 880, sm: 770, md: 800, lg: 761 },
+  },
+  "wiring-table": {
+    component: lazy(() =>
+      import("./wiring-table-demo").then((m) => ({ default: m.WiringTableDemo })),
+    ),
+    source: wiringTableSource,
+    placeholder: { base: 364, sm: 296, md: 364, lg: 296 },
   },
   "bitfield-diagram": {
     component: lazy(() =>

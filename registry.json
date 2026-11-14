@@ -1055,6 +1055,26 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "pinout",
+      "type": "registry:lib",
+      "title": "Pinout logic",
+      "description": "Wiring assignments for a board, the physical arrangement of its header pins, and conflict detection: two parts on one pin, a bus role on two pins, a signal on a power pin, a part above the board logic level.",
+      "files": [
+        {
+          "path": "registry/benchcn/lib/pinout.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/boards"
+      ],
+      "categories": [
+        "board"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/pinout-header"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "pinout-header",
       "type": "registry:ui",
       "title": "Pinout header",
@@ -1064,21 +1084,47 @@
           "path": "registry/benchcn/ui/pinout-header/pinout-header.tsx",
           "type": "registry:ui",
           "target": "components/ui/pinout-header.tsx"
-        },
-        {
-          "path": "registry/benchcn/lib/pinout.ts",
-          "type": "registry:lib"
         }
       ],
       "registryDependencies": [
         "@benchcn/tokens",
         "@benchcn/instrument",
-        "@benchcn/boards"
+        "@benchcn/boards",
+        "@benchcn/pinout"
       ],
       "categories": [
         "board"
       ],
       "docs": "https://nathan-abela.github.io/benchcn/docs/components/pinout-header"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "wiring-table",
+      "type": "registry:ui",
+      "title": "Wiring table",
+      "description": "Board wiring as a table, one row per wire from the same assignments as the pinout header, with conflicts on the affected rows, Markdown copy and CSV download.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/wiring-table/wiring-table.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/wiring-table.tsx"
+        },
+        {
+          "path": "registry/benchcn/lib/wiring.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": [
+        "button",
+        "@benchcn/tokens",
+        "@benchcn/instrument",
+        "@benchcn/boards",
+        "@benchcn/pinout"
+      ],
+      "categories": [
+        "board"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/wiring-table"
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
