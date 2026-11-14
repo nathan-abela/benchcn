@@ -831,6 +831,19 @@ export const registry: RegistryItem[] = [
     docs: docsUrl("components/rotary-encoder"),
   },
   {
+    name: "momentary-button",
+    type: "registry:ui",
+    title: "Momentary button",
+    description:
+      "Hold-to-run button for a jog, horn or pump prime: on at press, off at release, pointer cancel, blur or a hidden tab so it never sticks on, and shows whether the device confirmed on or is still on.",
+    files: [
+      { path: "registry/benchcn/ui/momentary-button/momentary-button.tsx", type: "registry:ui" },
+    ],
+    registryDependencies: [`${ns}/tokens`, `${ns}/instrument`, `${ns}/actuator`],
+    categories: ["controls"],
+    docs: docsUrl("components/momentary-button"),
+  },
+  {
     name: "pwm-slider",
     type: "registry:ui",
     title: "PWM slider",

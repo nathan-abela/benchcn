@@ -1325,6 +1325,29 @@
     },
     {
       "$schema": "https://ui.shadcn.com/schema/registry-item.json",
+      "name": "momentary-button",
+      "type": "registry:ui",
+      "title": "Momentary button",
+      "description": "Hold-to-run button for a jog, horn or pump prime: on at press, off at release, pointer cancel, blur or a hidden tab so it never sticks on, and shows whether the device confirmed on or is still on.",
+      "files": [
+        {
+          "path": "registry/benchcn/ui/momentary-button/momentary-button.tsx",
+          "type": "registry:ui",
+          "target": "components/ui/momentary-button.tsx"
+        }
+      ],
+      "registryDependencies": [
+        "@benchcn/tokens",
+        "@benchcn/instrument",
+        "@benchcn/actuator"
+      ],
+      "categories": [
+        "controls"
+      ],
+      "docs": "https://nathan-abela.github.io/benchcn/docs/components/momentary-button"
+    },
+    {
+      "$schema": "https://ui.shadcn.com/schema/registry-item.json",
       "name": "pwm-slider",
       "type": "registry:ui",
       "title": "PWM slider",

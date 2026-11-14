@@ -1,0 +1,73 @@
+---
+title: Momentary button
+description: Hold-to-run button for a jog, horn or pump prime. It sends on at press and off however the hold ends, and shows whether the device confirmed on or is still on.
+---
+
+<ComponentPreview name="momentary-button" />
+
+Hold the button and the horn sounds; let go and it stops. Off is sent on release, and also when the pointer is cancelled, focus leaves, the window loses focus or the tab is hidden, so the page never leaves it on by itself. If the device still reports on after the release, the status turns red and says Still on.
+
+## Installation
+
+<InstallTabs item="momentary-button" />
+
+## Usage
+
+Spread the tracked actuator in and send both edges through `command`. Use [Actuator control](/docs/components/actuator-control) instead for outputs that should stay on after the press.
+
+```tsx
+import { useMockDevice } from "@/hooks/use-mock-device";
+import { MomentaryButton } from "@/components/ui/momentary-button";
+
+export function Horn() {
+  const { actuators, command } = useMockDevice();
+  return (
+    <MomentaryButton
+      label="Horn"
+      action="Hold to sound"
+      {...actuators.horn}
+      onCommand={(on) => command("horn", on)}
+    />
+  );
+}
+```
+
+## The device stops too
+
+A dropped connection delivers no off at all. Firmware driving anything that moves should switch the output off by itself when it stops hearing from the page, as the [joystick](/docs/components/joystick) firmware does for drive commands.
+
+## Props
+
+<PropsTable of="momentary-button" />
+
+## States
+
+| Status   | When                                                     |
+| -------- | -------------------------------------------------------- |
+| Unknown  | `confirmed` is `null`                                    |
+| Off      | Released, and the device confirms off                    |
+| Waiting  | `pending`                                                |
+| On       | Held, and the device confirms on                         |
+| Still on | Released, but the device still reports on, even on error |
+| Not on   | Held, but the device acknowledged off                    |
+| Error    | `error` is set, including `"timeout"`                    |
+
+## Keyboard
+
+| Key           | Result        |
+| ------------- | ------------- |
+| Space / Enter | On while held |
+| Tab away      | Off           |
+
+Key repeat is ignored, so holding a key sends one on, not a stream.
+
+## Accessibility
+
+The button exposes `aria-pressed` while held and says "Release to stop". The status is a polite live region, so screen readers hear On and Off as the device confirms them. The fill appears on pointer-down with no transition beyond a 100 ms colour change.
+
+## Ask your agent
+
+<AgentPrompt item="momentary-button">
+  Use the momentary button for outputs that must only run while held. Send both edges through
+  command, and give the firmware its own timeout so a lost off still stops the output.
+</AgentPrompt>

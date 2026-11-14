@@ -14,6 +14,7 @@ import ledBarSource from "./led-bar-demo.tsx?raw";
 import ledMatrixSource from "./led-matrix-demo.tsx?raw";
 import logicAnalyzerSource from "./logic-analyzer-demo.tsx?raw";
 import meterReadoutSource from "./meter-readout-demo.tsx?raw";
+import momentaryButtonSource from "./momentary-button-demo.tsx?raw";
 import odometryPlotSource from "./odometry-plot-demo.tsx?raw";
 import oledDisplaySource from "./oled-display-demo.tsx?raw";
 import oscilloscopeSource from "./oscilloscope-demo.tsx?raw";
@@ -106,6 +107,13 @@ export const demos: Record<string, Demo> = {
     ),
     source: rotaryEncoderSource,
     placeholder: { base: 382, sm: 326 },
+  },
+  "momentary-button": {
+    component: lazy(() =>
+      import("./momentary-button-demo").then((m) => ({ default: m.MomentaryButtonDemo })),
+    ),
+    source: momentaryButtonSource,
+    placeholder: { base: 254, sm: 198 },
   },
   "pwm-slider": {
     component: lazy(() => import("./pwm-slider-demo").then((m) => ({ default: m.PwmSliderDemo }))),

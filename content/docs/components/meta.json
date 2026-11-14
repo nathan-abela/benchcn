@@ -11,6 +11,7 @@
     "setpoint-input",
     "rotary-encoder",
     "pwm-slider",
+    "momentary-button",
     "emergency-stop",
     "joystick",
     "---Readouts---",

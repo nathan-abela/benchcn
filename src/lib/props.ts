@@ -405,6 +405,44 @@ export const props: Record<string, PropsDoc> = {
     },
     disabled: { type: "boolean", description: "", default: "false" },
   },
+  "momentary-button": {
+    label: { type: "ReactNode", description: "What the output is.", required: true },
+    description: { type: "ReactNode", description: "Pin, what it drives. One line." },
+    commanded: {
+      type: "boolean | null",
+      description: "`true` while held, `false` after the release.",
+      required: true,
+    },
+    confirmed: {
+      type: "boolean | null",
+      description: "What the device last acknowledged. `null` until known.",
+      required: true,
+    },
+    pending: { type: "boolean", description: "Waiting for an acknowledgement.", default: "false" },
+    error: { type: "string | null", description: '`"timeout"` or the device\'s error text.' },
+    latency: { type: "number | null", description: "Round trip of the last ack in milliseconds." },
+    onCommand: {
+      type: "(on: boolean) => void",
+      description:
+        "`true` at press, `false` on release, pointer cancel, blur, window blur, hidden tab, disable or unmount.",
+      required: true,
+    },
+    action: {
+      type: "string",
+      description: "Button text while released.",
+      default: '"Hold to run"',
+    },
+    disabled: {
+      type: "boolean",
+      description: "Going disabled mid-hold sends off.",
+      default: "false",
+    },
+    labels: {
+      type: "{ on?: string; off?: string }",
+      description: "Words for the two states.",
+      default: '{ on: "On", off: "Off" }',
+    },
+  },
   "pwm-slider": {
     label: { type: "ReactNode", description: "", required: true },
     description: { type: "ReactNode", description: "Pin, frequency. One line." },
