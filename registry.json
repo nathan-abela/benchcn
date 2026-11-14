@@ -1204,7 +1204,8 @@
         "@benchcn/odometry-plot",
         "@benchcn/actuator-control",
         "@benchcn/alarm-list",
-        "@benchcn/range-bar",
+        "@benchcn/battery-indicator",
+        "@benchcn/connection-status",
         "@benchcn/strip-chart",
         "@benchcn/serial-console",
         "@benchcn/status-led"
@@ -1219,7 +1220,7 @@
       "name": "weather-station",
       "type": "registry:block",
       "title": "Weather station",
-      "description": "Weather dashboard block: seven-segment temperature, climate tiles with sparklines, computed dew point, pressure trend on an LCD and a low-battery LED, with a kiosk layout.",
+      "description": "Weather dashboard block: seven-segment temperature, climate tiles with sparklines, computed dew point, pressure trend on an LCD, battery, signal and link readouts, and a kiosk layout.",
       "files": [
         {
           "path": "registry/benchcn/blocks/weather-station/weather-station.tsx",
@@ -1231,7 +1232,9 @@
         "@benchcn/sensor-tile",
         "@benchcn/seven-segment",
         "@benchcn/character-lcd",
-        "@benchcn/status-led"
+        "@benchcn/battery-indicator",
+        "@benchcn/signal-strength",
+        "@benchcn/connection-status"
       ],
       "categories": [
         "blocks"

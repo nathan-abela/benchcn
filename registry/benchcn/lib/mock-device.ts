@@ -126,6 +126,10 @@ const sensors: Sensor[] = [
     read: (_, s) =>
       s.psu.v === 0 ? noise(s, 0.0004) : s.psu.v - s.psu.i * LEAD_OHMS + noise(s, 0.0008),
   },
+  {
+    info: { id: "rssi", u: "dBm", min: -100, max: -30, kind: "sensor", label: "Wi-Fi signal" },
+    read: (t, s) => -64 + 7 * Math.sin((TAU * t) / 900) + noise(s, 1.5),
+  },
 ];
 
 const robotSensors: Sensor[] = [

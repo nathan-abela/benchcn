@@ -136,7 +136,7 @@ export const demos: Record<string, Demo> = {
   robot: {
     component: lazy(() => import("./robot-demo").then((m) => ({ default: m.RobotDemo }))),
     source: robotSource,
-    placeholder: { base: 2053, sm: 2282, md: 1765, lg: 1909, xl: 1032 },
+    placeholder: { base: 1941, sm: 2066, md: 1234, lg: 1302, xl: 794 },
   },
   "alarm-list": {
     component: lazy(() => import("./alarm-list-demo").then((m) => ({ default: m.AlarmListDemo }))),
@@ -247,7 +247,7 @@ export const demos: Record<string, Demo> = {
       import("./weather-station-demo").then((m) => ({ default: m.WeatherStationDemo })),
     ),
     source: weatherStationSource,
-    placeholder: { base: 870, sm: 910, md: 455, lg: 475 },
+    placeholder: { base: 889, sm: 920, md: 463, lg: 483, xl: 478 },
   },
   "serial-console": {
     component: lazy(() =>

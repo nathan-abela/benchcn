@@ -749,7 +749,8 @@ export const registry: RegistryItem[] = [
       `${ns}/odometry-plot`,
       `${ns}/actuator-control`,
       `${ns}/alarm-list`,
-      `${ns}/range-bar`,
+      `${ns}/battery-indicator`,
+      `${ns}/connection-status`,
       `${ns}/strip-chart`,
       `${ns}/serial-console`,
       `${ns}/status-led`,
@@ -762,7 +763,7 @@ export const registry: RegistryItem[] = [
     type: "registry:block",
     title: "Weather station",
     description:
-      "Weather dashboard block: seven-segment temperature, climate tiles with sparklines, computed dew point, pressure trend on an LCD and a low-battery LED, with a kiosk layout.",
+      "Weather dashboard block: seven-segment temperature, climate tiles with sparklines, computed dew point, pressure trend on an LCD, battery, signal and link readouts, and a kiosk layout.",
     files: [
       {
         path: "registry/benchcn/blocks/weather-station/weather-station.tsx",
@@ -774,7 +775,9 @@ export const registry: RegistryItem[] = [
       `${ns}/sensor-tile`,
       `${ns}/seven-segment`,
       `${ns}/character-lcd`,
-      `${ns}/status-led`,
+      `${ns}/battery-indicator`,
+      `${ns}/signal-strength`,
+      `${ns}/connection-status`,
     ],
     categories: ["blocks"],
     docs: docsUrl("blocks/weather-station"),

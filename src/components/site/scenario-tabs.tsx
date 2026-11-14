@@ -61,9 +61,9 @@ type ScenarioId = (typeof SCENARIOS)[number]["id"];
 const PLACEHOLDERS: Record<ScenarioId, PlaceholderHeights> = {
   power: { base: 1802, sm: 1422, md: 1216, lg: 1178, xl: 1012 },
   plant: { base: 1103, sm: 831, lg: 566 },
-  weather: { base: 880, sm: 916, md: 475 },
+  weather: { base: 896, sm: 931, md: 483 },
   signals: { base: 1228, sm: 1354, md: 1391, lg: 673, xl: 735 },
-  robot: { base: 2020, sm: 2321, md: 2027, lg: 2227, xl: 979 },
+  robot: { base: 1895, sm: 2116, md: 1333, lg: 1461, xl: 943 },
   datasheet: { base: 2057, lg: 1477, xl: 1461 },
 };
 

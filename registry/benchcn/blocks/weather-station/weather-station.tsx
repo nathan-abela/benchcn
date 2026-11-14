@@ -1,7 +1,7 @@
 // benchcn.dev · weather-station
 // A weather station dashboard: a big seven-segment temperature, climate tiles with sparklines, a
-// computed dew point, pressure trend on an LCD and a low-battery LED. Mock device until you pass a
-// source.
+// computed dew point, pressure trend on an LCD, and the battery, signal and link a remote station
+// needs watched. Mock device until you pass a source.
 import type { ComponentProps, ReactElement } from "react";
 
 import { cn } from "@/lib/utils";
@@ -9,10 +9,12 @@ import { useMockDevice } from "@/registry/benchcn/hooks/use-mock-device";
 import { InstrumentLabel } from "@/registry/benchcn/lib/instrument";
 import type { SourceHandle } from "@/registry/benchcn/lib/source-store";
 import type { WireSample } from "@/registry/benchcn/lib/wire";
+import { BatteryIndicator } from "@/registry/benchcn/ui/battery-indicator/battery-indicator";
 import { CharacterLcd } from "@/registry/benchcn/ui/character-lcd/character-lcd";
+import { ConnectionStatus } from "@/registry/benchcn/ui/connection-status/connection-status";
 import { SensorTile } from "@/registry/benchcn/ui/sensor-tile/sensor-tile";
 import { SevenSegment } from "@/registry/benchcn/ui/seven-segment/seven-segment";
-import { StatusLed } from "@/registry/benchcn/ui/status-led/status-led";
+import { SignalStrength } from "@/registry/benchcn/ui/signal-strength/signal-strength";
 
 export type WeatherStationProps = ComponentProps<"section"> & {
   source?: SourceHandle;
@@ -27,6 +29,7 @@ const DEFAULT_CHANNELS = {
   pressure: "pressure",
   light: "light",
   battery: "battery",
+  rssi: "rssi",
 };
 
 /** Magnus formula with the Sonntag constants; good to about 0.35 °C between -45 and 60 °C. */
@@ -73,12 +76,13 @@ function Panel({
   ...props
 }: Omit<WeatherStationProps, "source"> & { source: SourceHandle }): ReactElement {
   const ch = { ...DEFAULT_CHANNELS, ...overrides };
-  const { readings, history, received } = source;
+  const { readings, history } = source;
   const temp = numberOf(readings[ch.temp]);
   const humidity = numberOf(readings[ch.humidity]);
   const pressure = numberOf(readings[ch.pressure]);
   const light = numberOf(readings[ch.light]);
   const battery = numberOf(readings[ch.battery]);
+  const rssi = numberOf(readings[ch.rssi]);
   const dew = temp !== null && humidity !== null ? dewPoint(temp, humidity) : null;
   const trend = pressureTrend(history[ch.pressure]);
   const kiosk = layout === "kiosk";
@@ -94,26 +98,12 @@ function Panel({
       )}
       {...props}
     >
-      <header className="flex items-center justify-between gap-4">
+      <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <InstrumentLabel>{title}</InstrumentLabel>
-        <div className="flex items-center gap-4">
-          <StatusLed
-            label="Link"
-            color="blue"
-            size="sm"
-            pattern="heartbeat"
-            rate={1}
-            on={received > 0}
-            showLabel
-          />
-          <StatusLed
-            label="Battery"
-            color="red"
-            size="sm"
-            pattern="blink"
-            on={battery !== null && battery < 3.5}
-            showLabel
-          />
+        <div className="text-muted-foreground flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm">
+          <SignalStrength label="Wi-Fi" value={rssi} />
+          <BatteryIndicator label="Battery" unit="V" min={3.0} max={4.2} value={battery} />
+          <ConnectionStatus source={source} />
         </div>
       </header>
 

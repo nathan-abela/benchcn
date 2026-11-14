@@ -1,6 +1,6 @@
 ---
 title: Weather station
-description: A weather dashboard with a seven-segment temperature, climate tiles with sparklines, a computed dew point, pressure trend on an LCD and a low-battery LED.
+description: A weather dashboard with a seven-segment temperature, climate tiles with sparklines, a computed dew point, pressure trend on an LCD, and battery, signal and link readouts.
 ---
 
 <ComponentPreview name="weather-station" />
@@ -20,12 +20,12 @@ import { WeatherStation } from "@/components/weather-station";
 
 ## Props
 
-| Prop       | Type                                                    | Default             | Meaning                    |
-| ---------- | ------------------------------------------------------- | ------------------- | -------------------------- |
-| `source`   | `SourceHandle`                                          | its own mock        |                            |
-| `title`    | `string`                                                | `"Weather station"` |                            |
-| `layout`   | `"grid" \| "kiosk"`                                     | `"grid"`            | Kiosk fills 800×480        |
-| `channels` | `Partial<{ temp, humidity, pressure, light, battery }>` | defaults            | Channel ids on your device |
+| Prop       | Type                                                          | Default             | Meaning                    |
+| ---------- | ------------------------------------------------------------- | ------------------- | -------------------------- |
+| `source`   | `SourceHandle`                                                | its own mock        |                            |
+| `title`    | `string`                                                      | `"Weather station"` |                            |
+| `layout`   | `"grid" \| "kiosk"`                                           | `"grid"`            | Kiosk fills 800×480        |
+| `channels` | `Partial<{ temp, humidity, pressure, light, battery, rssi }>` | defaults            | Channel ids on your device |
 
 ## Derived values
 

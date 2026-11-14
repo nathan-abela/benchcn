@@ -2,7 +2,7 @@
 // A teleoperated robot: an e-stop that wins over everything, a drive that must be enabled on
 // purpose, a joystick that streams velocities only while the drive is confirmed, the path driven
 // so far, battery and speed, alarms and the log. Runs on the mock device until you pass a source.
-import type { ComponentProps, ReactElement } from "react";
+import type { ComponentProps, ReactElement, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 import { useAlarms } from "@/registry/benchcn/hooks/use-alarms";
@@ -16,10 +16,11 @@ import type { SourceHandle } from "@/registry/benchcn/lib/source-store";
 import { setCommand } from "@/registry/benchcn/lib/wire";
 import { ActuatorControl } from "@/registry/benchcn/ui/actuator-control/actuator-control";
 import { AlarmList } from "@/registry/benchcn/ui/alarm-list/alarm-list";
+import { BatteryIndicator } from "@/registry/benchcn/ui/battery-indicator/battery-indicator";
+import { ConnectionStatus } from "@/registry/benchcn/ui/connection-status/connection-status";
 import { EmergencyStop } from "@/registry/benchcn/ui/emergency-stop/emergency-stop";
 import { Joystick, type JoystickVector } from "@/registry/benchcn/ui/joystick/joystick";
 import { OdometryPlot } from "@/registry/benchcn/ui/odometry-plot/odometry-plot";
-import { RangeBar } from "@/registry/benchcn/ui/range-bar/range-bar";
 import { SerialConsole } from "@/registry/benchcn/ui/serial-console/serial-console";
 import { StatusLed } from "@/registry/benchcn/ui/status-led/status-led";
 import { StripChart } from "@/registry/benchcn/ui/strip-chart/strip-chart";
@@ -65,7 +66,7 @@ function Panel({
   ...props
 }: Omit<RobotProps, "source"> & { source: SourceHandle }): ReactElement {
   const ch = { ...DEFAULT_CHANNELS, ...overrides };
-  const { readings, history, actuators, logs, command, send, received } = source;
+  const { readings, actuators, logs, command, send, received } = source;
   const kiosk = layout === "kiosk";
   const estop = actuators[ch.estop] ?? INITIAL_ACTUATOR_STATE;
   const drive = actuators[ch.drive] ?? INITIAL_ACTUATOR_STATE;
@@ -133,7 +134,7 @@ function Panel({
     >
       <header className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <InstrumentLabel>{title}</InstrumentLabel>
-        <div className="flex items-center gap-4">
+        <div className="text-muted-foreground flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
           <StatusLed
             label="Drive"
             color="green"
@@ -149,15 +150,14 @@ function Panel({
             on={estop.confirmed === true}
             showLabel
           />
-          <StatusLed
-            label="Link"
-            color="blue"
-            size="sm"
-            pattern="heartbeat"
-            rate={1}
-            on={received > 0}
-            showLabel
+          <BatteryIndicator
+            label="Battery"
+            unit="V"
+            min={3.0}
+            max={4.2}
+            value={typeof battery === "number" ? battery : null}
           />
+          <ConnectionStatus source={source} />
         </div>
       </header>
 
@@ -168,33 +168,20 @@ function Panel({
           {driveControl}
         </div>
       ) : (
-        <>
-          {/* Stop and enable sit together, so on a phone they come first. */}
-          <div className="grid items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
-            <div className="flex flex-col gap-4">
-              {stopControl}
-              {driveControl}
-            </div>
-            <div className="flex flex-col gap-4">
-              {pad}
-              <RangeBar
-                label="Battery"
-                unit="V"
-                min={3}
-                max={4.2}
-                precision={2}
-                thresholds={{ low: 3.3, warnBelow: 3.5 }}
-                value={typeof battery === "number" ? battery : null}
-                recent={history[ch.battery]}
-              />
-            </div>
-            <OdometryPlot
-              className="md:col-span-2 xl:col-span-1"
-              path={trail.path}
-              pose={trail.pose}
-            />
-          </div>
-          <div className="grid items-start gap-4 xl:grid-cols-3">
+        // Stop and enable come first so a phone shows them first. On wide screens each row pairs
+        // cards of similar height (stop, joystick, odometry; drive and motion; alarms and the log)
+        // and the cards stretch to the row, so no column leaves a hole under it.
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <Cell className="xl:col-start-1 xl:row-start-1">{stopControl}</Cell>
+          <Cell className="xl:col-start-1 xl:row-start-2">{driveControl}</Cell>
+          <Cell className="xl:col-start-2 xl:row-start-1">{pad}</Cell>
+          <Cell className="xl:col-start-3 xl:row-start-1">
+            <OdometryPlot path={trail.path} pose={trail.pose} />
+          </Cell>
+          <Cell className="md:col-span-2 xl:col-start-2 xl:row-start-2">
+            <StripChart title="Motion" series={motion} seconds={30} height={150} />
+          </Cell>
+          <Cell className="md:col-span-2 xl:col-span-1 xl:col-start-1 xl:row-start-3">
             <AlarmList
               alarms={alarms.alarms}
               onAcknowledge={alarms.acknowledge}
@@ -202,21 +189,21 @@ function Panel({
               onShelve={alarms.shelve}
               onUnshelve={alarms.unshelve}
             />
-            <StripChart
-              className="xl:col-span-2"
-              title="Motion"
-              series={motion}
-              seconds={30}
-              height={150}
+          </Cell>
+          <Cell className="md:col-span-2 xl:col-start-2 xl:row-start-3">
+            <SerialConsole
+              lines={logs.map((log, i) => ({ id: i, text: log.log, level: log.lvl, t: log.t }))}
+              height={120}
+              status={`${received} msgs`}
             />
-          </div>
-          <SerialConsole
-            lines={logs.map((log, i) => ({ id: i, text: log.log, level: log.lvl, t: log.t }))}
-            height={120}
-            status={`${received} msgs`}
-          />
-        </>
+          </Cell>
+        </div>
       )}
     </section>
   );
+}
+
+/** A grid cell whose card fills the row's height. */
+function Cell({ className, children }: { className?: string; children: ReactNode }): ReactElement {
+  return <div className={cn("flex *:min-w-0 *:flex-1", className)}>{children}</div>;
 }
