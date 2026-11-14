@@ -12,6 +12,7 @@
     "rotary-encoder",
     "pwm-slider",
     "momentary-button",
+    "d-pad",
     "emergency-stop",
     "joystick",
     "---Readouts---",

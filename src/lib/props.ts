@@ -480,6 +480,47 @@ export const props: Record<string, PropsDoc> = {
     rate: { type: "number", description: "Streamed values per second.", default: "20" },
     disabled: { type: "boolean", description: "", default: "false" },
   },
+  "d-pad": {
+    label: { type: "ReactNode", description: "", default: '"Jog"' },
+    description: { type: "ReactNode", description: "Machine, travel. One line." },
+    unit: { type: "string", description: "Unit of the steps and positions.", default: '"mm"' },
+    steps: {
+      type: "number[]",
+      description: "Step sizes to choose from.",
+      default: "[0.1, 1, 10]",
+    },
+    defaultStep: { type: "number", description: "", default: "the second step" },
+    onStepChange: { type: "(step: number) => void", description: "" },
+    onJog: {
+      type: "(move: { direction, x, y }) => void",
+      description:
+        "One step: `x` positive right, `y` positive up. Called at press, then every `repeatInterval` while held.",
+      required: true,
+    },
+    onHome: { type: "() => void", description: "Shows a centre Home button." },
+    repeatDelay: {
+      type: "number",
+      description: "Milliseconds held before repeating starts.",
+      default: "400",
+    },
+    repeatInterval: {
+      type: "number",
+      description: "Milliseconds between repeated steps.",
+      default: "150",
+    },
+    position: {
+      type: "{ x?: number | null; y?: number | null }",
+      description: "Where the device says it is. Leave out to hide the readouts.",
+    },
+    axes: { type: "{ x?: string; y?: string }", description: "Axis names.", default: '"X", "Y"' },
+    pending: { type: "boolean", description: "Shows Waiting.", default: "false" },
+    error: { type: "string | null", description: "Shown under the readouts." },
+    disabled: {
+      type: "boolean",
+      description: "Going disabled mid-hold stops repeating.",
+      default: "false",
+    },
+  },
   "odometry-plot": {
     path: {
       type: "ArrayLike<{ x: number; y: number }>",

@@ -8,6 +8,7 @@ import batteryIndicatorSource from "./battery-indicator-demo.tsx?raw";
 import bitfieldDiagramSource from "./bitfield-diagram-demo.tsx?raw";
 import characterLcdSource from "./character-lcd-demo.tsx?raw";
 import connectionStatusSource from "./connection-status-demo.tsx?raw";
+import dPadSource from "./d-pad-demo.tsx?raw";
 import emergencyStopSource from "./emergency-stop-demo.tsx?raw";
 import joystickSource from "./joystick-demo.tsx?raw";
 import ledBarSource from "./led-bar-demo.tsx?raw";
@@ -119,6 +120,11 @@ export const demos: Record<string, Demo> = {
     component: lazy(() => import("./pwm-slider-demo").then((m) => ({ default: m.PwmSliderDemo }))),
     source: pwmSliderSource,
     placeholder: { base: 279, sm: 223 },
+  },
+  "d-pad": {
+    component: lazy(() => import("./d-pad-demo").then((m) => ({ default: m.DPadDemo }))),
+    source: dPadSource,
+    placeholder: { base: 380, sm: 246 },
   },
   "odometry-plot": {
     component: lazy(() =>

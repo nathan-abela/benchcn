@@ -10,6 +10,7 @@ const COMPONENTS = [
   "rotary-encoder",
   "momentary-button",
   "pwm-slider",
+  "d-pad",
   "sensor-tile",
   "range-bar",
   "battery-indicator",

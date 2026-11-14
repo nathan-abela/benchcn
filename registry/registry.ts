@@ -861,4 +861,21 @@ export const registry: RegistryItem[] = [
     categories: ["controls"],
     docs: docsUrl("components/pwm-slider"),
   },
+  {
+    name: "d-pad",
+    type: "registry:ui",
+    title: "D-pad",
+    description:
+      "Directional pad for stepped jogging of a CNC or printer axis or a camera's pan and tilt: one step per press, repeat while held, arrow keys, a home button and a selectable step size.",
+    files: [{ path: "registry/benchcn/ui/d-pad/d-pad.tsx", type: "registry:ui" }],
+    registryDependencies: [
+      "button",
+      `${ns}/tokens`,
+      `${ns}/instrument`,
+      `${ns}/stepper`,
+      `${ns}/pacing`,
+    ],
+    categories: ["controls"],
+    docs: docsUrl("components/d-pad"),
+  },
 ];
