@@ -3,42 +3,42 @@ title: Overview
 description: The catalog. Each page has a live preview, install command, usage, API and accessibility notes.
 ---
 
-## Signals
+## Readouts
 
-- [Oscilloscope](/docs/components/oscilloscope): triggered waveform display with measurements.
-- [Logic analyzer](/docs/components/logic-analyzer): digital lanes with zoom and I²C, SPI, UART and Modbus RTU decode.
-- [Strip chart](/docs/components/strip-chart): rolling multi-series trend with honest gaps and CSV export.
+- [Alarm list](/docs/components/alarm-list): rule-driven alarms with acknowledgement and shelving.
+- [Battery indicator](/docs/components/battery-indicator): charge from volts or percent, grey until low.
+- [Connection status](/docs/components/connection-status): a source's link state, retries and stale detection.
+- [Meter readout](/docs/components/meter-readout): multimeter face with hold and min, max and average.
+- [Odometry plot](/docs/components/odometry-plot): a robot's path and heading on a scaled grid.
+- [Range bar](/docs/components/range-bar): where a value sits against its limits and setpoint, grey until abnormal.
+- [Sensor tile](/docs/components/sensor-tile): one reading with thresholds, sparkline and stale detection.
+- [Signal strength](/docs/components/signal-strength): bars from RSSI or link quality.
 
 ## Controls
 
 - [Actuator control](/docs/components/actuator-control): press-and-hold with commanded versus confirmed state.
-- [Setpoint input](/docs/components/setpoint-input): numeric setpoint that stays a draft until the device confirms it.
-- [Rotary encoder](/docs/components/rotary-encoder): detented knob with a push button that sends once turning stops.
-- [PWM slider](/docs/components/pwm-slider): streams duty while dragging and confirms the value it was released on.
-- [Momentary button](/docs/components/momentary-button): hold to run, off however the hold ends.
 - [D-pad](/docs/components/d-pad): stepped jogging with repeat while held and a choice of step size.
 - [Emergency stop](/docs/components/emergency-stop): latching software stop with a two-step reset.
 - [Joystick](/docs/components/joystick): teleoperation from touch, keys or a gamepad that stops on release.
-
-## Readouts
-
-- [Sensor tile](/docs/components/sensor-tile): one reading with thresholds, sparkline and stale detection.
-- [Range bar](/docs/components/range-bar): where a value sits against its limits and setpoint, grey until abnormal.
-- [Meter readout](/docs/components/meter-readout): multimeter face with hold and min, max and average.
-- [Battery indicator](/docs/components/battery-indicator): charge from volts or percent, grey until low.
-- [Signal strength](/docs/components/signal-strength): bars from RSSI or link quality.
-- [Connection status](/docs/components/connection-status): a source's link state, retries and stale detection.
-- [Alarm list](/docs/components/alarm-list): rule-driven alarms with acknowledgement and shelving.
-- [Odometry plot](/docs/components/odometry-plot): a robot's path and heading on a scaled grid.
+- [Momentary button](/docs/components/momentary-button): hold to run, off however the hold ends.
+- [PWM slider](/docs/components/pwm-slider): streams duty while dragging and confirms the value it was released on.
+- [Rotary encoder](/docs/components/rotary-encoder): detented knob with a push button that sends once turning stops.
+- [Setpoint input](/docs/components/setpoint-input): numeric setpoint that stays a draft until the device confirms it.
 
 ## Displays
 
-- [Status LED](/docs/components/status-led): panel LED with patterns.
-- [Seven-segment display](/docs/components/seven-segment): SVG digits in physical colours.
 - [Character LCD](/docs/components/character-lcd): HD44780 text display from the real character ROM.
-- [OLED display](/docs/components/oled-display): monochrome OLED from a bitmap or raw SSD1306 display RAM.
-- [LED matrix](/docs/components/led-matrix): dot-matrix panel with scrolling text.
 - [LED bar](/docs/components/led-bar): segmented bar graph with warning and alarm segments.
+- [LED matrix](/docs/components/led-matrix): dot-matrix panel with scrolling text.
+- [OLED display](/docs/components/oled-display): monochrome OLED from a bitmap or raw SSD1306 display RAM.
+- [Seven-segment display](/docs/components/seven-segment): SVG digits in physical colours.
+- [Status LED](/docs/components/status-led): panel LED with patterns.
+
+## Signals
+
+- [Logic analyzer](/docs/components/logic-analyzer): digital lanes with zoom and I²C, SPI, UART and Modbus RTU decode.
+- [Oscilloscope](/docs/components/oscilloscope): triggered waveform display with measurements.
+- [Strip chart](/docs/components/strip-chart): rolling multi-series trend with honest gaps and CSV export.
 
 ## Comms
 
@@ -46,6 +46,6 @@ description: The catalog. Each page has a live preview, install command, usage, 
 
 ## Boards and docs
 
-- [Pinout header](/docs/components/pinout-header): board pinouts with wiring and conflict detection.
 - [Bitfield diagram](/docs/components/bitfield-diagram): register layouts with live decoding.
+- [Pinout header](/docs/components/pinout-header): board pinouts with wiring and conflict detection.
 - [Timing diagram](/docs/components/timing-diagram): WaveJSON-style timing figures.

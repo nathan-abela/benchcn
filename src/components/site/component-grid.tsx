@@ -15,12 +15,12 @@ export const CATEGORY_LABEL: Record<string, string> = {
   blocks: "Blocks",
 };
 
-/** Also the order of the docs sidebar and the catalog page. */
+/** Most reached-for first. Also the order of the docs sidebar and the catalog page. */
 export const CATEGORY_ORDER = [
-  "signals",
-  "controls",
   "readouts",
+  "controls",
   "displays",
+  "signals",
   "comms",
   "board",
   "blocks",
