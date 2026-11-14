@@ -162,3 +162,31 @@
     opacity: 1;
   }
 }
+
+/* A display module powering up: flickers on once, then holds. */
+@utility power-on {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: power-on 420ms linear both;
+  }
+}
+
+@keyframes power-on {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 0.7;
+  }
+  30% {
+    opacity: 0.12;
+  }
+  52% {
+    opacity: 0.9;
+  }
+  64% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 1;
+  }
+}
