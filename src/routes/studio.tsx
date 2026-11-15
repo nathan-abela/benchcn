@@ -5,7 +5,7 @@ import type { ReactElement } from "react";
 import { SiteNav } from "@/components/site/site-nav";
 import { Studio } from "@/components/studio/studio";
 import { baseOptions } from "@/lib/layout.shared";
-import { landingImageUrl, ogImageMeta } from "@/lib/shared";
+import { getPageImageUrl, ogImageMeta } from "@/lib/shared";
 
 import { siteConfig } from "../../config/site";
 
@@ -21,7 +21,8 @@ export const Route = createFileRoute("/studio")({
       { property: "og:title", content: `Studio · ${siteConfig.name}` },
       { property: "og:description", content: DESCRIPTION },
       { property: "og:url", content: `${siteConfig.url}/studio` },
-      ...ogImageMeta(landingImageUrl, "An oscilloscope screen showing a sine and a square wave"),
+      // The Studio docs page's generated card, so a shared Studio link says Studio, not benchcn.
+      ...ogImageMeta(getPageImageUrl({ slugs: ["studio"] }).url, `Studio · ${siteConfig.name}`),
     ],
   }),
 });
