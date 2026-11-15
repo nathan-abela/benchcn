@@ -39,12 +39,17 @@ export function getPageMarkdownUrl(page: { slugs: string[]; locale?: string }) {
   return { segments, url: `${siteConfig.basepath}${getDocsUrl(segments, page.locale)}` };
 }
 
+/** Prerendered loader data, fetched on client navigation because a static host cannot run server functions. */
+export function getPageDataUrl(slugs: string[]): string {
+  return `${siteConfig.basepath}${docsRoute}/${slugs.length === 0 ? "index" : slugs.join("/")}.json`;
+}
+
 /** @returns page slugs */
 export function decodeMarkdownUrl(segments: string[]) {
   if (segments.length === 0) return [];
 
   const out = [...segments];
-  out[out.length - 1] = out[out.length - 1].replace(/\.md$/, "");
+  out[out.length - 1] = out[out.length - 1].replace(/\.(md|json)$/, "");
   if (out.length === 1 && out[0] === "index") out.pop();
   return out;
 }

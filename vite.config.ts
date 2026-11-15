@@ -25,6 +25,11 @@ const markdownPages = slugs.map((s) => ({
   sitemap: { exclude: true },
 }));
 
+const dataPages = slugs.map((s) => ({
+  path: `/docs/${s.length === 0 ? "index" : s.join("/")}.json`,
+  sitemap: { exclude: true },
+}));
+
 const ogPages = slugs.map((s) => ({
   path: `/og/docs/${[...s, "image.png"].join("/")}`,
   sitemap: { exclude: true },
@@ -56,6 +61,7 @@ export default defineConfig({
           sitemap: { exclude: true },
         },
         ...markdownPages,
+        ...dataPages,
         ...ogPages,
       ],
     }),

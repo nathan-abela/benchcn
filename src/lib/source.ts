@@ -3,7 +3,7 @@ import { lucideIconsPlugin } from "fumadocs-core/source/lucide-icons";
 import { defineDocs } from "fumadocs-mdx/macro";
 
 import { siteConfig } from "../../config/site";
-import { docsRoute } from "./shared";
+import { docsRoute, getPageImageUrl, getPageMarkdownUrl } from "./shared";
 
 export const docs = defineDocs({
   dir: "content/docs",
@@ -20,6 +20,21 @@ export const source = loader({
   baseUrl: docsRoute,
   plugins: [lucideIconsPlugin()],
 });
+
+export type DocsPageData = NonNullable<Awaited<ReturnType<typeof getDocsPageData>>>;
+
+export async function getDocsPageData(slugs: string[]) {
+  const page = source.getPage(slugs);
+  if (!page) return null;
+
+  return {
+    path: page.path,
+    title: page.data.title,
+    markdownUrl: getPageMarkdownUrl(page).url,
+    imageUrl: getPageImageUrl(page).url,
+    pageTree: await source.serializePageTree(source.getPageTree()),
+  };
+}
 
 export const docsLlms = llms(source, {
   renderPage: async (page) => `# ${page.data.title} (${siteConfig.url}${page.url})

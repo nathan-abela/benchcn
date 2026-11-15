@@ -17,6 +17,26 @@ test.describe("static site", () => {
     await expect(page.getByRole("heading", { name: "Introduction" })).toBeVisible();
   });
 
+  test("navigates from the landing page to docs without a server", async ({ page }) => {
+    // #given the landing page has hydrated
+    await page.goto("./");
+    await page.waitForLoadState("networkidle");
+
+    // #when following nav links client-side
+    await page.getByRole("link", { name: "Docs", exact: true }).first().click();
+
+    // #then the docs page renders from prerendered data
+    await expect(page.getByRole("heading", { name: "Introduction" })).toBeVisible();
+
+    // #when moving on to a nested page
+    await page.getByRole("link", { name: "Components", exact: true }).first().click();
+
+    // #then it renders too
+    await expect(page).toHaveURL(/\/docs\/components\/?$/);
+    await expect(page.getByText("Something went wrong")).toHaveCount(0);
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  });
+
   test("ships the registry index and an item", async ({ request }) => {
     // #when fetching the registry index
     const index = await request.get("./r/registry.json");

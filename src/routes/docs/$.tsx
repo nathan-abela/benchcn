@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { createServerFn } from "@tanstack/react-start";
+import { createIsomorphicFn } from "@tanstack/react-start";
 import { useFumadocsLoader } from "fumadocs-core/source/client";
 import { useSidebar } from "fumadocs-ui/components/sidebar/base";
 import { DocsLayout } from "fumadocs-ui/layouts/notebook";
@@ -11,14 +11,15 @@ import { MenuIcon } from "@/components/site/icons";
 import { PageActions } from "@/components/site/page-actions";
 import { SiteNav } from "@/components/site/site-nav";
 import { baseOptions } from "@/lib/layout.shared";
-import { getPageImageUrl, getPageMarkdownUrl, gitConfig, ogImageMeta } from "@/lib/shared";
-import { docs, source } from "@/lib/source";
+import { getPageDataUrl, gitConfig, ogImageMeta } from "@/lib/shared";
+import { type DocsPageData, docs, getDocsPageData } from "@/lib/source";
 
 export const Route = createFileRoute("/docs/$")({
   component: Page,
   loader: async ({ params }) => {
-    const slugs = params._splat?.split("/") ?? [];
-    const data = await serverLoader({ data: slugs });
+    const slugs = params._splat?.split("/").filter(Boolean) ?? [];
+    const data = await loadPageData(slugs);
+    if (!data) throw notFound();
     await docs.getPage(data.path)?.preload();
     return data;
   },
@@ -27,21 +28,11 @@ export const Route = createFileRoute("/docs/$")({
   }),
 });
 
-const serverLoader = createServerFn({
-  method: "GET",
-})
-  .validator((slugs: string[]) => slugs)
-  .handler(async ({ data: slugs }) => {
-    const page = source.getPage(slugs);
-    if (!page) throw notFound();
-
-    return {
-      path: page.path,
-      title: page.data.title,
-      markdownUrl: getPageMarkdownUrl(page).url,
-      imageUrl: getPageImageUrl(page).url,
-      pageTree: await source.serializePageTree(source.getPageTree()),
-    };
+const loadPageData = createIsomorphicFn()
+  .server((slugs: string[]) => getDocsPageData(slugs))
+  .client(async (slugs: string[]): Promise<DocsPageData | null> => {
+    const response = await fetch(getPageDataUrl(slugs));
+    return response.ok ? response.json() : null;
   });
 
 /**
