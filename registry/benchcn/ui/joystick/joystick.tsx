@@ -221,7 +221,7 @@ export function Joystick({
         </InstrumentLabel>
       </div>
 
-      <div className="flex justify-center">
+      <div className="flex flex-1 items-center justify-center">
         <button
           type="button"
           aria-roledescription="joystick"

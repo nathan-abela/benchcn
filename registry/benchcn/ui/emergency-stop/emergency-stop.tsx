@@ -150,7 +150,7 @@ export function EmergencyStop({
         </span>
       </div>
 
-      <div className="flex items-center justify-center py-2">
+      <div className="flex flex-1 items-center justify-center py-2">
         {/* Every shadow is concentric: seen head-on, the button sits dead centre in its collar
             and shows being pressed by sinking inward, not by sliding down. */}
         <div className="rounded-full bg-[oklch(0.86_0.17_95)] p-3 shadow-[inset_0_0_0_2px_rgb(0_0_0/0.12),0_0_0_1px_rgb(0_0_0/0.15)]">
