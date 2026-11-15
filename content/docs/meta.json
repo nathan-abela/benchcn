@@ -6,6 +6,7 @@
     "data-sources",
     "wire-protocol",
     "theming",
+    "studio",
     "---Components---",
     "...components",
     "---Blocks---",

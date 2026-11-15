@@ -1,0 +1,56 @@
+---
+title: Studio
+description: Arrange benchcn components on a grid, bind them to a device, and export the dashboard as one file.
+---
+
+The [Studio](/studio) is for laying out a dashboard before you write it. Add cards, bind each one to a channel on the mock device or your own WebSocket, then take away a `dashboard.tsx` and one `shadcn add` command that installs everything it imports.
+
+## Build a layout
+
+The left panel holds the data source, the cards on the canvas in order, and the components you can add. A new card binds to the first matching channel that no other card uses, and takes the label, unit and range the device reports for it. Select a card to change its channels, props and width in the inspector on the right.
+
+The canvas is a 12-column grid. Cards are a quarter, a third, a half, two thirds or the full width. Drag a card by the handle above it to reorder.
+
+Your layout is saved in this browser as you work.
+
+## Bind to your hardware
+
+The mock device is the default, so every card shows live data straight away. To use your own device, pick **WebSocket**, enter its URL and press **Connect**. The device has to speak the [wire protocol](/docs/wire-protocol), and its `hello` message fills the channel lists in the inspector.
+
+Web Serial, ROS 2 and NetworkTables are not Studio sources yet. Build against the mock device, export, and swap the hook in the file for [`useSerialSource`](/docs/hooks/use-serial-source), [`useRosbridgeSource`](/docs/hooks/use-rosbridge-source) or [`useNt4Source`](/docs/hooks/use-nt4-source).
+
+## Export
+
+**Code** shows the install command for pnpm, npm, yarn and bun, and the generated `dashboard.tsx`, which you can copy or download. The file uses `useMockDevice()` or `useWebSocketSource(url)` to match the data source you picked, and lays the cards out on the same grid, stacking to one column on phones.
+
+The command needs the `@benchcn` registry in your `components.json`. See [Installation](/docs/installation).
+
+## Hand it to an agent
+
+**Prompt** copies a prompt for a coding agent with the registry setup, the install command, the layout in words, the channels your device reports and the generated file. The agent then fits the dashboard into your project instead of guessing at component names and props.
+
+## Share a layout
+
+**Share** copies a link with the whole layout compressed into the URL hash, so nothing is uploaded. Opening it shows the shared layout without overwriting your own, and **Open my draft** goes back to yours. Edit the shared layout and it becomes your draft.
+
+A shared link never connects to hardware on its own. If it uses a WebSocket source, the URL is filled in and you press **Connect** yourself.
+
+## Limits
+
+- The site is served over https, so browsers block `ws://` to a network address such as `ws://192.168.1.20:8080`. Use `wss://`, a `localhost` address, or run the exported dashboard on your own machine.
+- These components are not in the Studio yet: [oscilloscope](/docs/components/oscilloscope), [logic analyzer](/docs/components/logic-analyzer), [character LCD](/docs/components/character-lcd), [OLED display](/docs/components/oled-display), [LED matrix](/docs/components/led-matrix), [alarm list](/docs/components/alarm-list), [joystick](/docs/components/joystick), [D-pad](/docs/components/d-pad), [odometry plot](/docs/components/odometry-plot), [pinout header](/docs/components/pinout-header), [bitfield diagram](/docs/components/bitfield-diagram), [timing diagram](/docs/components/timing-diagram) and [wiring table](/docs/components/wiring-table). Add them to the exported file by hand.
+- **Phone** preview stacks the cards in one column. It does not change the cards themselves, so check the exported page on a real phone.
+- On a phone the Studio shows the dashboard and its code. Adding and editing cards needs a wider screen.
+
+## Keyboard
+
+| Keys                                             | Does                              |
+| ------------------------------------------------ | --------------------------------- |
+| Arrow keys on a card's handle                    | Move the card                     |
+| <kbd>Shift</kbd> + Left or Right                 | Make the card narrower or wider   |
+| <kbd>Delete</kbd> on a card's handle             | Remove the card                   |
+| <kbd>Alt</kbd> + arrows inside a card            | Move or resize without the handle |
+| <kbd>Alt</kbd> + Up or Down in the list of cards | Reorder from the left panel       |
+| <kbd>Escape</kbd>                                | Deselect                          |
+
+Moves and width changes are announced to screen readers.
