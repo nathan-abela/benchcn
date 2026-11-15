@@ -49,6 +49,7 @@ export default defineConfig({
         { path: "/kiosk/power-bench", sitemap: { exclude: true } },
         { path: "/kiosk/robot", sitemap: { exclude: true } },
         { path: "/kiosk/weather-station", sitemap: { exclude: true } },
+        { path: "/studio" },
         {
           path: "/404",
           prerender: { enabled: true, outputPath: "/404.html" },

@@ -51,6 +51,9 @@ export function SiteNav({ className, menu }: SiteNavProps): ReactElement {
           >
             Components
           </Link>
+          <Link to="/studio" className={`${TEXT_LINK} hidden sm:inline-flex`}>
+            Studio
+          </Link>
           <button
             type="button"
             aria-label="Search"
