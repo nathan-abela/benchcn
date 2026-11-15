@@ -35,15 +35,15 @@ A socket can stay open long after the device behind it has hung, and a serial po
 
 ## States
 
-| State        | When                                       | Dot             |
-| ------------ | ------------------------------------------ | --------------- |
-| Connected    | Open and sending                           | Solid           |
-| Stale        | Open, nothing for `staleAfter`             | `--warning`     |
-| Connecting   | Opening; from the second try, the attempt  | Ring, pulsing   |
-| Disconnected | Closed, on purpose or between retries      | Ring            |
-| Error        | The transport reported an error            | `--destructive` |
-| Idle         | Not started, for example no URL yet        | Ring            |
-| Unsupported  | No WebSocket or Web Serial in this browser | Ring            |
+| State        | When                                          | Dot             |
+| ------------ | --------------------------------------------- | --------------- |
+| Connected    | Open and sending                              | Solid           |
+| Stale        | Open, nothing for `staleAfter`                | `--warning`     |
+| Connecting   | Opening, with the attempt from the second try | Ring, pulsing   |
+| Disconnected | Closed, on purpose or between retries         | Ring            |
+| Error        | The transport reported an error               | `--destructive` |
+| Idle         | Not started, for example no URL yet           | Ring            |
+| Unsupported  | No WebSocket or Web Serial in this browser    | Ring            |
 
 ## Examples
 
@@ -57,7 +57,7 @@ Without a source, pass what you have.
 
 ## Theming
 
-Connected uses `--foreground`; the dot only takes a colour for Stale and Error, so a healthy panel stays neutral.
+Connected uses `--foreground`. The dot only takes a colour for Stale and Error, so a healthy panel stays neutral.
 
 ## Accessibility
 

@@ -20,7 +20,7 @@ import { SignalStrength } from "@/components/ui/signal-strength";
 <SignalStrength unit="%" value={linkQuality} />
 ```
 
-An ESP32 reports RSSI from `WiFi.RSSI()`; send it as a sample on its own channel and pass `readings.rssi?.v`.
+An ESP32 reports RSSI from `WiFi.RSSI()`. Send it as a sample on its own channel and pass `readings.rssi?.v`.
 
 ## Default thresholds
 
@@ -63,6 +63,6 @@ Under `prefers-reduced-motion` bars switch without fading.
 ## Ask your agent
 
 <AgentPrompt item="signal-strength">
-  Pass the raw RSSI in dBm. Keep the default thresholds for Wi-Fi; for any other radio, set
+  Pass the raw RSSI in dBm. Keep the default thresholds for Wi-Fi. For any other radio, set
   `thresholds` from its documentation instead of guessing.
 </AgentPrompt>

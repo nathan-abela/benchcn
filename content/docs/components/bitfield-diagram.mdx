@@ -46,11 +46,11 @@ Leave out `onValueChange` to show a decoded value without editing. Leave out `va
 
 ### 32-bit registers
 
-Registers wider than 16 bits wrap into rows of 16; set `lanes` to change that. Fields that cross a row boundary are drawn in both rows.
+Registers wider than 16 bits wrap into rows of 16, and `lanes` changes that. Fields that cross a row boundary are drawn in both rows.
 
 ### Access types
 
-`access` accepts `RW`, `RO`, `WO`, `W1C` and `RSVD`; it is shown in the legend and `RSVD` hatches the field.
+`access` accepts `RW`, `RO`, `WO`, `W1C` and `RSVD`. It is shown in the legend, and `RSVD` hatches the field.
 
 ## Theming
 
@@ -58,7 +58,7 @@ Fields take `--channel-1` to `--channel-4` in order, or a `color` of your own. R
 
 ## Accessibility
 
-The SVG is decorative. A visually hidden sentence lists every field with its bit range and the current value, and the legend is a real table. Clickable bits are SVG rectangles; for keyboard editing pair the diagram with inputs that call the same setter.
+The SVG is decorative. A visually hidden sentence lists every field with its bit range and the current value, and the legend is a real table. Clickable bits are SVG rectangles, so for keyboard editing pair the diagram with inputs that call the same setter.
 
 ## Ask your agent
 

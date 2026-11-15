@@ -5,7 +5,7 @@ description: Alarm summary with acknowledgement and shelving. Rules raise alarms
 
 <ComponentPreview name="alarm-list" />
 
-Heat the chamber below the list and watch it climb toward the two limits on its bar; each alarm rises as the value crosses its line, the critical one on top and flashing until acknowledged. Cool it again before acknowledging and both stay, marked Cleared, unacknowledged, until someone has seen them. Drop the link and the chamber sensor raises its own alarm two seconds later.
+Heat the chamber below the list and watch it climb toward the two limits on its bar. Each alarm rises as the value crosses its line, the critical one on top and flashing until acknowledged. Cool it again before acknowledging and both stay, marked Cleared, unacknowledged, until someone has seen them. Drop the link and the chamber sensor raises its own alarm two seconds later.
 
 ## Installation
 
@@ -61,7 +61,7 @@ export function Alarms() {
 | `below`      | Active while the value is below this                              |
 | `deadband`   | How far back past the limit the value must go before it clears    |
 | `staleAfter` | Active when a channel that has reported goes quiet this many ms   |
-| `priority`   | `critical`, `high`, `medium` or `low`; sets order and edge colour |
+| `priority`   | `critical`, `high`, `medium` or `low`, sets order and edge colour |
 
 The deadband stops an alarm chattering when a value hovers at its limit. A channel that has never reported raises nothing: it has no signal to lose, and connection state belongs to the source.
 
@@ -71,7 +71,7 @@ The deadband stops an alarm chattering when a value hovers at its limit. A chann
 
 ## State model
 
-An alarm is three independent things, after the OPC UA Alarms and Conditions model (Part 9): whether the condition is active, which comes from the process; whether the latest activation is acknowledged, which comes from the operator; and whether it is shelved. The row shows the ISA-18.2 style name for the first two.
+An alarm is three independent things, after the OPC UA Alarms and Conditions model (Part 9). The process decides whether the condition is active, the operator decides whether the latest activation is acknowledged, and shelving is separate from both. The row shows the ISA-18.2 style name for the first two.
 
 | Active | Acknowledged | Shown as                | Leaves the list when |
 | ------ | ------------ | ----------------------- | -------------------- |
@@ -81,7 +81,7 @@ An alarm is three independent things, after the OPC UA Alarms and Conditions mod
 
 Every new activation needs its own acknowledgement, and the row counts repeat activations so a chattering alarm is visible.
 
-Shelving hides an alarm without changing its state. Shelve with no `shelveMinutes` lasts until the condition next clears; with minutes it lasts that long through any number of clears. Unshelve brings it back at once. A shelved alarm that cleared while unacknowledged comes back as Cleared, unacknowledged.
+Shelving hides an alarm without changing its state. Shelve with no `shelveMinutes` lasts until the condition next clears. With minutes it lasts that long through any number of clears. Unshelve brings it back at once. A shelved alarm that cleared while unacknowledged comes back as Cleared, unacknowledged.
 
 Acknowledgement and shelving live on the page. They are not sent to the device.
 

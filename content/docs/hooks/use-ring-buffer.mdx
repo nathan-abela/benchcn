@@ -24,7 +24,7 @@ const ch1 = useRingBuffer(source.store, "ch1", { capacity: 65_536 });
 />;
 ```
 
-`block` messages (`{"ch","vs","sr"}`) are appended whole with their sample rate; single `sample` messages are appended one by one with the rate estimated from their spacing.
+`block` messages (`{"ch","vs","sr"}`) are appended whole with their sample rate. Single `sample` messages are appended one by one with the rate estimated from their spacing.
 
 ## Options
 

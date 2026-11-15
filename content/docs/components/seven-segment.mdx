@@ -21,7 +21,7 @@ import { SevenSegment } from "@/components/ui/seven-segment";
 <SevenSegment value="Err" />
 ```
 
-Numbers are formatted with `decimals` and right aligned into `digits` positions. Strings are rendered character by character; anything the segment font cannot show becomes a blank.
+Numbers are formatted with `decimals` and right aligned into `digits` positions. Strings are rendered character by character, and anything the segment font cannot show becomes a blank.
 
 ## Props
 
@@ -53,11 +53,11 @@ Keep the value as `HH:MM` and toggle `colon`. An unlit colon is drawn at `offOpa
 
 ### Larger
 
-`size` is the digit height in pixels; width follows.
+`size` is the digit height in pixels, and the width follows.
 
 ## Theming
 
-Presets `red`, `amber`, `green`, `blue` and `white` are physical colours; without `color` the segments use `--primary`. The bezel is a fixed near-black. `offOpacity` controls how visible unlit segments are.
+Presets `red`, `amber`, `green`, `blue` and `white` are physical colours. Without `color` the segments use `--primary`. The bezel is a fixed near-black. `offOpacity` controls how visible unlit segments are.
 
 ## Accessibility
 
@@ -66,6 +66,6 @@ The SVG is decorative. A visually hidden text carries `label`, or the formatted 
 ## Ask your agent
 
 <AgentPrompt item="seven-segment">
-  Pass numbers with `decimals` and `digits` so the width never jumps; pass strings only for clocks
+  Pass numbers with `decimals` and `digits` so the width never jumps. Pass strings only for clocks
   and status words.
 </AgentPrompt>

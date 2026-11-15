@@ -36,6 +36,6 @@ The source snapshot (`readings`, `history`, `logs`, `actuators`, `hello`, `recei
 
 ## Device side
 
-The firmware serves a WebSocket, sends one JSON object per line, and answers `set` commands with an `ack`. Binary frames are decoded as UTF-8 text; frames do not need to end on a line boundary. See the [wire protocol](/docs/wire-protocol).
+The firmware serves a WebSocket, sends one JSON object per line, and answers `set` commands with an `ack`. Binary frames are decoded as UTF-8 text, and frames do not need to end on a line boundary. See the [wire protocol](/docs/wire-protocol).
 
 Without React, `createWebSocketTransport(url)` returns the transport and `createSourceStore(transport)` the store.

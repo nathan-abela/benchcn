@@ -85,7 +85,7 @@ Before the first acknowledgement `confirmed` is `null`. The control shows Unknow
 
 ## Theming
 
-Bezel and readouts use shadcn tokens. The LED uses `--success`, `--warning` and `--destructive`; the hold bar uses `--primary` at low opacity. There is no `color` prop: an actuator's colour is semantic, not physical.
+Bezel and readouts use shadcn tokens. The LED uses `--success`, `--warning` and `--destructive`, and the hold bar uses `--primary` at low opacity. There is no `color` prop: an actuator's colour is semantic, not physical.
 
 ## Accessibility
 
@@ -93,7 +93,7 @@ The button is a `switch` whose `aria-checked` reflects the confirmed state (`mix
 
 | Key                 | Result                                 |
 | ------------------- | -------------------------------------- |
-| Hold Space or Enter | Fills the bar; releasing early cancels |
+| Hold Space or Enter | Fills the bar, releasing early cancels |
 | Tab                 | Moves focus to the switch              |
 
 Under `prefers-reduced-motion` the bar jumps to full when the hold completes and the LED does not pulse.

@@ -34,7 +34,7 @@ Oscilloscope, logic analyzer, strip chart, meter, seven-segment, LCD and OLED di
 ## What is in it
 
 - **Readouts:** sensor tile, range bar, meter readout with hold and min/max/avg, battery indicator, signal strength, connection status, alarm list with acknowledgement and shelving, odometry plot.
-- **Controls:** actuator control, setpoint input, rotary encoder, PWM slider, momentary button and d-pad, all tracking commanded vs. confirmed through the device's acknowledgements; an emergency stop with a two-step reset; a joystick for touch, keys or a gamepad.
+- **Controls:** actuator control, setpoint input, rotary encoder, PWM slider, momentary button and d-pad, all tracking commanded vs. confirmed through the device's acknowledgements, plus an emergency stop with a two-step reset and a joystick for touch, keys or a gamepad.
 - **Displays:** status LED, seven-segment display, character LCD, OLED display, LED matrix, LED bar.
 - **Signals:** oscilloscope with cursors, logic analyzer with I²C, SPI, UART and Modbus RTU decode, strip chart with CSV export.
 - **Comms:** serial console.

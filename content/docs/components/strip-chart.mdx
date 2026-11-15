@@ -27,7 +27,7 @@ export function Trend() {
 }
 ```
 
-Swap `useMockDevice()` for `useWebSocketSource(url)` or `useSerialSource()`; the chart does not change.
+Swap `useMockDevice()` for `useWebSocketSource(url)` or `useSerialSource()`. The chart does not change.
 
 ## Props
 
@@ -67,7 +67,7 @@ A fixed range stops the axis from rescaling as values move. In a stacked chart, 
 | Situation               | What the chart does                                        |
 | ----------------------- | ---------------------------------------------------------- |
 | Samples stop            | The line ends at the last sample and the legend says Stale |
-| Samples resume          | A new line starts; the gap stays visible                   |
+| Samples resume          | A new line starts, the gap stays visible                   |
 | Paused                  | The plot and legend freeze while recording continues       |
 | Export CSV              | Every recorded point, one row per timestamp, ISO time      |
 | A series has no samples | Its legend shows `--`                                      |
@@ -86,5 +86,5 @@ Under `prefers-reduced-motion` the chart redraws a few times a second instead of
 
 <AgentPrompt item="strip-chart">
   Use useStripSeries to record channels from the source and pass the result to StripChart. Keep
-  series with the same unit on one chart; mixed units stack into lanes on their own.
+  series with the same unit on one chart. Mixed units stack into lanes on their own.
 </AgentPrompt>

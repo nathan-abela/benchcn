@@ -27,7 +27,7 @@ import { PinoutHeader } from "@/components/ui/pinout-header";
 />;
 ```
 
-`use` tells the conflict checker which function the wire relies on. Leave it out for power and ground wires; set it for signals so bus roles are checked and a signal on a power pin is reported.
+`use` tells the conflict checker which function the wire relies on. Leave it out for power and ground wires. Set it for signals so bus roles are checked and a signal on a power pin is reported.
 
 ## Supported boards
 
@@ -77,7 +77,7 @@ The checker is a plain function, `findConflicts(board, assignments)`, so a docs 
 
 ### Click handling
 
-`onPinClick` receives the pin and its header; use it to open a wiring form or copy the pin name.
+`onPinClick` receives the pin and its header. Use it to open a wiring form or copy the pin name.
 
 ## Theming
 
@@ -85,7 +85,7 @@ Pin colours are conventional and fixed: 5 V red, 3V3 orange, ground dark, I2C bl
 
 ## Accessibility
 
-Pins are list items. Each has a text description with number, name, functions and the parts wired to it; with `onPinClick` they are buttons. Conflicts are a labelled list of sentences, not just red rings.
+Pins are list items. Each has a text description with number, name, functions and the parts wired to it. With `onPinClick` they are buttons. Conflicts are a labelled list of sentences, not just red rings.
 
 ## Ask your agent
 

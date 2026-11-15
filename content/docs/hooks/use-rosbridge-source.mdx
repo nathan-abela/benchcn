@@ -3,7 +3,7 @@ title: useRosbridgeSource
 description: ROS 2 topics over a rosbridge WebSocket, returning the same snapshot as the mock device.
 ---
 
-For a ROS 2 robot running `rosbridge_server`. You map topics to channel ids; subscriptions become readings, and `command(id, value)` publishes. Built on the [rosbridge v2 protocol](https://github.com/RobotWebTools/rosbridge_suite/blob/ros2/ROSBRIDGE_PROTOCOL.md) (version 2.1.0).
+For a ROS 2 robot running `rosbridge_server`. You map topics to channel ids. Subscriptions become readings, and `command(id, value)` publishes. Built on the [rosbridge v2 protocol](https://github.com/RobotWebTools/rosbridge_suite/blob/ros2/ROSBRIDGE_PROTOCOL.md) (version 2.1.0).
 
 ## Installation
 
@@ -41,7 +41,7 @@ rosbridge does not acknowledge a publish, so a command is confirmed only when th
 
 ## A robot block on ROS 2
 
-The [robot block](/docs/blocks/robot) runs on any source with its channel ids. Two channels can share a command topic; each publish carries the whole message, so sending `angular` does not reset `linear` to zero.
+The [robot block](/docs/blocks/robot) runs on any source with its channel ids. Two channels can share a command topic, because each publish carries the whole message, so sending `angular` does not reset `linear` to zero.
 
 ```tsx
 import { Robot } from "@/components/robot";
@@ -95,7 +95,7 @@ export function Teleop() {
 }
 ```
 
-The `/estop` and `/drive` topics are your node's; ROS 2 has no standard for them. The block streams velocities with `send`, which publishes on `/cmd_vel` like `command` does but is not tracked. Your node still needs its own watchdog that stops the robot when `/cmd_vel` goes quiet. rosbridge publishers default to transient local durability, so a node that starts later receives the last command sent; make sure that is safe for your drive and e-stop topics.
+The `/estop` and `/drive` topics are your node's, since ROS 2 has no standard for them. The block streams velocities with `send`, which publishes on `/cmd_vel` like `command` does but is not tracked. Your node still needs its own watchdog that stops the robot when `/cmd_vel` goes quiet. rosbridge publishers default to transient local durability, so a node that starts later receives the last command sent. Make sure that is safe for your drive and e-stop topics.
 
 ## Channel mapping
 
@@ -105,7 +105,7 @@ The `/estop` and `/drive` topics are your node's; ROS 2 has no standard for them
 | `topic`                       | `string`                                            |            | Topic the value is read from: a reading, or the state that confirms a command        |
 | `type`                        | `string`                                            | inferred   | Interface type of `topic`, such as `std_msgs/msg/Float64`                            |
 | `field`                       | `string \| (msg) => unknown`                        | `"data"`   | Dot path into the message, or a function of it                                       |
-| `command`                     | `{ topic, type, field? }`                           |            | Where `command(id, value)` publishes; `type` is required, `field` defaults to `data` |
+| `command`                     | `{ topic, type, field? }`                           |            | Where `command(id, value)` publishes. `type` is required, `field` defaults to `data` |
 | `tolerance`                   | `number`                                            | `0`        | A reported number this close to the commanded one confirms it                        |
 | `unit`, `min`, `max`, `label` |                                                     |            | Passed to components through `readings` and `hello`                                  |
 
@@ -133,4 +133,4 @@ Without React, `createRosbridgeTransport(url, channels)` returns the transport, 
 
 ## Tested against
 
-The protocol logic is unit-tested against the message shapes in the spec. It has not yet been run against a live `rosbridge_server` or a real robot; please report what you find.
+The protocol logic is unit-tested against the message shapes in the spec. It has not yet been run against a live `rosbridge_server` or a real robot. Please report what you find.

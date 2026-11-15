@@ -3,7 +3,7 @@ title: useNt4Source
 description: FIRST NetworkTables 4 topics as a source, returning the same snapshot as the mock device.
 ---
 
-For an FRC robot, or any NetworkTables 4 server. You map topics to channel ids; subscribed topics become readings, and `command(id, value)` publishes a value. Built on the [NetworkTables 4.1 spec](https://github.com/wpilibsuite/allwpilib/blob/main/ntcore/doc/networktables4.adoc), falling back to 4.0.
+For an FRC robot, or any NetworkTables 4 server. You map topics to channel ids. Subscribed topics become readings, and `command(id, value)` publishes a value. Built on the [NetworkTables 4.1 spec](https://github.com/wpilibsuite/allwpilib/blob/main/ntcore/doc/networktables4.adoc), falling back to 4.0.
 
 ## Installation
 
@@ -29,7 +29,7 @@ const { status, readings, setpoints, command } = useNt4Source(nt4Url("10.12.34.2
 });
 ```
 
-`nt4Url(host, name)` builds `ws://<host>:5810/nt/<name>`; the server shows `name` in its client list. The mapping is read once, on mount. Pass `null` as the URL to stay disconnected.
+`nt4Url(host, name)` builds `ws://<host>:5810/nt/<name>`, and the server shows `name` in its client list. The mapping is read once, on mount. Pass `null` as the URL to stay disconnected.
 
 ## Commanded and confirmed
 
@@ -73,7 +73,7 @@ export function PitDashboard() {
 }
 ```
 
-On an FRC robot the Driver Station enables and disables the robot; a dashboard drive switch is something your robot code chooses to honour. It also needs its own timeout on the velocity topics, because a dropped link sends nothing.
+On an FRC robot the Driver Station enables and disables the robot. A dashboard drive switch is something your robot code chooses to honour. It also needs its own timeout on the velocity topics, because a dropped link sends nothing.
 
 ## Channel mapping
 
@@ -82,7 +82,7 @@ On an FRC robot the Driver Station enables and disables the robot; a dashboard d
 | `kind`                        | `"sensor" \| "digital" \| "actuator" \| "setpoint"` | `"sensor"` | Actuators and setpoints are tracked from the start                                              |
 | `topic`                       | `string`                                            |            | Topic the value is read from: a reading, or the state that confirms a command                   |
 | `index`                       | `number`                                            |            | Element to read from an array topic (`double[]`, `boolean[]` and so on)                         |
-| `command`                     | `{ topic, type }`                                   |            | Where `command(id, value)` publishes; `type` is `boolean`, `double`, `int`, `float` or `string` |
+| `command`                     | `{ topic, type }`                                   |            | Where `command(id, value)` publishes. `type` is `boolean`, `double`, `int`, `float` or `string` |
 | `tolerance`                   | `number`                                            | `0`        | A reported number this close to the commanded one confirms it                                   |
 | `unit`, `min`, `max`, `label` |                                                     |            | Passed to components through `readings` and `hello`                                             |
 
@@ -104,10 +104,10 @@ The source snapshot (`readings`, `history`, `logs`, `actuators`, `setpoints`, `h
 
 ## On the wire
 
-The hook offers the `v4.1.networktables.first.wpi.edu` and `networktables.first.wpi.edu` subprotocols. It syncs its clock with the server before it publishes or subscribes, as the spec asks; commands sent before then are dropped with a warning in `logs`. Browsers cannot send WebSocket pings, so it uses the spec's fallback: a time request every second, and a reconnect after three seconds without a reply. MessagePack is read by a small built-in decoder (`@/lib/msgpack`), not a dependency.
+The hook offers the `v4.1.networktables.first.wpi.edu` and `networktables.first.wpi.edu` subprotocols. It syncs its clock with the server before it publishes or subscribes, as the spec asks, and commands sent before then are dropped with a warning in `logs`. Browsers cannot send WebSocket pings, so it uses the spec's fallback: a time request every second, and a reconnect after three seconds without a reply. MessagePack is read by a small built-in decoder (`@/lib/msgpack`), not a dependency.
 
 Without React, `createNt4Transport(url, channels)` returns the transport, and `createNt4Session` in `@/lib/nt4` is the protocol logic with no socket at all.
 
 ## Tested against
 
-The protocol logic is unit-tested, including the spec's own 17-byte value example. It has not yet been run against a live NetworkTables server or a real robot; please report what you find.
+The protocol logic is unit-tested, including the spec's own 17-byte value example. It has not yet been run against a live NetworkTables server or a real robot. Please report what you find.

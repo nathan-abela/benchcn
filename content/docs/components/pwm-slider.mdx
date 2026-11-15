@@ -5,7 +5,7 @@ description: Continuous slider for LED dimming, servo angle or motor duty. It st
 
 <ComponentPreview name="pwm-slider" />
 
-Drag the thumb and the LED follows twenty times a second. Let go and the final duty is sent once more as a tracked command, so it only turns green when the device acknowledges it. The mark on the track is the confirmed duty; it hides under the thumb when they agree.
+Drag the thumb and the LED follows twenty times a second. Let go and the final duty is sent once more as a tracked command, so it only turns green when the device acknowledges it. The mark on the track is the confirmed duty, and it hides under the thumb when they agree.
 
 ## Installation
 
@@ -13,7 +13,7 @@ Drag the thumb and the LED follows twenty times a second. Let go and the final d
 
 ## Usage
 
-Stream with `send` and commit with `command`. The streamed values are replaced by the next one, so tracking each acknowledgement would only show noise; the release value is the one worth confirming.
+Stream with `send` and commit with `command`. The streamed values are replaced by the next one, so tracking each acknowledgement would only show noise. The release value is the one worth confirming.
 
 ```tsx
 import { useMockDevice } from "@/hooks/use-mock-device";
@@ -72,7 +72,7 @@ Key presses commit straight away and never stream, so each one is one tracked co
 
 ## Accessibility
 
-The thumb is the Base UI slider's range input, labelled by `label` and its unit, with the value exposed. The status is a polite live region. The slider has no motion of its own; the waiting dot does not pulse under `prefers-reduced-motion`.
+The thumb is the Base UI slider's range input, labelled by `label` and its unit, with the value exposed. The status is a polite live region. The slider has no motion of its own, and the waiting dot does not pulse under `prefers-reduced-motion`.
 
 ## Ask your agent
 

@@ -58,7 +58,7 @@ decode={{ protocol: "modbus", rx: "rx", baudRate: 19_200 }}
 
 The list groups frames the way each bus does: one row per I²C start, per SPI chip select, per line of UART text (a line feed or an idle gap ends the row), and per Modbus frame.
 
-Modbus frames end after 3.5 characters of silence, a gap over 1.5 characters inside one is flagged, and every CRC is checked. Function codes 01 to 06, 15 and 16 are parsed; others show their bytes in hex.
+Modbus frames end after 3.5 characters of silence, a gap over 1.5 characters inside one is flagged, and every CRC is checked. Function codes 01 to 06, 15 and 16 are parsed, and others show their bytes in hex.
 
 ## Props
 
@@ -105,7 +105,7 @@ Leave `decode` out for plain digital capture, for example a PWM line next to its
 | SPI      | Word                  | Bubble with MOSI in hex, then MISO when it is not zero         |
 | UART     | Byte                  | Bubble with the character, or the byte in hex if not printable |
 | UART     | Framing, parity error | Red bubble naming the error                                    |
-| Modbus   | Address, function     | Bubbles in the address colour; an exception is red             |
+| Modbus   | Address, function     | Bubbles in the address colour, red for an exception            |
 | Modbus   | Data                  | Bubble with the byte in hex                                    |
 | Modbus   | CRC                   | One bubble over both bytes, red when it does not match         |
 | Modbus   | Gap over 1.5 chars    | Red bubble over the silence                                    |

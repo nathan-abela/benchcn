@@ -53,8 +53,8 @@ Everything in `@/lib/bitmap` takes the bitmap first. Coordinates are in pixels f
 | `setPixel(bitmap, x, y, on?)`            | One pixel                                                      |
 | `drawLine(bitmap, x0, y0, x1, y1, on?)`  | A line, both ends included                                     |
 | `drawRect(bitmap, x, y, w, h, on?)`      | An outline                                                     |
-| `fillRect(bitmap, x, y, w, h, on?)`      | A filled box; `on: false` erases                               |
-| `drawText(bitmap, text, x, y, options?)` | 5×8 text, `{ scale, on }`; returns the x of the next character |
+| `fillRect(bitmap, x, y, w, h, on?)`      | A filled box, `on: false` erases                               |
+| `drawText(bitmap, text, x, y, options?)` | 5×8 text, `{ scale, on }`, returns the x of the next character |
 | `textWidth(text, scale?)`                | Width in pixels, for right alignment and centring              |
 | `toSsd1306(bitmap)`                      | The bytes to send to a real panel                              |
 | `fromSsd1306(buffer, width?, height?)`   | A bitmap from those bytes                                      |

@@ -32,13 +32,13 @@ import { TimingDiagram } from "@/components/ui/timing-diagram";
 | ----------- | --------------------------------------------------- |
 | `0` `1`     | Low, high (`l`, `h`, `d`, `u` are accepted aliases) |
 | `p` `n`     | One clock cycle, rising or falling edge first       |
-| `=` `2`-`9` | A bus value; the digit picks the colour slot        |
+| `=` `2`-`9` | A bus value, the digit picks the colour slot        |
 | `x`         | Unknown, hatched                                    |
 | `z`         | High impedance, dashed mid level                    |
 | `.`         | Repeat the previous character                       |
 | `\|`        | A break in time                                     |
 
-`period` stretches every character of a signal; `phase` shifts it in cycles. Node arrows and edge annotations from full WaveJSON are not supported.
+`period` stretches every character of a signal, and `phase` shifts it in cycles. Node arrows and edge annotations from full WaveJSON are not supported.
 
 ## Props
 
@@ -50,7 +50,7 @@ Lines use the current text colour. Bus fills use `--channel-1` to `--channel-4` 
 
 ## Accessibility
 
-The figure is decorative; a visually hidden sentence names the signals. Put the meaning of the figure in `caption`, which is real text.
+The figure is decorative, and a visually hidden sentence names the signals. Put the meaning of the figure in `caption`, which is real text.
 
 ## Ask your agent
 

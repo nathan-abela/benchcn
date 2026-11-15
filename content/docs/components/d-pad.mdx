@@ -5,7 +5,7 @@ description: Directional pad for stepped jogging of a CNC or printer axis or a c
 
 <ComponentPreview name="d-pad" />
 
-Press an arrow to move the stage one step; hold it and it repeats after 400 ms. Pick 0.1, 1 or 10 mm, or focus the pad and use the arrow keys. The X and Y readouts are the positions the stage acknowledged, not the ones you asked for.
+Press an arrow to move the stage one step. Hold it and it repeats after 400 ms. Pick 0.1, 1 or 10 mm, or focus the pad and use the arrow keys. The X and Y readouts are the positions the stage acknowledged, not the ones you asked for.
 
 ## Installation
 
@@ -65,7 +65,7 @@ Rename the axes and use degrees.
 | Home       | `onHome`                       |
 | Tab        | The pad, then each step size   |
 
-The operating system's key repeat is ignored; holding uses `repeatDelay` and `repeatInterval` like the pointer. Repeating stops on release, pointer cancel, focus leaving, the window losing focus or the tab hiding.
+The operating system's key repeat is ignored. Holding uses `repeatDelay` and `repeatInterval` like the pointer. Repeating stops on release, pointer cancel, focus leaving, the window losing focus or the tab hiding.
 
 ## Accessibility
 

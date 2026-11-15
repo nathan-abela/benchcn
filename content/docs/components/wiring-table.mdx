@@ -33,7 +33,7 @@ const wiring: Assignment[] = [
 <WiringTable board={raspberryPi40Pin} assignments={wiring} />
 ```
 
-`signal` is the part's pin. `wire` is a colour as you would say it; a CSS colour name also draws a swatch. Set `voltage` on a signal wire to check the part against the board's logic level.
+`signal` is the part's pin. `wire` is a colour as you would say it, and a CSS colour name also draws a swatch. Set `voltage` on a signal wire to check the part against the board's logic level.
 
 ## Props
 
@@ -66,7 +66,7 @@ const markdown = wiringToMarkdown(wiringRows(raspberryPi40Pin, wiring));
 
 ## Accessibility
 
-A real table with a caption and column headers; each part is a row group header. The table scrolls inside its card on narrow screens. Conflicts are sentences in the note cell, not colour alone, and copying is announced.
+A real table with a caption and column headers, and each part is a row group header. The table scrolls inside its card on narrow screens. Conflicts are sentences in the note cell, not colour alone, and copying is announced.
 
 ## Ask your agent
 

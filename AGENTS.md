@@ -68,6 +68,7 @@ evals/                    Realistic agent prompts and results log. Not created y
 - Motion: `motion/react` for UI motion, `requestAnimationFrame` loops for instruments, always gated on `prefers-reduced-motion`.
 - Keep comments to the why. No commented-out code.
 - No em dashes anywhere: UI, docs, comments, commit messages. Empty readouts show `--`.
+- No semicolons in prose (UI, docs, README, registry descriptions). Use a full stop or a comma. Write "ex." instead of "e.g.".
 - Named exports. Explicit return types on exported functions. Tests use `// #given`, `// #when`, `// #then`.
 - Domain data (pinouts, protocol timings, character ROMs) is typed from the official document named in the file. Never fill gaps from memory.
 - Dependencies stay minimal. Ask before adding one a component would carry into a user's project.
