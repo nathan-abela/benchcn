@@ -29,4 +29,4 @@ ${await page.data.getText("processed")}`,
 
 /** llms.txt links are site-relative; make them absolute so agents can fetch them from anywhere. */
 export const absoluteDocsLinks = (text: string): string =>
-  text.replaceAll("](/docs", `](${siteConfig.url}/docs`);
+  text.replace(/\]\(\/(?!\/)/g, `](${siteConfig.url}/`);
