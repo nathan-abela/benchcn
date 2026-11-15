@@ -42,6 +42,10 @@ Oscilloscope, logic analyzer, strip chart, meter, seven-segment, LCD and OLED di
 - **Blocks:** power bench, robot, plant monitor and weather station, each with an 800×480 kiosk layout.
 - **Data:** sources for the mock device, WebSocket, Web Serial, ROS 2 through rosbridge and FRC NetworkTables 4, plus a ring buffer, strip-chart series and alarm rules. Pure I²C, SPI, UART and Modbus RTU decoders with encoders and tests.
 
+## Studio
+
+The [Studio](https://nathan-abela.github.io/benchcn/studio) lays out a dashboard before you write it: add components to a grid, bind them to the mock device or your own WebSocket, and export one `dashboard.tsx` with the `shadcn add` command for everything it uses.
+
 ## Install
 
 Add the registry once to `components.json`:

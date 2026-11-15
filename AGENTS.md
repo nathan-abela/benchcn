@@ -37,6 +37,7 @@ registry/benchcn/
 src/routes/               TanStack Start file routes: landing, docs/$, kiosk/$block, api/search, llms.txt, og, 404
 src/components/site/      Site chrome: nav, install tabs, copy-prompt button, scenario tabs
 src/components/demos/     One demo per component, shared by landing and docs
+src/components/studio/    The Studio editor at /studio. Its layout, binding and code generation logic is src/lib/studio/
 src/styles/               app.css (tokens, fonts), themes.css (generated)
 content/docs/             Fumadocs MDX. One page per component, hook and block.
 scripts/                  build-registry.mts, build-themes.mts, serve-static.mts, registry-test.mts,
@@ -80,7 +81,8 @@ evals/                    Realistic agent prompts and results log. Not created y
 3. **Tests**: any pure logic (measurements, decoding, formatting) in a sibling `*.test.ts`.
 4. **Demo**: `src/components/demos/<name>-demo.tsx`, used by the docs page and, if it belongs there, the landing bench.
 5. **Docs page**: `content/docs/components/<name>.mdx` with preview, install tabs, usage, props table, examples, accessibility notes, and the copy-prompt block.
-6. **Verify**: `pnpm check && pnpm build && pnpm e2e && pnpm registry:test`, then open the page in both colour schemes and at phone width.
+6. **Studio**: if the component binds to a single channel, add it to `src/lib/studio/catalog.ts` so the Studio can place it and export it. Otherwise list it under Limits in `content/docs/studio.mdx`.
+7. **Verify**: `pnpm check && pnpm build && pnpm e2e && pnpm registry:test`, then open the page in both colour schemes and at phone width.
 
 The `add-component` skill in `.agents/skills/` walks through the same steps with templates. Skills live under `.agents/skills/` so any agent can use them; read the relevant `SKILL.md` before starting one of these tasks, since not every agent discovers that directory on its own.
 

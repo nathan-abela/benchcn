@@ -16,6 +16,7 @@ const DOCS: FooterLink[] = [
   { label: "Data sources", docs: "data-sources" },
   { label: "Wire protocol", docs: "wire-protocol" },
   { label: "Theming", docs: "theming" },
+  { label: "Studio", href: `${siteConfig.basepath}/studio` },
 ];
 
 const RESOURCES: FooterLink[] = [

@@ -61,6 +61,8 @@ Docs: https://nathan-abela.github.io/benchcn (every page also at `<url>.md`; ind
 
 For both robot sources, a command is confirmed only when the robot reports the value back on the channel's `topic`. Always map a state topic for e-stops, drives and anything an operator relies on; without one every command ends in `timeout`, on purpose.
 
+If the user laid out a dashboard in the Studio (`/studio` on the docs site), start from its exported `dashboard.tsx` and install command rather than rebuilding the layout.
+
 Every source returns the same handle: `readings`, `history`, `logs`, `actuators`, `setpoints`, `hello`, `received`, `command(id, value)`, `send`, `store`. Components never connect by themselves. Create one source at the top of the page and pass it down. For waveforms from a real device, feed `useRingBuffer(source.store, "ch1")` to the scope.
 
 ## The wire protocol (what the firmware prints)
