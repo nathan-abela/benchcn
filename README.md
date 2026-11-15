@@ -10,16 +10,11 @@
 </p>
 
 <p align="center">
-  <a href="https://ui.shadcn.com"><img src="https://shieldcn.dev/badge/shadcn%2Fui-000000.svg?logo=shadcnui&logoColor=white&variant=branded&size=xs#gh-light-mode-only" alt="shadcn/ui" /></a>
-  <a href="https://ui.shadcn.com"><img src="https://shieldcn.dev/badge/shadcn%2Fui-ffffff.svg?logo=shadcnui&logoColor=black&variant=branded&size=xs#gh-dark-mode-only" alt="shadcn/ui" /></a>
-  <a href="https://github.com/nathan-abela/benchcn/actions/workflows/ci.yml"><img src="https://shieldcn.dev/github/ci/nathan-abela/benchcn.svg?size=xs&mode=light#gh-light-mode-only" alt="CI" /></a>
-  <a href="https://github.com/nathan-abela/benchcn/actions/workflows/ci.yml"><img src="https://shieldcn.dev/github/ci/nathan-abela/benchcn.svg?size=xs&mode=dark#gh-dark-mode-only" alt="CI" /></a>
-  <a href="https://github.com/nathan-abela/benchcn/blob/main/LICENSE"><img src="https://shieldcn.dev/github/license/nathan-abela/benchcn.svg?size=xs&mode=light#gh-light-mode-only" alt="License" /></a>
-  <a href="https://github.com/nathan-abela/benchcn/blob/main/LICENSE"><img src="https://shieldcn.dev/github/license/nathan-abela/benchcn.svg?size=xs&mode=dark#gh-dark-mode-only" alt="License" /></a>
-  <a href="https://github.com/nathan-abela/benchcn/stargazers"><img src="https://shieldcn.dev/github/stars/nathan-abela/benchcn.svg?size=xs&mode=light#gh-light-mode-only" alt="Stars" /></a>
-  <a href="https://github.com/nathan-abela/benchcn/stargazers"><img src="https://shieldcn.dev/github/stars/nathan-abela/benchcn.svg?size=xs&mode=dark#gh-dark-mode-only" alt="Stars" /></a>
-  <a href="https://github.com/nathan-abela/benchcn"><img src="https://shieldcn.dev/views/repo/nathan-abela/benchcn.svg?size=xs&mode=light#gh-light-mode-only" alt="Views" /></a>
-  <a href="https://github.com/nathan-abela/benchcn"><img src="https://shieldcn.dev/views/repo/nathan-abela/benchcn.svg?size=xs&mode=dark#gh-dark-mode-only" alt="Views" /></a>
+  <a href="https://ui.shadcn.com"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/badge/shadcn%2Fui-ffffff.svg?logo=shadcnui&logoColor=black&variant=branded&size=xs" /><img src="https://shieldcn.dev/badge/shadcn%2Fui-000000.svg?logo=shadcnui&logoColor=white&variant=branded&size=xs" alt="shadcn/ui" /></picture></a>
+  <a href="https://github.com/nathan-abela/benchcn/actions/workflows/ci.yml"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/ci/nathan-abela/benchcn.svg?size=xs&mode=dark" /><img src="https://shieldcn.dev/github/ci/nathan-abela/benchcn.svg?size=xs&mode=light" alt="CI" /></picture></a>
+  <a href="https://github.com/nathan-abela/benchcn/blob/main/LICENSE"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/license/nathan-abela/benchcn.svg?size=xs&mode=dark" /><img src="https://shieldcn.dev/github/license/nathan-abela/benchcn.svg?size=xs&mode=light" alt="License" /></picture></a>
+  <a href="https://github.com/nathan-abela/benchcn/stargazers"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/github/stars/nathan-abela/benchcn.svg?size=xs&mode=dark" /><img src="https://shieldcn.dev/github/stars/nathan-abela/benchcn.svg?size=xs&mode=light" alt="Stars" /></picture></a>
+  <a href="https://github.com/nathan-abela/benchcn"><picture><source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/views/repo/nathan-abela/benchcn.svg?size=xs&mode=dark" /><img src="https://shieldcn.dev/views/repo/nathan-abela/benchcn.svg?size=xs&mode=light" alt="Views" /></picture></a>
 </p>
 
 <p align="center">
